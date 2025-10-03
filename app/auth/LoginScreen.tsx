@@ -20,7 +20,7 @@ export default function LoginScreen() {
       return;
     }
 
-    // Vai direto para as Tabs
+    // 🚀 Agora navega para a Home nas Tabs
     router.replace("/(tabs)/home");
   };
 
@@ -69,13 +69,7 @@ const styles = StyleSheet.create({
     ...(Platform.OS === "web" ? { maxWidth: 400, marginHorizontal: "auto" } : {}),
   },
   container: { width: "100%" },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 30,
-    textAlign: "center",
-    color: "#333",
-  },
+  title: { fontSize: 28, fontWeight: "bold", marginBottom: 30, textAlign: "center", color: "#333" },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
@@ -86,11 +80,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   togglePassword: { color: "#007bff", marginBottom: 20, textAlign: "right" },
-  button: {
-    backgroundColor: "#007bff",
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-  },
+  button: { backgroundColor: "#007bff", padding: 15, borderRadius: 10, alignItems: "center" },
   buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
 });

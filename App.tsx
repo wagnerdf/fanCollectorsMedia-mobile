@@ -1,6 +1,6 @@
-import { NavigationContainer } from '@react-navigation/native';
-import React from 'react';
-import AuthStack from './app/auth/AuthStack'; // importando a stack de autenticação
+import { NavigationContainer } from "@react-navigation/native";
+import React from "react";
+import AuthStack from "./app/auth/AuthStack";
 
 export default function App() {
   return (
@@ -9,3 +9,4 @@ export default function App() {
     </NavigationContainer>
   );
 }
+
