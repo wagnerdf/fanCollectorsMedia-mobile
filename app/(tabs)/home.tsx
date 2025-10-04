@@ -1,57 +1,34 @@
 import { useRouter } from "expo-router";
 import React from "react";
-import { Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function HomeScreen() {
   const router = useRouter();
 
   const handleLogout = () => {
-    // Volta para a tela de login
+    // 🚀 volta pro login
     router.replace("/auth/login");
   };
 
   return (
-    <View style={styles.outerContainer}>
-      <View style={styles.container}>
-        <Text style={styles.title}>Bem-vindo à Home!</Text>
-        <Text style={styles.subtitle}>Você fez login com sucesso.</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Bem-vindo à Home!</Text>
 
-        <TouchableOpacity style={styles.button} onPress={handleLogout}>
-          <Text style={styles.buttonText}>Sair</Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity style={styles.button} onPress={handleLogout}>
+        <Text style={styles.buttonText}>Sair</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  outerContainer: {
-    flex: 1,
-    justifyContent: "center",
-    backgroundColor: "#f0f2f5",
-    padding: 20,
-    ...(Platform.OS === "web" ? { maxWidth: 400, marginHorizontal: "auto" } : {}),
-  },
-  container: { width: "100%", alignItems: "center" },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: 10,
-    textAlign: "center",
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#666",
-    marginBottom: 30,
-    textAlign: "center",
-  },
+  container: { flex: 1, justifyContent: "center", alignItems: "center" },
+  title: { fontSize: 24, marginBottom: 20 },
   button: {
-    backgroundColor: "#007bff",
+    backgroundColor: "#d9534f",
     padding: 15,
     borderRadius: 10,
-    width: "60%",
-    alignItems: "center",
+    marginTop: 20,
   },
   buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
 });
