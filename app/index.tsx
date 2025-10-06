@@ -1,5 +1,17 @@
-import { Redirect } from "expo-router";
+import { useRouter } from "expo-router";
+import { useEffect } from "react";
 
 export default function Index() {
-  return <Redirect href="/auth/login" />;
+  const router = useRouter();
+
+  useEffect(() => {
+    // Usar setTimeout para garantir que o layout está montado
+    const timer = setTimeout(() => {
+      router.replace("../auth/Welcome");
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return null; // não precisa renderizar nada
 }
+
