@@ -1,5 +1,4 @@
 import { useRouter } from "expo-router";
-import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function WelcomeScreen() {
@@ -60,9 +59,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 36,
   },
-  buttonContainer: { flexDirection: "row", gap: 12 },
+  buttonContainer: { flexDirection: "row", justifyContent: "space-between", width: "100%" },
   button: { paddingVertical: 12, paddingHorizontal: 24, borderRadius: 10 },
-  loginButton: { backgroundColor: "#2563eb" },
-  signupButton: { backgroundColor: "#16a34a" },
+  loginButton: { backgroundColor: "#2563eb", flex: 1, marginRight: 6, alignItems: "center" },
+  signupButton: { backgroundColor: "#16a34a", flex: 1, marginLeft: 6, alignItems: "center" },
   buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
 });
