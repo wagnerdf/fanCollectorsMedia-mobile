@@ -2,7 +2,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import TabsLayout from "../(tabs)/_layout"; // redireciona para o conteúdo principal após login
 import LoginScreen from "./LoginScreen";
 import RecoverScreen from "./recover";
-import WelcomeScreen from "./welcome";
+import WelcomeScreen from "./Welcome";
 
 const Stack = createNativeStackNavigator();
 
