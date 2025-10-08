@@ -1,110 +1,146 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { useRouter } from "expo-router";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
+/* Import desabilitados por momento, será utilizados futuramente.
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+*/
 
-export default function TabTwoScreen() {
+export default function ExplorerScreen() {
+  const router = useRouter();
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
-            custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful <ThemedText type="defaultSemiBold">react-native-reanimated</ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+    <ScrollView contentContainerStyle={styles.scroll}>
+
+      <View style={styles.card}>
+        <Text style={styles.title}>Explorar</Text>
+
+        <Text style={styles.subtitle}>
+          Descubra novas mídias, coleções e tendências compartilhadas pela comunidade FanCollectorsMedia.
+        </Text>
+
+        <View style={styles.section}>
+          <View style={styles.item}>
+            <Text style={styles.itemTitle}>📀 Novas Coleções</Text>
+            <Text style={styles.itemText}>
+              Veja as coleções mais recentes adicionadas pelos fãs da comunidade.
+            </Text>
+            <TouchableOpacity
+              style={[styles.actionButton, styles.blueButton]}
+              onPress={() => alert("Funcionalidade em desenvolvimento!")}
+            >
+              <Text style={styles.actionText}>Ver novidades</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.item}>
+            <Text style={styles.itemTitle}>⭐ Fãs em Destaque</Text>
+            <Text style={styles.itemText}>
+              Conheça os colecionadores mais ativos e suas incríveis coleções.
+            </Text>
+            <TouchableOpacity
+              style={[styles.actionButton, styles.greenButton]}
+              onPress={() => alert("Funcionalidade em desenvolvimento!")}
+            >
+              <Text style={styles.actionText}>Explorar fãs</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.item}>
+            <Text style={styles.itemTitle}>🎮 Mídias Populares</Text>
+            <Text style={styles.itemText}>
+              Confira os jogos, filmes e séries mais colecionados do momento.
+            </Text>
+            <TouchableOpacity
+              style={[styles.actionButton, styles.purpleButton]}
+              onPress={() => alert("Funcionalidade em desenvolvimento!")}
+            >
+              <Text style={styles.actionText}>Ver mídias</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <TouchableOpacity
+          style={[styles.actionButton, styles.redButton, { marginTop: 18 }]}
+          onPress={() => router.replace("/auth/login")}
+        >
+          <Text style={styles.actionText}>Sair</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  scroll: {
+    paddingVertical: 24,
+    paddingHorizontal: 16,
+    backgroundColor: "#0d1117",
+    flexGrow: 1,
   },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
+  card: {
+    backgroundColor: "#161b22",
+    borderRadius: 20,
+    padding: 18,
+    elevation: 2,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "700",
+    color: "#fff",
+    textAlign: "center",
+    marginBottom: 8,
+  },
+  subtitle: {
+    color: "#cbd5e1",
+    textAlign: "center",
+    marginBottom: 12,
+  },
+  section: {
+    marginTop: 8,
+  },
+  item: {
+    backgroundColor: "#0d1117",
+    borderRadius: 12,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#2b2f33",
+    marginBottom: 12,
+  },
+  itemTitle: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 6,
+  },
+  itemText: {
+    color: "#9ca3af",
+    fontSize: 14,
+    marginBottom: 10,
+  },
+  actionButton: {
+    paddingVertical: 10,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  actionText: {
+    color: "#fff",
+    fontWeight: "700",
+  },
+  blueButton: {
+    backgroundColor: "#2563eb",
+  },
+  greenButton: {
+    backgroundColor: "#16a34a",
+  },
+  purpleButton: {
+    backgroundColor: "#7c3aed",
+  },
+  redButton: {
+    backgroundColor: "#dc2626",
   },
 });
