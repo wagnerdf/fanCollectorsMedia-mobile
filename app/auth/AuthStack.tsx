@@ -1,6 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import TabsLayout from "../(tabs)/_layout"; // redireciona para o conteúdo principal após login
-import LoginScreen from "./LoginScreen";
+import LoginScreen from "./Login";
 import RecoverScreen from "./recover";
 import WelcomeScreen from "./Welcome";
 

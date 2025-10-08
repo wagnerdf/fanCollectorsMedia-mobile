@@ -1,13 +1,28 @@
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function LoginScreen() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const isValidEmail = (email: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const handleLogin = async () => {
+    
+    if (!isValidEmail(email)) {
+      alert("Email inválido!");
+      return;
+    }
     if (!email || !password) {
       alert("Preencha email e senha!");
       return;
@@ -33,34 +48,55 @@ export default function LoginScreen() {
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
+          autoCapitalize="none"
         />
 
         <TextInput
           style={styles.input}
           placeholder="Sua senha"
           placeholderTextColor="#999"
-          secureTextEntry
+          secureTextEntry={!showPassword}
           value={password}
           onChangeText={setPassword}
         />
+
+        <TouchableOpacity
+          onPress={() => setShowPassword(!showPassword)}
+          style={styles.toggleContainer}
+        >
+          <Text style={styles.togglePassword}>
+            {showPassword ? "Ocultar senha" : "Mostrar senha"}
+          </Text>
+        </TouchableOpacity>
 
         <TouchableOpacity onPress={() => router.push("../auth/recover")}>
           <Text style={styles.recoverText}>Recuperar senha</Text>
         </TouchableOpacity>
 
         <View style={styles.buttonRow}>
-          <TouchableOpacity style={[styles.button, styles.loginButton]} onPress={handleLogin}>
+          <TouchableOpacity
+            style={[styles.button, styles.loginButton]}
+            onPress={handleLogin}
+          >
             <Text style={styles.buttonText}>Entrar</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.button, styles.backButton]} onPress={() => router.back()}>
+          <TouchableOpacity
+            style={[styles.button, styles.backButton]}
+            onPress={() => router.back()}
+          >
             <Text style={styles.buttonText}>Voltar</Text>
           </TouchableOpacity>
         </View>
 
         <Text style={styles.signupText}>
           Ainda não tem conta?{" "}
-          <Text style={styles.signupLink} onPress={() => alert("Função de cadastro ainda não implementada!")}>
+          <Text
+            style={styles.signupLink}
+            onPress={() =>
+              alert("Função de cadastro ainda não implementada!")
+            }
+          >
             Cadastre-se
           </Text>
         </Text>
@@ -95,7 +131,15 @@ const styles = StyleSheet.create({
     borderColor: "#444",
     borderRadius: 16,
     padding: 16,
-    marginBottom: 16,
+    marginBottom: 12,
+  },
+  toggleContainer: {
+    alignItems: "flex-end",
+    marginBottom: 8,
+  },
+  togglePassword: {
+    color: "#60a5fa",
+    fontSize: 14,
   },
   recoverText: {
     color: "#60a5fa",
