@@ -32,7 +32,8 @@ export default function LoginScreen() {
       // Futuramente conectar ao backend:
       router.replace("/(tabs)/home");
     } catch (error) {
-      alert("Erro ao conectar. Verifique suas credenciais.");
+      console.error(error);
+      alert("Erro ao conectar. Verifique suas credenciais: " + String(error));
     }
   };
 
