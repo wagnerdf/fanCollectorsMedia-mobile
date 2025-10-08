@@ -1,39 +1,49 @@
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function LoginScreen() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [login, setLogin] = useState("");
+  const [senha, setSenha] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-
-  const isValidEmail = (email: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    
-    if (!isValidEmail(email)) {
-      alert("Email inválido!");
+    if (!login || !senha) {
+      alert("Preencha login e senha!");
       return;
     }
-    if (!email || !password) {
-      alert("Preencha email e senha!");
+
+    // Validação de formato de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(login)) {
+      alert("Login deve ser um email válido!");
       return;
     }
 
     try {
-      // Futuramente conectar ao backend:
-      router.replace("/(tabs)/home");
+      setLoading(true);
+      const response = await fetch("http://localhost:8080/fanCollectorsMedia/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ login, senha }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Aqui você pode salvar o token em AsyncStorage ou SecureStore
+        console.log("Login bem-sucedido:", data.accessToken);
+        router.replace("/(tabs)/home");
+      } else {
+        alert(data.message || "Login ou senha incorretos!");
+      }
     } catch (error) {
       console.error(error);
-      alert("Erro ao conectar. Verifique suas credenciais: " + String(error));
+      alert("Erro ao conectar com o servidor!");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -46,8 +56,8 @@ export default function LoginScreen() {
           style={styles.input}
           placeholder="Seu email"
           placeholderTextColor="#999"
-          value={email}
-          onChangeText={setEmail}
+          value={login}
+          onChangeText={setLogin}
           keyboardType="email-address"
           autoCapitalize="none"
         />
@@ -57,29 +67,23 @@ export default function LoginScreen() {
           placeholder="Sua senha"
           placeholderTextColor="#999"
           secureTextEntry={!showPassword}
-          value={password}
-          onChangeText={setPassword}
+          value={senha}
+          onChangeText={setSenha}
         />
 
-        <TouchableOpacity
-          onPress={() => setShowPassword(!showPassword)}
-          style={styles.toggleContainer}
-        >
+        <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
           <Text style={styles.togglePassword}>
-            {showPassword ? "Ocultar senha" : "Mostrar senha"}
+            {showPassword ? "Ocultar" : "Mostrar"} senha
           </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => router.push("../auth/recover")}>
-          <Text style={styles.recoverText}>Recuperar senha</Text>
         </TouchableOpacity>
 
         <View style={styles.buttonRow}>
           <TouchableOpacity
             style={[styles.button, styles.loginButton]}
             onPress={handleLogin}
+            disabled={loading}
           >
-            <Text style={styles.buttonText}>Entrar</Text>
+            <Text style={styles.buttonText}>{loading ? "Entrando..." : "Entrar"}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -94,9 +98,7 @@ export default function LoginScreen() {
           Ainda não tem conta?{" "}
           <Text
             style={styles.signupLink}
-            onPress={() =>
-              alert("Função de cadastro ainda não implementada!")
-            }
+            onPress={() => alert("Função de cadastro ainda não implementada!")}
           >
             Cadastre-se
           </Text>
@@ -132,17 +134,9 @@ const styles = StyleSheet.create({
     borderColor: "#444",
     borderRadius: 16,
     padding: 16,
-    marginBottom: 12,
-  },
-  toggleContainer: {
-    alignItems: "flex-end",
-    marginBottom: 8,
+    marginBottom: 16,
   },
   togglePassword: {
-    color: "#60a5fa",
-    fontSize: 14,
-  },
-  recoverText: {
     color: "#60a5fa",
     textAlign: "right",
     marginBottom: 16,
