@@ -66,7 +66,7 @@ export default function ExplorerScreen() {
 
         <TouchableOpacity
           style={[styles.actionButton, styles.redButton, { marginTop: 18 }]}
-          onPress={() => router.replace("/auth/login")}
+          onPress={() => router.replace("/auth/Login")}
         >
           <Text style={styles.actionText}>Sair</Text>
         </TouchableOpacity>

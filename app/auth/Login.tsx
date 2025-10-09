@@ -40,7 +40,7 @@ export default function LoginScreen() {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(login)) {
-      showError("Login deve ser um email válido!");
+      showError("Digite um email válido!");
       return;
     }
 
@@ -130,7 +130,11 @@ export default function LoginScreen() {
 
           <TouchableOpacity
             style={[styles.button, styles.backButton]}
-            onPress={() => router.back()}
+            onPress={() => {
+              // Remove foco
+              (document.activeElement as HTMLElement)?.blur();
+              router.replace("/auth/Welcome");
+            }}
           >
             <Text style={styles.buttonText}>Voltar</Text>
           </TouchableOpacity>
