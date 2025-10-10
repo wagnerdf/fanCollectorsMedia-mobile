@@ -1,0 +1,1 @@
+export const WELCOME_IMAGE = require("../assets/fans.png");

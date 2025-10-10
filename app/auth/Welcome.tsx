@@ -1,37 +1,41 @@
 import { useRouter } from "expo-router";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
+import AppButton from "components/AppButton";
+
+import {
+  WELCOME_TITLE,
+  WELCOME_SUBTITLE,
+  LOGIN_BUTTON,
+  SIGNUP_BUTTON,
+  SIGNUP_ALERT,
+} from "constants/strings";
+import { WELCOME_IMAGE } from "constants/images";
 
 export default function WelcomeScreen() {
   const router = useRouter();
 
   return (
     <View style={styles.container}>
-      <Image
-        source={require("../../assets/fans.png")}
-        style={styles.image}
-        resizeMode="contain"
-      />
+      <Image source={WELCOME_IMAGE} style={styles.image} resizeMode="contain" />
 
-      <Text style={styles.title}>Bem-vindo ao FanCollectorsMedia</Text>
-
-      <Text style={styles.subtitle}>
-        Conecte-se com fãs como você, compartilhe sua coleção e descubra novas mídias para amar.
-      </Text>
+      <Text style={styles.title}>{WELCOME_TITLE}</Text>
+      <Text style={styles.subtitle}>{WELCOME_SUBTITLE}</Text>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={[styles.button, styles.loginButton]}
+        <AppButton
+          title={LOGIN_BUTTON}
           onPress={() => router.push("/auth/Login")}
-        >
-          <Text style={styles.buttonText}>Logar</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.button, styles.signupButton]}
-          onPress={() => alert("Função de cadastro ainda não implementada!")}
-        >
-          <Text style={styles.buttonText}>Cadastrar</Text>
-        </TouchableOpacity>
+          color="#2563eb"
+          flex={1}
+          margin="right"
+        />
+        <AppButton
+          title={SIGNUP_BUTTON}
+          onPress={() => alert(SIGNUP_ALERT)}
+          color="#16a34a"
+          flex={1}
+          margin="left"
+        />
       </View>
     </View>
   );
@@ -59,9 +63,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 36,
   },
-  buttonContainer: { flexDirection: "row", justifyContent: "space-between", width: "100%" },
-  button: { paddingVertical: 12, paddingHorizontal: 24, borderRadius: 10 },
-  loginButton: { backgroundColor: "#2563eb", flex: 1, marginRight: 6, alignItems: "center" },
-  signupButton: { backgroundColor: "#16a34a", flex: 1, marginLeft: 6, alignItems: "center" },
-  buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+  },
 });
