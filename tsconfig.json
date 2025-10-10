@@ -11,18 +11,19 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./*"
-      ]
-    }
+      "@/*": ["./*"],
+      "@env": ["env.d.ts"]   // 👈 Adiciona mapeamento manual do @env
+    },
+    "types": ["nativewind/types"]
   },
   "include": [
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    "env.d.ts"
   ],
   "exclude": [
     "node_modules",
-    "babel.config.js",
+    // "babel.config.js",
     "metro.config.js",
     "jest.config.js"
   ]

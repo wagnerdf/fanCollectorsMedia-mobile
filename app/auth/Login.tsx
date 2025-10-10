@@ -1,5 +1,7 @@
+import { API_BASE_URL } from "@env";
 import { useRouter } from "expo-router";
 import { useRef, useState } from "react";
+
 import {
   Animated,
   StyleSheet,
@@ -8,6 +10,8 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
+
+console.log("API_BASE_URL:", API_BASE_URL);
 
 interface LoginResponse {
   token: string | null;
@@ -52,14 +56,11 @@ export default function LoginScreen() {
     try {
       setLoading(true);
 
-      const response = await fetch(
-        "http://localhost:8080/fanCollectorsMedia/auth/login",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ login, senha }),
-        }
-      );
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ login, senha }),
+      });
 
       let data: LoginResponse = { token: null };
       try {
