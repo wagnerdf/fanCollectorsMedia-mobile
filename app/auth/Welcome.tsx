@@ -1,6 +1,9 @@
+import React, { useState } from "react";
 import { useRouter } from "expo-router";
 import { Image, StyleSheet, Text, View } from "react-native";
+
 import AppButton from "components/AppButton";
+import AnimatedMessage from "components/AnimatedMessage";
 
 import {
   WELCOME_TITLE,
@@ -13,6 +16,9 @@ import { WELCOME_IMAGE } from "constants/images";
 
 export default function WelcomeScreen() {
   const router = useRouter();
+  const [messageVisible, setMessageVisible] = useState(false);
+
+  const handleSignup = () => setMessageVisible(true);
 
   return (
     <View style={styles.container}>
@@ -31,12 +37,18 @@ export default function WelcomeScreen() {
         />
         <AppButton
           title={SIGNUP_BUTTON}
-          onPress={() => alert(SIGNUP_ALERT)}
+          onPress={handleSignup}
           color="#16a34a"
           flex={1}
           margin="left"
         />
       </View>
+
+      <AnimatedMessage
+        message={SIGNUP_ALERT}
+        visible={messageVisible}
+        onHide={() => setMessageVisible(false)}
+      />
     </View>
   );
 }
