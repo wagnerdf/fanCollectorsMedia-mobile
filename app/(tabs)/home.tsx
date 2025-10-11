@@ -1,11 +1,16 @@
 import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View, FlatList, ScrollView } from "react-native";
+import { getTotalMidias } from "../services/api"; // ajuste o caminho conforme seu projeto
 
 export default function HomeScreen() {
   const router = useRouter();
 
+  // Estado para armazenar o total de mídias do backend
+  const [totalMidias, setTotalMidias] = useState(0);
+
   const biblioteca = [
-    { label: "Todos os meus filmes", total: 64 },
+    { label: "Todos os meus filmes", total: totalMidias },
   ];
 
   const generos = [
@@ -24,6 +29,17 @@ export default function HomeScreen() {
   const handleLogout = () => {
     router.replace("/auth/Login");
   };
+
+  // Token do usuário (substituir pela lógica real de autenticação)
+  const userToken = "SEU_TOKEN_AQUI";
+
+  useEffect(() => {
+    const fetchTotal = async () => {
+      const total = await getTotalMidias(userToken);
+      setTotalMidias(total);
+    };
+    fetchTotal();
+  }, []);
 
   const renderItem = (item: any) => (
     <View style={styles.item}>

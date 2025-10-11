@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLogin } from "hooks/useLogin";
 import AnimatedError from "components/AnimatedError";
 
@@ -22,7 +23,7 @@ export default function LoginScreen() {
   const { loading, errorMessage, loginUser, setErrorMessage } = useLogin();
 
   const handleLogin = async () => {
-    Keyboard.dismiss(); // Fecha teclado ao submeter
+    Keyboard.dismiss();
     setErrorMessage("");
 
     if (!login || !senha) {
@@ -39,7 +40,14 @@ export default function LoginScreen() {
     const data = await loginUser(login, senha);
 
     if (data?.token) {
-      router.replace("/(tabs)/home");
+      try {
+        // Salva o token JWT no AsyncStorage
+        await AsyncStorage.setItem("userToken", data.token);
+        router.replace("/(tabs)/home");
+      } catch (e) {
+        console.error("Erro ao salvar token:", e);
+        setErrorMessage("Erro interno, tente novamente.");
+      }
     } else if (!errorMessage) {
       setErrorMessage(data?.message || "Login ou senha incorretos!");
     }
