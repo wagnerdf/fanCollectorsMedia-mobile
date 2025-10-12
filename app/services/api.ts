@@ -1,33 +1,55 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "@env";
+import axios from "axios";
 
+// 🧩 Cria uma instância do axios com base na URL da API
+const api = axios.create({
+  baseURL: `${API_BASE_URL}/api`,
+});
+
+// 🛡️ Intercepta todas as requisições e injeta o token automaticamente
+api.interceptors.request.use(async (config) => {
+  const token = await AsyncStorage.getItem("userToken");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  config.headers["Content-Type"] = "application/json";
+  return config;
+});
+
+// 🚀 Função genérica para requisições POST (usando axios)
 export const apiPost = async (endpoint: string, body: any) => {
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  return response.json();
+  try {
+    const response = await api.post(endpoint, body);
+    return response.data;
+  } catch (error: any) {
+    console.error("Erro na requisição POST:", error.response?.data || error.message);
+    throw error;
+  }
 };
 
-export async function getTotalMidias(): Promise<number> {
+// 🎞️ Retorna o total de mídias do usuário
+export const getTotalMidias = async (): Promise<number> => {
   try {
-    const token = await AsyncStorage.getItem("userToken"); // pega o token salvo
-    if (!token) return 0;
-
-    const response = await fetch(`${API_BASE_URL}/api/midias/usuario/total`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!response.ok) throw new Error("Erro ao buscar total de mídias");
-
-    const data = await response.json();
-    return data.totalMidias;
-  } catch (error) {
-    console.error("API getTotalMidias error:", error);
+    const response = await api.get("/midias/usuario/total");
+    return response.data.totalMidias;
+  } catch (error: any) {
+    console.error("Erro ao buscar total de mídias:", error.response?.data || error.message);
     return 0;
   }
-}
+};
+
+// 📀 Retorna a lista de mídias do usuário (paginação 10 em 10)
+export const getUserMidias = async (offset: number = 0, limit: number = 10) => {
+  try {
+    const response = await api.get(`/midias/minhas`, {
+      params: { offset, limit },
+    });
+    return response.data; // { total, midias, hasMore }
+  } catch (error: any) {
+    console.error("Erro ao buscar mídias do usuário:", error.response?.data || error.message);
+    return { total: 0, midias: [], hasMore: false };
+  }
+};
+
+export default api;
