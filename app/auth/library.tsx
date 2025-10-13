@@ -152,6 +152,8 @@ const styles = StyleSheet.create({
     width: "100%",
     aspectRatio: 2 / 3,
     borderRadius: 8,
+    borderWidth: 2,           // largura da borda
+    borderColor: "#00BFA6",
     resizeMode: "cover",
   },
   title: {
