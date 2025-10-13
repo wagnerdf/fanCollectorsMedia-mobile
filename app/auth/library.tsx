@@ -20,6 +20,7 @@ export default function LibraryScreen() {
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
+  const [modoLista, setModoLista] = useState(false);
 
   const limit = 10;
 
@@ -42,19 +43,40 @@ export default function LibraryScreen() {
     carregarMidias();
   }, []);
 
-  const renderMidia = ({ item }: any) => (
-    <TouchableOpacity style={styles.card}>
-      {/* Etiqueta de tipo */}
-      <View style={styles.tag}>
-        <Text style={styles.tagText}>{item.tipo}</Text>
-      </View>
-
-      <Image source={{ uri: item.capaUrl }} style={styles.poster} />
-      <Text style={styles.title} numberOfLines={2}>
-        {item.tituloAlternativo}
-      </Text>
-    </TouchableOpacity>
-  );
+  const renderMidia = ({ item }: any) => {
+    if (modoLista) {
+      // Modo lista
+      return (
+        <TouchableOpacity style={styles.listCard}>
+          <Image source={{ uri: item.capaUrl }} style={styles.listPoster} />
+          <View style={styles.listInfo}>
+            <Text style={styles.title} numberOfLines={2}>
+              {item.tituloAlternativo}
+            </Text>
+            <Text style={styles.genres}> {/* Aqui futuramente adicionaremos os gêneros */} 
+              {/* item.generos?.join(", ") */}
+            </Text>
+            <Text style={styles.rating}> {/* Aqui futuramente adicionaremos nota */} 
+              {/* item.nota */}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      );
+    } else {
+      // Modo grid (como já está)
+      return (
+        <TouchableOpacity style={styles.card}>
+          <View style={styles.tag}>
+            <Text style={styles.tagText}>{item.tipo}</Text>
+          </View>
+          <Image source={{ uri: item.capaUrl }} style={styles.poster} />
+          <Text style={styles.title} numberOfLines={2}>
+            {item.tituloAlternativo}
+          </Text>
+        </TouchableOpacity>
+      );
+    }
+  };
 
   const midiasFiltradas = midias.filter((m) =>
     m.tituloAlternativo?.toLowerCase().includes(search.toLowerCase())
@@ -68,8 +90,8 @@ export default function LibraryScreen() {
           <Ionicons name="chevron-back" size={28} color="#00BFA6" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>FanCollectorsMedia</Text>
-        <TouchableOpacity onPress={() => console.log("Alternar modo lista")}>
-          <Ionicons name="list-outline" size={26} color="#00BFA6" />
+        <TouchableOpacity onPress={() => setModoLista(!modoLista)}>
+          <Ionicons name={modoLista ? "grid-outline" : "list-outline"} size={26} color="#00BFA6" />
         </TouchableOpacity>
       </View>
 
@@ -98,13 +120,12 @@ export default function LibraryScreen() {
         data={midiasFiltradas}
         renderItem={renderMidia}
         keyExtractor={(item) => item.id.toString()}
-        numColumns={3}
-        columnWrapperStyle={{ justifyContent: "flex-start" }}
+        key={modoLista ? "list" : "grid"} // Isso força o FlatList a renderizar novamente
+        numColumns={modoLista ? 1 : 3}
+        columnWrapperStyle={modoLista ? undefined : { justifyContent: "flex-start" }}
         onEndReached={carregarMidias}
         onEndReachedThreshold={0.5}
-        ListFooterComponent={
-          loading ? <ActivityIndicator style={{ marginVertical: 20 }} /> : null
-        }
+        ListFooterComponent={loading ? <ActivityIndicator style={{ marginVertical: 20 }} /> : null}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 40 }}
       />
@@ -187,4 +208,34 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#000",
   },
+  listCard: {
+  flexDirection: "row",
+  marginBottom: 16,
+  alignItems: "center",
+  borderRadius: 8,
+  borderWidth: 2,
+  borderColor: "#00BFA6",
+  padding: 8,
+},
+listPoster: {
+  width: 80,
+  height: 120,
+  borderRadius: 4,
+  resizeMode: "cover",
+},
+listInfo: {
+  marginLeft: 12,
+  flex: 1,
+},
+genres: {
+  color: "#aaa",
+  fontSize: 12,
+  marginTop: 4,
+},
+rating: {
+  color: "#FFD700",
+  fontSize: 12,
+  marginTop: 2,
+},
+
 });
