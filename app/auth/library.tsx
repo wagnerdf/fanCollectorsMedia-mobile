@@ -26,12 +26,16 @@ export default function LibraryScreen() {
   const carregarMidias = async () => {
     if (loading || !hasMore) return;
     setLoading(true);
-
-    const data = await getUserMidias(offset, limit);
-    setMidias((prev) => [...prev, ...data.midias]);
-    setHasMore(data.hasMore);
-    setOffset((prev) => prev + limit);
-    setLoading(false);
+    try {
+      const data = await getUserMidias(offset, limit);
+      setMidias((prev) => [...prev, ...data.midias]);
+      setHasMore(data.hasMore);
+      setOffset((prev) => prev + limit);
+    } catch (error) {
+      console.log("Erro ao carregar mídias:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -40,6 +44,11 @@ export default function LibraryScreen() {
 
   const renderMidia = ({ item }: any) => (
     <TouchableOpacity style={styles.card}>
+      {/* Etiqueta de tipo */}
+      <View style={styles.tag}>
+        <Text style={styles.tagText}>{item.tipo}</Text>
+      </View>
+
       <Image source={{ uri: item.capaUrl }} style={styles.poster} />
       <Text style={styles.title} numberOfLines={2}>
         {item.tituloAlternativo}
@@ -53,21 +62,19 @@ export default function LibraryScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Header com botão voltar e lista */}
+      {/* Header */}
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="chevron-back" size={28} color="#00BFA6" />
         </TouchableOpacity>
-
         <Text style={styles.headerTitle}>FanCollectorsMedia</Text>
-
         <TouchableOpacity onPress={() => console.log("Alternar modo lista")}>
           <Ionicons name="list-outline" size={26} color="#00BFA6" />
         </TouchableOpacity>
       </View>
 
       {/* Título principal */}
-      <Text style={styles.mainTitle}>All my movies</Text>
+      <Text style={styles.mainTitle}>Todos os meus filmes</Text>
 
       {/* Campo de busca */}
       <View style={styles.searchContainer}>
@@ -108,7 +115,7 @@ export default function LibraryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#121212",
     paddingHorizontal: 12,
     paddingTop: 20,
   },
@@ -127,11 +134,12 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "700",
     marginBottom: 12,
+    color: "#fff",
   },
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#F2F2F2",
+    backgroundColor: "#1E1E1E",
     borderRadius: 10,
     paddingHorizontal: 10,
     paddingVertical: 8,
@@ -140,19 +148,20 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 14,
-    color: "#333",
+    color: "#fff",
   },
   card: {
     width: "32%",
     marginBottom: 20,
-    marginRight: "2%", // espaço entre cards
+    marginRight: "2%",
     alignItems: "center",
+    position: "relative",
   },
   poster: {
     width: "100%",
     aspectRatio: 2 / 3,
     borderRadius: 8,
-    borderWidth: 2,           // largura da borda
+    borderWidth: 2,
     borderColor: "#00BFA6",
     resizeMode: "cover",
   },
@@ -161,5 +170,21 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     marginTop: 6,
     textAlign: "center",
+    color: "#fff",
+  },
+  tag: {
+    position: "absolute",
+    top: 6,
+    left: 6,
+    backgroundColor: "#FFD700",
+    borderRadius: 4,
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    zIndex: 1,
+  },
+  tagText: {
+    fontSize: 10,
+    fontWeight: "700",
+    color: "#000",
   },
 });
