@@ -45,25 +45,31 @@ export default function LibraryScreen() {
 
   const renderMidia = ({ item }: any) => {
     if (modoLista) {
-      // Modo lista
       return (
         <TouchableOpacity style={styles.listCard}>
           <Image source={{ uri: item.capaUrl }} style={styles.listPoster} />
           <View style={styles.listInfo}>
-            <Text style={styles.title} numberOfLines={2}>
+            {/* Título */}
+            <Text style={styles.listTitle} numberOfLines={2}>
               {item.tituloAlternativo}
             </Text>
-            <Text style={styles.genres}> {/* Aqui futuramente adicionaremos os gêneros */} 
-              {/* item.generos?.join(", ") */}
+
+            {/* Gêneros */}
+            <Text style={styles.listGenres} numberOfLines={2}>
+              {item.generos}
             </Text>
-            <Text style={styles.rating}> {/* Aqui futuramente adicionaremos nota */} 
-              {/* item.nota */}
-            </Text>
+
+            {/* Nota Média */}
+            {item.notaMedia != null && (
+              <Text style={styles.listRating}>
+                ⭐ {item.notaMedia.toFixed(1)}
+              </Text>
+            )}
           </View>
         </TouchableOpacity>
       );
     } else {
-      // Modo grid (como já está)
+      // Modo grid
       return (
         <TouchableOpacity style={styles.card}>
           <View style={styles.tag}>
@@ -91,7 +97,11 @@ export default function LibraryScreen() {
         </TouchableOpacity>
         <Text style={styles.headerTitle}>FanCollectorsMedia</Text>
         <TouchableOpacity onPress={() => setModoLista(!modoLista)}>
-          <Ionicons name={modoLista ? "grid-outline" : "list-outline"} size={26} color="#00BFA6" />
+          <Ionicons
+            name={modoLista ? "grid-outline" : "list-outline"}
+            size={26}
+            color="#00BFA6"
+          />
         </TouchableOpacity>
       </View>
 
@@ -122,10 +132,14 @@ export default function LibraryScreen() {
         keyExtractor={(item) => item.id.toString()}
         key={modoLista ? "list" : "grid"} // Isso força o FlatList a renderizar novamente
         numColumns={modoLista ? 1 : 3}
-        columnWrapperStyle={modoLista ? undefined : { justifyContent: "flex-start" }}
+        columnWrapperStyle={
+          modoLista ? undefined : { justifyContent: "flex-start" }
+        }
         onEndReached={carregarMidias}
         onEndReachedThreshold={0.5}
-        ListFooterComponent={loading ? <ActivityIndicator style={{ marginVertical: 20 }} /> : null}
+        ListFooterComponent={
+          loading ? <ActivityIndicator style={{ marginVertical: 20 }} /> : null
+        }
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 40 }}
       />
@@ -209,33 +223,41 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   listCard: {
-  flexDirection: "row",
-  marginBottom: 16,
-  alignItems: "center",
-  borderRadius: 8,
-  borderWidth: 2,
-  borderColor: "#00BFA6",
-  padding: 8,
-},
-listPoster: {
-  width: 80,
-  height: 120,
-  borderRadius: 4,
-  resizeMode: "cover",
-},
-listInfo: {
-  marginLeft: 12,
-  flex: 1,
-},
-genres: {
-  color: "#aaa",
-  fontSize: 12,
-  marginTop: 4,
-},
-rating: {
-  color: "#FFD700",
-  fontSize: 12,
-  marginTop: 2,
-},
-
+    flexDirection: "row",
+    marginBottom: 16,
+    alignItems: "flex-start",
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: "#00BFA6",
+    padding: 8,
+  },
+  listPoster: {
+    width: 80,
+    height: 100,
+    borderRadius: 4,
+    resizeMode: "cover",
+  },
+  listInfo: {
+    marginLeft: 12,
+    flex: 1,
+    justifyContent: "center",
+  },
+  listTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#fff",
+    textAlign: "left",
+    marginBottom: 4,
+  },
+  listGenres: {
+    fontSize: 14,
+    color: "#aaa",
+    textAlign: "left",
+    marginBottom: 2,
+  },
+  listRating: {
+    fontSize: 14,
+    color: "#FFD700",
+    textAlign: "left",
+  },
 });
