@@ -87,9 +87,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.fancollectorsmediamobile"
+    namespace "com.wagnerdf.fancollectorsmediamobile"
     defaultConfig {
-        applicationId "com.fancollectorsmediamobile"
+        applicationId "com.wagnerdf.fancollectorsmediamobile"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
