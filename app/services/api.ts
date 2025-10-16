@@ -52,4 +52,9 @@ export const getUserMidias = async (offset: number = 0, limit: number = 10) => {
   }
 };
 
+export const getMidiaById = async (id: number) => {
+  const response = await api.get(`/api/midias/${id}`);
+  return response.data;
+};
+
 export default api;
