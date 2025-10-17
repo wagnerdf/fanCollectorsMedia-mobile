@@ -1,10 +1,22 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { API_BASE_URL } from "@env";
 import axios from "axios";
+import Constants from "expo-constants";
+
+// 🔧 Pega a URL da API definida em app.config.js (ou no EAS Secret)
+const { API_BASE_URL } = Constants.expoConfig?.extra || {};
+
+// ✅ Fallback para evitar crash caso API_BASE_URL não esteja definida
+const baseURL =
+  API_BASE_URL && API_BASE_URL !== "undefined"
+    ? API_BASE_URL
+    : "https://fancollectorsmedia-production.up.railway.app"; // fallback definitivo de produção
+
+
+console.log("🌐 API_BASE_URL:", baseURL);
 
 // 🧩 Cria uma instância do axios com base na URL da API
 const api = axios.create({
-  baseURL: `${API_BASE_URL}`,
+  baseURL,
 });
 
 // 🛡️ Intercepta todas as requisições e injeta o token automaticamente
@@ -52,6 +64,7 @@ export const getUserMidias = async (offset: number = 0, limit: number = 10) => {
   }
 };
 
+// 🔎 Busca uma mídia específica pelo ID
 export const getMidiaById = async (id: number) => {
   const response = await api.get(`/api/midias/${id}`);
   return response.data;
