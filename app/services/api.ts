@@ -70,4 +70,15 @@ export const getMidiaById = async (id: number) => {
   return response.data;
 };
 
+// 📊 Retorna todos os gêneros do usuário com contagem de mídias
+export const getGeneros = async (): Promise<{ [key: string]: number }> => {
+  try {
+    const response = await api.get("/api/midias/generos");
+    return response.data; // { "Ação": 5, "Drama": 3, ... }
+  } catch (error: any) {
+    console.error("Erro ao buscar gêneros:", error.response?.data || error.message);
+    return {};
+  }
+};
+
 export default api;

@@ -1,21 +1,16 @@
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View, FlatList, ScrollView } from "react-native";
-import { getTotalMidias } from "../services/api";
+import { getTotalMidias, getGeneros } from "../services/api";
 
 export default function HomeScreen() {
   const router = useRouter();
   const [totalMidias, setTotalMidias] = useState(0);
+  const [generos, setGeneros] = useState<{ nome: string; total: number }[]>([]);
+  const [loadingGeneros, setLoadingGeneros] = useState(true);
 
   const biblioteca = [
     { label: "Todos os meus filmes", total: totalMidias },
-  ];
-
-  const generos = [
-    { nome: "Ação", total: 12 },
-    { nome: "Aventura", total: 9 },
-    { nome: "Comédia", total: 7 },
-    { nome: "Terror", total: 4 },
   ];
 
   const midias = [
@@ -29,6 +24,22 @@ export default function HomeScreen() {
   };
 
   useEffect(() => {
+    const fetchTotal = async () => {
+      const total = await getTotalMidias();
+      setTotalMidias(total);
+    };
+    fetchTotal();
+  }, []);
+
+  useEffect(() => {
+    const fetchGeneros = async () => {
+      const data = await getGeneros();
+      const generosArray = Object.entries(data).map(([nome, total]) => ({ nome, total }));
+      setGeneros(generosArray);
+      setLoadingGeneros(false);
+    };
+    fetchGeneros();
+
     const fetchTotal = async () => {
       const total = await getTotalMidias();
       setTotalMidias(total);
@@ -64,11 +75,15 @@ export default function HomeScreen() {
       />
 
       <Text style={styles.sectionTitle}>Gêneros</Text>
-      <FlatList
-        data={generos}
-        renderItem={({ item }) => renderItem(item, "generos")}
-        keyExtractor={(item) => item.nome}
-      />
+      {loadingGeneros ? (
+        <Text style={{ color: "#fff", marginBottom: 10 }}>Carregando...</Text>
+      ) : (
+        <FlatList
+          data={generos}
+          renderItem={({ item }) => renderItem(item, "generos")}
+          keyExtractor={(item) => item.nome}
+        />
+      )}
 
       <Text style={styles.sectionTitle}>Mídia</Text>
       <FlatList
