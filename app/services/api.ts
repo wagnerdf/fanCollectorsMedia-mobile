@@ -81,4 +81,16 @@ export const getGeneros = async (): Promise<{ genero: string; total: number }[]>
   }
 };
 
+// 📊 Retorna todos os tipos de mídia do usuário com contagem
+export const getTipos = async (): Promise<{ tipo: string; total: number }[]> => {
+  try {
+    const response = await api.get("/api/midias/tipos");
+    return response.data; // array de DTOs: [{ tipo, total }]
+  } catch (error: any) {
+    console.error("Erro ao buscar tipos de mídia:", error.response?.data || error.message);
+    return [];
+  }
+};
+
+
 export default api;

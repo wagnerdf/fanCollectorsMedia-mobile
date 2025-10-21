@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View, FlatList, ScrollView } from "react-native";
-import { getTotalMidias, getGeneros } from "../services/api";
+import { getTotalMidias, getGeneros, getTipos } from "../services/api";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -9,14 +9,11 @@ export default function HomeScreen() {
   const [generos, setGeneros] = useState<{ nome: string; total: number }[]>([]);
   const [loadingGeneros, setLoadingGeneros] = useState(true);
 
+  const [tiposMidia, setTiposMidia] = useState<{ tipo: string; total: number }[]>([]);
+  const [loadingTipos, setLoadingTipos] = useState(true);
+
   const biblioteca = [
     { label: "Todos os meus filmes", total: totalMidias },
-  ];
-
-  const midias = [
-    { tipo: "DVD", total: 23 },
-    { tipo: "Blu-ray", total: 18 },
-    { tipo: "VHS", total: 4 },
   ];
 
   const handleLogout = () => {
@@ -46,6 +43,21 @@ export default function HomeScreen() {
     };
 
     fetchGeneros();
+  }, []);
+
+    useEffect(() => {
+    const fetchTipos = async () => {
+      try {
+        const data = await getTipos();
+        setTiposMidia(data);
+      } catch (error) {
+        console.error("Erro ao buscar tipos de mídia:", error);
+      } finally {
+        setLoadingTipos(false);
+      }
+    };
+
+    fetchTipos();
   }, []);
 
   const renderItem = (item: any, section?: string) => (
@@ -87,11 +99,15 @@ export default function HomeScreen() {
       )}
 
       <Text style={styles.sectionTitle}>Mídia</Text>
-      <FlatList
-        data={midias}
-        renderItem={({ item }) => renderItem(item, "midias")}
-        keyExtractor={(item) => item.tipo}
-      />
+      {loadingTipos ? (
+        <Text style={{ color: "#fff", marginBottom: 10 }}>Carregando...</Text>
+      ) : (
+        <FlatList
+          data={tiposMidia}
+          renderItem={({ item }) => renderItem(item, "midias")}
+          keyExtractor={(item) => item.tipo}
+        />
+      )}
 
       <TouchableOpacity style={styles.button} onPress={handleLogout}>
         <Text style={styles.buttonText}>Sair</Text>
