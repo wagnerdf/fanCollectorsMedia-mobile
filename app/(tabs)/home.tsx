@@ -33,18 +33,19 @@ export default function HomeScreen() {
 
   useEffect(() => {
     const fetchGeneros = async () => {
-      const data = await getGeneros();
-      const generosArray = Object.entries(data).map(([nome, total]) => ({ nome, total }));
-      setGeneros(generosArray);
-      setLoadingGeneros(false);
+      try {
+        const data = await getGeneros(); // data já é Array<{ genero: string, total: number }>
+        // Ajusta para o estado usado no FlatList
+        const generosArray = data.map(item => ({ nome: item.genero, total: item.total }));
+        setGeneros(generosArray);
+      } catch (error) {
+        console.error("Erro ao buscar gêneros:", error);
+      } finally {
+        setLoadingGeneros(false);
+      }
     };
-    fetchGeneros();
 
-    const fetchTotal = async () => {
-      const total = await getTotalMidias();
-      setTotalMidias(total);
-    };
-    fetchTotal();
+    fetchGeneros();
   }, []);
 
   const renderItem = (item: any, section?: string) => (
