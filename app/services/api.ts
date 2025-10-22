@@ -92,5 +92,26 @@ export const getTipos = async (): Promise<{ tipo: string; total: number }[]> => 
   }
 };
 
+// 🔎 Busca mídias do usuário por gênero
+export const getMidiasByGenero = async (genero: string): Promise<any[]> => {
+  try {
+    const response = await api.get(`/api/midias/generos/${encodeURIComponent(genero)}`);
+    return response.data; // array de MidiaListagemMobileDto
+  } catch (error: any) {
+    console.error("Erro ao buscar mídias por gênero:", error.response?.data || error.message);
+    return [];
+  }
+};
+
+// 🔎 Busca mídias do usuário por tipo
+export const getMidiasByTipo = async (tipo: string): Promise<any[]> => {
+  try {
+    const response = await api.get(`/api/midias/tipo-midia/${encodeURIComponent(tipo)}`);
+    return response.data; // array de MidiaListagemMobileDto
+  } catch (error: any) {
+    console.error("Erro ao buscar mídias por tipo:", error.response?.data || error.message);
+    return [];
+  }
+};
 
 export default api;
