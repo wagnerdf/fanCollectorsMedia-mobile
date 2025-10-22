@@ -9,8 +9,8 @@ import {
   TouchableOpacity,
   TextInput,
 } from "react-native";
-import { useRouter } from "expo-router";
-import { getUserMidias, getMidiaById } from "../services/api";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { getUserMidias, getMidiaById, getMidiasByGenero, getMidiasByTipo } from "../services/api";
 import { Ionicons } from "@expo/vector-icons";
 
 // --- Modal de detalhes da mídia ---
@@ -57,71 +57,24 @@ const MidiaModal = ({ visible, midiaId, onClose }: any) => {
 };
 
 const modalStyles = StyleSheet.create({
-  overlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0,0,0,0.85)",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 999,
-  },
-  modalContainer: {
-    width: "85%",
-    backgroundColor: "#1E1E1E",
-    borderRadius: 12,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: "#00BFA6",
-    alignItems: "center",
-  },
-  poster: {
-    width: 150,
-    height: 220,
-    borderRadius: 8,
-    borderColor: "#00BFA6",
-    borderWidth: 2,
-    marginBottom: 12,
-  },
-  title: {
-    fontSize: 20,
-    color: "#fff",
-    fontWeight: "700",
-    textAlign: "center",
-    marginBottom: 6,
-  },
-  genre: {
-    color: "#aaa",
-    marginBottom: 6,
-  },
-  rating: {
-    color: "#FFD700",
-    marginBottom: 10,
-  },
-  synopsis: {
-    color: "#ddd",
-    textAlign: "center",
-    fontSize: 14,
-    lineHeight: 20,
-    marginBottom: 16,
-  },
-  closeButton: {
-    backgroundColor: "#00BFA6",
-    borderRadius: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-  },
-  closeText: {
-    color: "#fff",
-    fontWeight: "600",
-  },
+  overlay: { position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.85)", justifyContent: "center", alignItems: "center", zIndex: 999 },
+  modalContainer: { width: "85%", backgroundColor: "#1E1E1E", borderRadius: 12, padding: 20, borderWidth: 1, borderColor: "#00BFA6", alignItems: "center" },
+  poster: { width: 150, height: 220, borderRadius: 8, borderColor: "#00BFA6", borderWidth: 2, marginBottom: 12 },
+  title: { fontSize: 20, color: "#fff", fontWeight: "700", textAlign: "center", marginBottom: 6 },
+  genre: { color: "#aaa", marginBottom: 6 },
+  rating: { color: "#FFD700", marginBottom: 10 },
+  synopsis: { color: "#ddd", textAlign: "center", fontSize: 14, lineHeight: 20, marginBottom: 16 },
+  closeButton: { backgroundColor: "#00BFA6", borderRadius: 8, paddingVertical: 8, paddingHorizontal: 16 },
+  closeText: { color: "#fff", fontWeight: "600" },
 });
 
 // --- Library Screen ---
 export default function LibraryScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ genero?: string; tipo?: string }>();
+  const genero = params.genero;
+  const tipo = params.tipo;
+
   const [midias, setMidias] = useState<any[]>([]);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -138,9 +91,23 @@ export default function LibraryScreen() {
     if (loading || !hasMore) return;
     setLoading(true);
     try {
-      const data = await getUserMidias(offset, limit);
-      setMidias((prev) => [...prev, ...data.midias]);
-      setHasMore(data.hasMore);
+      let data: any = { midias: [], hasMore: false };
+
+      if (genero) {
+        const res = await getMidiasByGenero(genero);
+        data.midias = res;
+        data.hasMore = false;
+      } else if (tipo) {
+        const res = await getMidiasByTipo(tipo);
+        data.midias = res;
+        data.hasMore = false;
+      } else {
+        const res = await getUserMidias(offset, limit);
+        data = res;
+      }
+
+      setMidias((prev) => (offset === 0 ? data.midias : [...prev, ...data.midias]));
+      setHasMore(data.hasMore ?? false);
       setOffset((prev) => prev + limit);
     } catch (error) {
       console.log("Erro ao carregar mídias:", error);
@@ -150,47 +117,39 @@ export default function LibraryScreen() {
   };
 
   useEffect(() => {
+    setOffset(0);
+    setHasMore(true);
     carregarMidias();
-  }, []);
+  }, [genero, tipo]);
 
-  const renderMidia = ({ item }: any) => {
-    return (
-      <TouchableOpacity
-        style={modoLista ? styles.listCard : styles.card}
-        onPress={() => {
-          setSelectedMidiaId(item.id);
-          setShowModal(true);
-        }}
-      >
-        {modoLista ? (
-          <>
-            <Image source={{ uri: item.capaUrl }} style={styles.listPoster} />
-            <View style={styles.listInfo}>
-              <Text style={styles.listTitle} numberOfLines={2}>
-                {item.tituloAlternativo}
-              </Text>
-              <Text style={styles.listGenres} numberOfLines={2}>
-                {item.generos}
-              </Text>
-              {item.notaMedia != null && (
-                <Text style={styles.listRating}>⭐ {item.notaMedia.toFixed(1)}</Text>
-              )}
-            </View>
-          </>
-        ) : (
-          <>
-            <View style={styles.tag}>
-              <Text style={styles.tagText}>{item.tipo}</Text>
-            </View>
-            <Image source={{ uri: item.capaUrl }} style={styles.poster} />
-            <Text style={styles.title} numberOfLines={2}>
-              {item.tituloAlternativo}
-            </Text>
-          </>
-        )}
-      </TouchableOpacity>
-    );
-  };
+  const renderMidia = ({ item }: any) => (
+    <TouchableOpacity
+      style={modoLista ? styles.listCard : styles.card}
+      onPress={() => {
+        setSelectedMidiaId(item.id);
+        setShowModal(true);
+      }}
+    >
+      {modoLista ? (
+        <>
+          <Image source={{ uri: item.capaUrl }} style={styles.listPoster} />
+          <View style={styles.listInfo}>
+            <Text style={styles.listTitle} numberOfLines={2}>{item.tituloAlternativo}</Text>
+            <Text style={styles.listGenres} numberOfLines={2}>{item.generos}</Text>
+            {item.notaMedia != null && <Text style={styles.listRating}>⭐ {item.notaMedia.toFixed(1)}</Text>}
+          </View>
+        </>
+      ) : (
+        <>
+          <View style={styles.tag}>
+            <Text style={styles.tagText}>{item.tipo}</Text>
+          </View>
+          <Image source={{ uri: item.capaUrl }} style={styles.poster} />
+          <Text style={styles.title} numberOfLines={2}>{item.tituloAlternativo}</Text>
+        </>
+      )}
+    </TouchableOpacity>
+  );
 
   const midiasFiltradas = midias.filter((m) =>
     m.tituloAlternativo?.toLowerCase().includes(search.toLowerCase())
@@ -205,23 +164,14 @@ export default function LibraryScreen() {
         </TouchableOpacity>
         <Text style={styles.headerTitle}>FanCollectorsMedia</Text>
         <TouchableOpacity onPress={() => setModoLista(!modoLista)}>
-          <Ionicons
-            name={modoLista ? "grid-outline" : "list-outline"}
-            size={26}
-            color="#00BFA6"
-          />
+          <Ionicons name={modoLista ? "grid-outline" : "list-outline"} size={26} color="#00BFA6" />
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.mainTitle}>Todos os meus filmes</Text>
+      <Text style={styles.mainTitle}>{genero ? `Gênero: ${genero}` : tipo ? `Tipo: ${tipo}` : "Todos os meus filmes"}</Text>
 
       <View style={styles.searchContainer}>
-        <Ionicons
-          name="search-outline"
-          size={18}
-          color="#999"
-          style={{ marginRight: 6 }}
-        />
+        <Ionicons name="search-outline" size={18} color="#999" style={{ marginRight: 6 }} />
         <TextInput
           style={styles.searchInput}
           placeholder="Search"
@@ -237,24 +187,15 @@ export default function LibraryScreen() {
         keyExtractor={(item) => item.id.toString()}
         key={modoLista ? "list" : "grid"}
         numColumns={modoLista ? 1 : 3}
-        columnWrapperStyle={
-          modoLista ? undefined : { justifyContent: "flex-start" }
-        }
+        columnWrapperStyle={modoLista ? undefined : { justifyContent: "flex-start" }}
         onEndReached={carregarMidias}
         onEndReachedThreshold={0.5}
-        ListFooterComponent={
-          loading ? <ActivityIndicator style={{ marginVertical: 20 }} /> : null
-        }
+        ListFooterComponent={loading ? <ActivityIndicator style={{ marginVertical: 20 }} /> : null}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 40 }}
       />
 
-      {/* Modal de detalhes */}
-      <MidiaModal
-        visible={showModal}
-        midiaId={selectedMidiaId}
-        onClose={() => setShowModal(false)}
-      />
+      <MidiaModal visible={showModal} midiaId={selectedMidiaId} onClose={() => setShowModal(false)} />
     </View>
   );
 }
@@ -265,7 +206,7 @@ const styles = StyleSheet.create({
   headerContainer: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 10 },
   headerTitle: { fontSize: 18, fontWeight: "600", color: "#00BFA6" },
   mainTitle: { fontSize: 28, fontWeight: "700", marginBottom: 12, color: "#fff" },
-  searchContainer: { flexDirection: "row", alignItems: "center", backgroundColor: "#1E1E1E", borderRadius: 10, paddingHorizontal: 10, paddingVertical: 8, marginBottom: 16 },
+  searchContainer: { flexDirection: "row", alignItems: "center", backgroundColor: "#1E1E1E", borderRadius: 10, paddingHorizontal: 10, paddingVertical: 8 },
   searchInput: { flex: 1, fontSize: 14, color: "#fff" },
   card: { width: "32%", marginBottom: 20, marginRight: "2%", alignItems: "center", position: "relative" },
   poster: { width: "100%", aspectRatio: 2 / 3, borderRadius: 8, borderWidth: 2, borderColor: "#00BFA6", resizeMode: "cover" },
