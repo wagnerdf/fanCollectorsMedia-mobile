@@ -7,7 +7,6 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk"
-        
       },
       "node": "20.19.5"
     },
@@ -16,6 +15,10 @@
       "android": {
         "buildType": "app-bundle"
       }
+    },
+    "web": {
+      "distribution": "internal",
+      "node": "20.19.5"
     }
   }
 }
