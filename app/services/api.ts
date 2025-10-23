@@ -92,25 +92,39 @@ export const getTipos = async (): Promise<{ tipo: string; total: number }[]> => 
   }
 };
 
-// 🔎 Busca mídias do usuário por gênero
-export const getMidiasByGenero = async (genero: string): Promise<any[]> => {
+// 🔎 Busca mídias do usuário por gênero (com paginação)
+export const getMidiasByGenero = async (
+  genero: string,
+  page: number = 0,
+  size: number = 10
+): Promise<{ content: any[]; currentPage: number; totalItems: number; totalPages: number; hasMore: boolean }> => {
   try {
-    const response = await api.get(`/api/midias/generos/${encodeURIComponent(genero)}`);
-    return response.data; // array de MidiaListagemMobileDto
+    const response = await api.get(`/api/midias/generos/${encodeURIComponent(genero)}`, {
+      params: { page, size },
+    });
+
+    return response.data; // objeto { content, currentPage, totalItems, totalPages, hasMore }
   } catch (error: any) {
     console.error("Erro ao buscar mídias por gênero:", error.response?.data || error.message);
-    return [];
+    return { content: [], currentPage: 0, totalItems: 0, totalPages: 0, hasMore: false };
   }
 };
 
-// 🔎 Busca mídias do usuário por tipo
-export const getMidiasByTipo = async (tipo: string): Promise<any[]> => {
+// 🔎 Busca mídias do usuário por tipo (com paginação)
+export const getMidiasByTipo = async (
+  tipo: string,
+  page: number = 0,
+  size: number = 10
+): Promise<{ content: any[]; currentPage: number; totalItems: number; totalPages: number; hasMore: boolean }> => {
   try {
-    const response = await api.get(`/api/midias/tipo-midia/${encodeURIComponent(tipo)}`);
-    return response.data; // array de MidiaListagemMobileDto
+    const response = await api.get(`/api/midias/tipo-midia/${encodeURIComponent(tipo)}`, {
+      params: { page, size },
+    });
+
+    return response.data; // objeto { content, currentPage, totalItems, totalPages, hasMore }
   } catch (error: any) {
     console.error("Erro ao buscar mídias por tipo:", error.response?.data || error.message);
-    return [];
+    return { content: [], currentPage: 0, totalItems: 0, totalPages: 0, hasMore: false };
   }
 };
 
