@@ -94,16 +94,13 @@ export default function LibraryScreen() {
       let data: any = { midias: [], hasMore: false };
 
       if (genero) {
-        const res = await getMidiasByGenero(genero);
-        data.midias = res;
-        data.hasMore = false;
+        const res = await getMidiasByGenero(genero, offset / limit, limit);
+        data.midias = res.content;
+        data.hasMore = res.hasMore;
       } else if (tipo) {
-        const res = await getMidiasByTipo(tipo);
-        data.midias = res;
-        data.hasMore = false;
-      } else {
-        const res = await getUserMidias(offset, limit);
-        data = res;
+        const res = await getMidiasByTipo(tipo, offset / limit, limit);
+        data.midias = res.content;
+        data.hasMore = res.hasMore;
       }
 
       setMidias((prev) => (offset === 0 ? data.midias : [...prev, ...data.midias]));
