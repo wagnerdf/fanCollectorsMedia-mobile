@@ -142,7 +142,7 @@ export default function LibraryScreen() {
       ) : (
         <>
           <View style={styles.tag}>
-            <Text style={styles.tagText}>{item.tipo}</Text>
+            <Text style={styles.tagText}>{item.midiaTipoNome}</Text>
           </View>
           <Image source={{ uri: item.capaUrl }} style={styles.poster} />
           <Text style={styles.title} numberOfLines={2}>{item.tituloAlternativo}</Text>
