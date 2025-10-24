@@ -64,8 +64,8 @@ const MidiaModal = ({ visible, midiaId, onClose }: any) => {
 
                   {/* Seção: Detalhes Técnicos */}
                   <Text style={modalStyles.sectionTitle}>Detalhes Técnicos</Text>
-                  <Text style={modalStyles.infoText}><Text style={modalStyles.label}>Observações:</Text> {midia.observacoes ?? "—"}</Text>
-                  <Text style={modalStyles.infoText}><Text style={modalStyles.label}>Nota Média:</Text> {midia.notaMedia?.toFixed(3) ?? "—"}</Text>
+                  <Text style={modalStyles.infoText}><Text style={modalStyles.label}>Observações:</Text> {midia.observacoes.trim() !== "" ? midia.observacoes : "—"}</Text>
+                  <Text style={modalStyles.infoText}><Text style={modalStyles.label}>Nota Média:</Text> {midia.notaMedia?.toFixed(1) ?? "—"}</Text>
 
                   {/* Seção: Créditos */}
                   <Text style={modalStyles.sectionTitle}>Créditos</Text>
