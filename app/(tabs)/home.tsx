@@ -95,6 +95,7 @@ export default function HomeScreen() {
         data={biblioteca}
         renderItem={({ item }) => renderItem(item, "biblioteca")}
         keyExtractor={(item) => item.label}
+        scrollEnabled={false}
       />
 
       <Text style={styles.sectionTitle}>Gêneros</Text>
@@ -105,6 +106,7 @@ export default function HomeScreen() {
           data={generos}
           renderItem={({ item }) => renderItem(item, "generos")}
           keyExtractor={(item) => item.nome}
+          scrollEnabled={false} 
         />
       )}
 
@@ -116,6 +118,7 @@ export default function HomeScreen() {
           data={tiposMidia}
           renderItem={({ item }) => renderItem(item, "midias")}
           keyExtractor={(item) => item.tipo}
+          scrollEnabled={false} 
         />
       )}
 
