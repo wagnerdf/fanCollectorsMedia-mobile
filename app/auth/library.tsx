@@ -51,12 +51,31 @@ const MidiaModal = ({ visible, midiaId, onClose }: any) => {
               <View style={modalStyles.scrollWrapper}>
                 <ScrollView style={modalStyles.scrollArea} showsVerticalScrollIndicator={false}>
                   <Image source={{ uri: midia.capaUrl }} style={modalStyles.fullPoster} />
+                  {/* Título */}
                   <Text style={modalStyles.title}>{midia.tituloAlternativo}</Text>
-                  <Text style={modalStyles.genre}>{midia.generos}</Text>
-                  {midia.notaMedia && (
-                    <Text style={modalStyles.rating}>⭐ {midia.notaMedia.toFixed(1)}</Text>
-                  )}
-                  <Text style={modalStyles.synopsis}>{midia.sinopse}</Text>
+
+                  {/* Seção: Informações Gerais */}
+                  <Text style={modalStyles.sectionTitle}>Informações Gerais</Text>
+                  <Text style={modalStyles.infoText}><Text style={modalStyles.label}>Gênero:</Text> {midia.generos}</Text>
+                  <Text style={modalStyles.infoText}><Text style={modalStyles.label}>Tipo:</Text> {midia.midiaTipoNome}</Text>
+                  <Text style={modalStyles.infoText}><Text style={modalStyles.label}>Formato:</Text> {midia.formatoMidia}</Text>
+                  <Text style={modalStyles.infoText}><Text style={modalStyles.label}>Duração:</Text> {midia.duracao} minutos</Text>
+                  <Text style={modalStyles.infoText}><Text style={modalStyles.label}>Linguagem:</Text> {midia.linguagem}</Text>
+
+                  {/* Seção: Detalhes Técnicos */}
+                  <Text style={modalStyles.sectionTitle}>Detalhes Técnicos</Text>
+                  <Text style={modalStyles.infoText}><Text style={modalStyles.label}>Observações:</Text> {midia.observacoes ?? "—"}</Text>
+                  <Text style={modalStyles.infoText}><Text style={modalStyles.label}>Nota Média:</Text> {midia.notaMedia?.toFixed(3) ?? "—"}</Text>
+
+                  {/* Seção: Créditos */}
+                  <Text style={modalStyles.sectionTitle}>Créditos</Text>
+                  <Text style={modalStyles.infoText}><Text style={modalStyles.label}>Artistas:</Text> {midia.artistas}</Text>
+                  <Text style={modalStyles.infoText}><Text style={modalStyles.label}>Diretores:</Text> {midia.diretores}</Text>
+                  <Text style={modalStyles.infoText}><Text style={modalStyles.label}>Estúdio:</Text> {midia.estudio}</Text>
+                  
+                  {/* Seção: Créditos */}
+                  <Text style={modalStyles.sectionTitle}>Sinopse</Text>
+                  <Text style={modalStyles.infoText}><Text> {midia.sinopse}{"\n"}</Text></Text>
                 </ScrollView>
                 <LinearGradient
                   colors={["transparent", "#1E1E1E"]}
@@ -145,8 +164,8 @@ const modalStyles = StyleSheet.create({
     fontWeight: "bold",
   },
   scrollWrapper: {
-  flex: 1,
-  position: "relative",
+    flex: 1,
+    position: "relative",
   },
   scrollIndicatorBottom: {
     position: "absolute",
@@ -163,6 +182,24 @@ const modalStyles = StyleSheet.create({
     borderTopRightRadius: 16,
     marginBottom: 16,
     alignSelf: "center",
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#3A73FF",
+    marginTop: 12,
+    marginBottom: 6,
+    textAlign: "left",
+  },
+  label: {
+    fontWeight: "700",
+    color: "#FFD700",
+  },
+  infoText: {
+    fontSize: 14,
+    color: "#fff",
+    marginBottom: 4,
+    textAlign: "left",
   },
 });
 
