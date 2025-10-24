@@ -20,6 +20,7 @@ import {
   getMidiasByTipo,
 } from "../services/api";
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 
 // --- Modal de detalhes da mídia ---
 const { width, height } = Dimensions.get("window");
@@ -47,15 +48,21 @@ const MidiaModal = ({ visible, midiaId, onClose }: any) => {
           ) : midia ? (
             <>
               {/* Área rolável */}
-              <ScrollView style={modalStyles.scrollArea} showsVerticalScrollIndicator={false}>
-                <Image source={{ uri: midia.capaUrl }} style={modalStyles.poster} />
-                <Text style={modalStyles.title}>{midia.tituloAlternativo}</Text>
-                <Text style={modalStyles.genre}>{midia.generos}</Text>
-                {midia.notaMedia && (
-                  <Text style={modalStyles.rating}>⭐ {midia.notaMedia.toFixed(1)}</Text>
-                )}
-                <Text style={modalStyles.synopsis}>{midia.sinopse}</Text>
-              </ScrollView>
+              <View style={modalStyles.scrollWrapper}>
+                <ScrollView style={modalStyles.scrollArea} showsVerticalScrollIndicator={false}>
+                  <Image source={{ uri: midia.capaUrl }} style={modalStyles.fullPoster} />
+                  <Text style={modalStyles.title}>{midia.tituloAlternativo}</Text>
+                  <Text style={modalStyles.genre}>{midia.generos}</Text>
+                  {midia.notaMedia && (
+                    <Text style={modalStyles.rating}>⭐ {midia.notaMedia.toFixed(1)}</Text>
+                  )}
+                  <Text style={modalStyles.synopsis}>{midia.sinopse}</Text>
+                </ScrollView>
+                <LinearGradient
+                  colors={["transparent", "#1E1E1E"]}
+                  style={modalStyles.scrollIndicatorBottom}
+                />
+              </View>
 
               {/* Botão fixo fora da rolagem */}
               <TouchableOpacity onPress={onClose} style={modalStyles.closeButton}>
@@ -136,6 +143,26 @@ const modalStyles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  scrollWrapper: {
+  flex: 1,
+  position: "relative",
+  },
+  scrollIndicatorBottom: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 40,
+  },
+  fullPoster: {
+    width: "100%",
+    height: 250,
+    resizeMode: "contain",
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    marginBottom: 16,
+    alignSelf: "center",
   },
 });
 
