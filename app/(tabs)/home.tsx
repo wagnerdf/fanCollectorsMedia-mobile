@@ -25,7 +25,7 @@ export default function HomeScreen() {
 
   const handleReload = async () => {
     setAtualizando(true);
-    await carregarDadosIniciais();
+    await carregarDadosIniciais(true); // <- força o recarregamento
     setTimeout(() => setAtualizando(false), 1500);
   };
 

@@ -16,7 +16,7 @@ interface AppDataContextType {
   totalMidias: number;
   generos: Genero[];
   tiposMidia: TipoMidia[];
-  carregarDadosIniciais: () => Promise<void>;
+  carregarDadosIniciais: (forcar?: boolean) => Promise<void>; // adicionamos o parâmetro opcional
   carregando: boolean;
   jaCarregado: boolean;
 }
@@ -36,8 +36,8 @@ export const AppDataProvider = ({ children }: ProviderProps) => {
   const [carregando, setCarregando] = useState<boolean>(false);
   const [jaCarregado, setJaCarregado] = useState<boolean>(false);
 
-  const carregarDadosIniciais = async () => {
-    if (jaCarregado) return; // evita recarregar
+  const carregarDadosIniciais = async (forcar = false) => {
+    if (jaCarregado && !forcar) return; // evita recarregar, exceto quando forcar = true
     setCarregando(true);
     try {
       const [total, generosData, tiposData] = await Promise.all([
