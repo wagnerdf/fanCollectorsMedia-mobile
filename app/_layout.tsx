@@ -1,19 +1,23 @@
 import React from "react";
 import { SafeAreaView, StyleSheet } from "react-native";
 import { Slot } from "expo-router";
+import { AppDataProvider } from "../src/context/AppDataContext";
 
 export default function Layout() {
   return (
-    <SafeAreaView style={styles.container}>
-      <Slot />
-    </SafeAreaView>
+    <AppDataProvider>
+      <SafeAreaView style={styles.container}>
+        <Slot />
+      </SafeAreaView>
+    </AppDataProvider>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#00BFA6", // Cor de fundo padrão
+    backgroundColor: "#00BFA6",
   },
 });
+
 
