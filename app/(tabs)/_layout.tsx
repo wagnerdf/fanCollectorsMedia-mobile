@@ -1,12 +1,11 @@
+import React from "react";
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { useColorScheme } from "react-native";
+import { AppDataProvider } from "../../src/context/AppDataContext";
 
 export default function TabsLayout() {
-  const scheme = useColorScheme();
-  const isDark = scheme === "dark";
-
   return (
+    <AppDataProvider>
       <Tabs
         screenOptions={{
           headerShown: false,
@@ -18,29 +17,24 @@ export default function TabsLayout() {
           },
           tabBarActiveTintColor: "#f5a623",
           tabBarInactiveTintColor: "#888",
-          tabBarLabelStyle: {
-            fontSize: 12,
-          },
+          tabBarLabelStyle: { fontSize: 12 },
         }}
       >
-      <Tabs.Screen
-        name="home"
-        options={{
-          title: "Home",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" color={color} size={size} />
-          ),
-        }}
-      />
-    <Tabs.Screen
-      name="explore"          
-      options={{
-        title: "Explore",  
-        tabBarIcon: ({ color, size }) => (
-          <Ionicons name="grid" color={color} size={size} />
-        ),
-      }}
-    />
-    </Tabs>
+        <Tabs.Screen
+          name="home"
+          options={{
+            title: "Home",
+            tabBarIcon: ({ color, size }) => <Ionicons name="home" color={color} size={size} />,
+          }}
+        />
+        <Tabs.Screen
+          name="explore"
+          options={{
+            title: "Explore",
+            tabBarIcon: ({ color, size }) => <Ionicons name="grid" color={color} size={size} />,
+          }}
+        />
+      </Tabs>
+    </AppDataProvider>
   );
 }
