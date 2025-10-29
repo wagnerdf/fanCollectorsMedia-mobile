@@ -313,7 +313,7 @@ export default function LibraryScreen() {
         <Ionicons name="search-outline" size={18} color="#999" style={{ marginRight: 6 }} />
         <TextInput
           style={styles.searchInput}
-          placeholder="Search"
+          placeholder="Procurar"
           placeholderTextColor="#aaa"
           value={search}
           onChangeText={setSearch}
@@ -365,10 +365,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#1E1E1E",
     borderRadius: 10,
-    paddingHorizontal: 10,
+    paddingHorizontal: 16,
     paddingVertical: 8,
+  marginBottom: 20,
   },
-  searchInput: { flex: 1, fontSize: 14, color: "#fff" },
+  searchInput: { 
+    flex: 1, 
+    fontSize: 14, 
+    color: "#fff",
+    paddingHorizontal: 10,
+  },
   card: {
     width: "32%",
     marginBottom: 20,
