@@ -220,30 +220,30 @@ export default function LibraryScreen() {
   const [showModal, setShowModal] = useState(false);
 
   const limit = 10;
-  const jaCarregado = useRef(false); // flag para não recarregar
+  //const jaCarregado = useRef(false); // flag para não recarregar
 
-  const carregarMidias = async () => {
-    if (loading || !hasMore) return;
+  const carregarMidias = async (novoOffset = 0) => {
+    if (loading || (novoOffset !== 0 && !hasMore)) return;
     setLoading(true);
     try {
       let data: any = { midias: [], hasMore: false };
 
       if (genero) {
-        const res = await getMidiasByGenero(genero, offset / limit, limit);
+        const res = await getMidiasByGenero(genero, novoOffset / limit, limit);
         data.midias = res.content;
         data.hasMore = res.hasMore;
       } else if (tipo) {
-        const res = await getMidiasByTipo(tipo, offset / limit, limit);
+        const res = await getMidiasByTipo(tipo, novoOffset / limit, limit);
         data.midias = res.content;
         data.hasMore = res.hasMore;
       } else {
-        const res = await getUserMidias(offset, limit);
+        const res = await getUserMidias(novoOffset, limit);
         data = res;
       }
 
-      setMidias((prev) => (offset === 0 ? data.midias : [...prev, ...data.midias]));
+      setMidias((prev) => (novoOffset === 0 ? data.midias : [...prev, ...data.midias]));
       setHasMore(data.hasMore ?? false);
-      setOffset((prev) => prev + limit);
+      setOffset(novoOffset + limit);
     } catch (error) {
       console.log("Erro ao carregar mídias:", error);
     } finally {
@@ -253,12 +253,11 @@ export default function LibraryScreen() {
 
   // --- Ajuste principal: só carregar na primeira vez ---
   useEffect(() => {
-    if (!jaCarregado.current) {
-      setOffset(0);
-      setHasMore(true);
-      carregarMidias();
-      jaCarregado.current = true;
-    }
+    // sempre que o gênero ou tipo mudarem, reinicia a busca
+    setOffset(0);
+    setHasMore(true);
+    setMidias([]);
+    carregarMidias(0);
   }, [genero, tipo]);
 
   const renderMidia = ({ item }: any) => (
@@ -296,7 +295,7 @@ export default function LibraryScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={() => router.back()}>
+        <TouchableOpacity onPress={() => router.push("/home")}>
           <Ionicons name="chevron-back" size={28} color="#00BFA6" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>FanCollectorsMedia</Text>
@@ -327,7 +326,7 @@ export default function LibraryScreen() {
         key={modoLista ? "list" : "grid"}
         numColumns={modoLista ? 1 : 3}
         columnWrapperStyle={modoLista ? undefined : { justifyContent: "flex-start" }}
-        onEndReached={carregarMidias}
+        onEndReached={() => carregarMidias(offset)}
         onEndReachedThreshold={0.5}
         ListFooterComponent={loading ? <ActivityIndicator style={{ marginVertical: 20 }} /> : null}
         showsVerticalScrollIndicator={false}

@@ -24,21 +24,28 @@ export default function TabsLayout() {
           }}
         >
           <Tabs.Screen
-            name="home"
+            name="explore"
             options={{
               title: "Home",
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name="grid" color={color} size={size} />
+              ),
+            }}
+          />
+          <Tabs.Screen
+            name="home"
+            options={{
+              title: "Biblioteca",
               tabBarIcon: ({ color, size }) => (
                 <Ionicons name="home" color={color} size={size} />
               ),
             }}
           />
+          {/* 👇 Oculta a tela Library do menu, mas mantém rota acessível */}
           <Tabs.Screen
-            name="explore"
+            name="library"
             options={{
-              title: "Explore",
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="grid" color={color} size={size} />
-              ),
+              href: null,
             }}
           />
         </Tabs>
