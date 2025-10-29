@@ -34,15 +34,15 @@ export default function HomeScreen() {
       style={styles.item}
       onPress={() => {
         if (section === "biblioteca") {
-          router.push("/auth/library");
+          router.push("/(tabs)/library");
         } else if (section === "generos") {
           router.push({
-            pathname: "/auth/library",
+            pathname: "/(tabs)/library",
             params: { genero: item.nome },
           });
         } else if (section === "midias") {
           router.push({
-            pathname: "/auth/library",
+            pathname: "/(tabs)/library",
             params: { tipo: item.tipo },
           });
         }
