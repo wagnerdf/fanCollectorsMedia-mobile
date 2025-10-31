@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, ActivityIndicator } from "react-native";
 import Animated, {
   FadeInRight,
   FadeOutLeft,
@@ -7,32 +7,63 @@ import Animated, {
   FadeOutRight,
 } from "react-native-reanimated";
 import { useFocusEffect } from "@react-navigation/native";
+import { getUserProfile } from "../services/api";
 
 export default function UserEdit() {
   const [screen, setScreen] = useState<"main" | "editData" | "editAddress" | "changePassword">("main");
+  const [userData, setUserData] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
-  // Quando a aba receber foco, retorna à tela principal
+  // 🔁 Atualiza a tela principal e carrega os dados do usuário
   useFocusEffect(
     useCallback(() => {
       setScreen("main");
+      fetchUserData();
     }, [])
   );
+
+  const fetchUserData = async () => {
+    try {
+      setLoading(true);
+      const data = await getUserProfile();
+      setUserData(data);
+    } catch (error) {
+      console.error("Erro ao carregar perfil:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleBack = () => setScreen("main");
 
   return (
     <View style={styles.container}>
-      {/* Cabeçalho fixo com avatar e nome */}
+      {/* Cabeçalho fixo com avatar, nome e email */}
       <View style={styles.header}>
-        <Image source={{ uri: "https://i.pravatar.cc/150?img=3" }} style={styles.avatar} />
-        <Text style={styles.name}>Wagner Andrade</Text>
+        {loading ? (
+          <ActivityIndicator size="large" color="#f5a623" />
+        ) : (
+          <>
+            <Image
+              source={
+                userData?.avatarUrl
+                  ? { uri: userData.avatarUrl }
+                  : require("@/assets/default-user.png")
+              }
+              style={styles.avatar}
+            />
+            <Text style={styles.name}>
+              {userData ? `${userData.nome} ${userData.sobreNome}` : "Carregando..."}
+            </Text>
+            <Text style={styles.email}>
+              {userData?.email || ""}
+            </Text>
+          </>
+        )}
       </View>
 
       {/* Área dinâmica com as seções */}
-      <ScrollView
-        contentContainerStyle={styles.scrollContainer}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
         {screen === "main" && (
           <Animated.View
             key="main"
@@ -110,37 +141,36 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 60,
   },
-
   header: {
     alignItems: "center",
     marginBottom: 25,
   },
-
   avatar: {
     width: 120,
     height: 120,
     borderRadius: 60,
     marginBottom: 10,
   },
-
   name: {
     color: "#fff",
     fontSize: 20,
     fontWeight: "bold",
   },
-
+  email: {
+    color: "#aaa",
+    fontSize: 14,
+    marginTop: 5,
+  },
   scrollContainer: {
     alignItems: "center",
     justifyContent: "center",
     paddingBottom: 40,
   },
-
   center: {
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
   },
-
   option: {
     backgroundColor: "#1e1e1e",
     paddingVertical: 12,
@@ -150,34 +180,29 @@ const styles = StyleSheet.create({
     width: "85%",
     alignItems: "center",
   },
-
   optionText: {
     color: "#f5a623",
     fontSize: 16,
     fontWeight: "500",
   },
-
   subTitle: {
     color: "#f5a623",
     fontSize: 22,
     fontWeight: "bold",
     marginBottom: 10,
   },
-
   subText: {
     color: "#ccc",
     textAlign: "center",
     marginBottom: 20,
     paddingHorizontal: 10,
   },
-
   backButton: {
     backgroundColor: "#f5a623",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
   },
-
   backText: {
     color: "#121212",
     fontWeight: "bold",

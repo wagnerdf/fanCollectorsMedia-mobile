@@ -128,4 +128,22 @@ export const getMidiasByTipo = async (
   }
 };
 
+// 👤 Retorna os dados do perfil do usuário logado
+export const getUserProfile = async (): Promise<{
+  id: number;
+  nome: string;
+  sobreNome: string;
+  email: string;
+  avatarUrl: string;
+}> => {
+  try {
+    const response = await api.get("/api/cadastros/perfil");
+    return response.data;
+  } catch (error: any) {
+    console.error("Erro ao buscar perfil do usuário:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+
 export default api;
