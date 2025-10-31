@@ -269,6 +269,146 @@ export default function UserEdit() {
             </ScrollView>
           </Animated.View>
         )}
+
+       {/* Editar Endereço */}
+        {screen === "editAddress" && userData && (
+          <Animated.View
+            key="editAddress"
+            entering={FadeInLeft.duration(300)}
+            exiting={FadeOutRight.duration(300)}
+            style={styles.center}
+          >
+            <Text style={styles.subTitle}>🏠 Editar Endereço</Text>
+
+            <ScrollView style={{ width: "100%" }}>
+              {/* CEP */}
+              <Text style={styles.label}>CEP</Text>
+              <MaskedTextInput
+                mask="99999-999"
+                style={styles.input}
+                value={userData.endereco?.cep || ""}
+                keyboardType="numeric"
+                onChangeText={(text, rawText) =>
+                  setUserData({
+                    ...userData,
+                    endereco: { ...userData.endereco, cep: rawText },
+                  })
+                }
+              />
+
+              {/* Rua */}
+              <Text style={styles.label}>Rua</Text>
+              <TextInput
+                style={styles.input}
+                value={userData.endereco?.rua || ""}
+                onChangeText={(text) =>
+                  setUserData({
+                    ...userData,
+                    endereco: { ...userData.endereco, rua: text },
+                  })
+                }
+              />
+
+              {/* Número */}
+              <Text style={styles.label}>Número</Text>
+              <TextInput
+                style={styles.input}
+                value={userData.endereco?.numero || ""}
+                onChangeText={(text) =>
+                  setUserData({
+                    ...userData,
+                    endereco: { ...userData.endereco, numero: text },
+                  })
+                }
+                keyboardType="numeric"
+              />
+
+              {/* Complemento */}
+              <Text style={styles.label}>Complemento</Text>
+              <TextInput
+                style={styles.input}
+                value={userData.endereco?.complemento || ""}
+                onChangeText={(text) =>
+                  setUserData({
+                    ...userData,
+                    endereco: { ...userData.endereco, complemento: text },
+                  })
+                }
+              />
+
+              {/* Bairro */}
+              <Text style={styles.label}>Bairro</Text>
+              <TextInput
+                style={styles.input}
+                value={userData.endereco?.bairro || ""}
+                onChangeText={(text) =>
+                  setUserData({
+                    ...userData,
+                    endereco: { ...userData.endereco, bairro: text },
+                  })
+                }
+              />
+
+              {/* Cidade */}
+              <Text style={styles.label}>Cidade</Text>
+              <TextInput
+                style={styles.input}
+                value={userData.endereco?.cidade || ""}
+                onChangeText={(text) =>
+                  setUserData({
+                    ...userData,
+                    endereco: { ...userData.endereco, cidade: text },
+                  })
+                }
+              />
+
+              {/* Estado */}
+              <Text style={styles.label}>Estado</Text>
+              <TextInput
+                style={styles.input}
+                value={userData.endereco?.estado || ""}
+                maxLength={2}
+                autoCapitalize="characters"
+                onChangeText={(text) =>
+                  setUserData({
+                    ...userData,
+                    endereco: { ...userData.endereco, estado: text.toUpperCase() },
+                  })
+                }
+              />
+
+              {/* Botões */}
+              <View style={styles.buttonsContainer}>
+                <TouchableOpacity
+                  style={styles.saveButton}
+                  onPress={() =>
+                    handleSave({
+                      endereco: {
+                        cep: userData.endereco?.cep,
+                        rua: userData.endereco?.rua,
+                        numero: userData.endereco?.numero,
+                        complemento: userData.endereco?.complemento,
+                        bairro: userData.endereco?.bairro,
+                        cidade: userData.endereco?.cidade,
+                        estado: userData.endereco?.estado,
+                      },
+                    })
+                  }
+                  disabled={isSaving}
+                >
+                  <Text style={styles.saveText}>
+                    {isSaving ? "Salvando..." : "Salvar"}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+                  <Text style={styles.backText}>Voltar</Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+          </Animated.View>
+
+        )}
       </ScrollView>
     </View>
   );
