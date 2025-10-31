@@ -1,5 +1,16 @@
 import React, { useState, useCallback } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, ActivityIndicator, TextInput, Platform } from "react-native";
+import {
+  Alert,
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+  ActivityIndicator,
+  TextInput,
+  Platform,
+} from "react-native";
 import Animated, {
   FadeInRight,
   FadeOutLeft,
@@ -7,8 +18,8 @@ import Animated, {
   FadeOutRight,
 } from "react-native-reanimated";
 import { useFocusEffect } from "@react-navigation/native";
-import { getUserProfile } from "../services/api";
-import { MaterialIcons } from '@expo/vector-icons';
+import { getUserProfile, updateUserProfile } from "../services/api";
+import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { Picker } from "@react-native-picker/picker";
@@ -16,15 +27,16 @@ import { MaskedTextInput } from "react-native-mask-text";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 export default function UserEdit() {
-  const [screen, setScreen] = useState<"main" | "editData" | "editAddress" | "changePassword">("main");
+  const [screen, setScreen] = useState<
+    "main" | "editData" | "editAddress" | "changePassword"
+  >("main");
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
-  // Router do Expo Router para navegação
   const router = useRouter();
 
-  // 🔁 Atualiza a tela principal e carrega os dados do usuário ao ganhar foco
   useFocusEffect(
     useCallback(() => {
       setScreen("main");
@@ -32,7 +44,6 @@ export default function UserEdit() {
     }, [])
   );
 
-  // 📌 Função para buscar perfil do usuário logado
   const fetchUserData = async () => {
     try {
       setLoading(true);
@@ -45,14 +56,62 @@ export default function UserEdit() {
     }
   };
 
-  // 🔙 Volta para a tela principal do usuário
+  // 💾 Função genérica para salvar dados (serve para dados, endereço ou senha)
+  const handleSave = async (updatedFields?: Partial<typeof userData>) => {
+    if (!userData) return;
+
+    try {
+      setIsSaving(true);
+
+      // Mescla o que o usuário alterou com o que já temos
+      const mergedData = {
+        ...userData,
+        ...updatedFields,
+        endereco: {
+          ...userData.endereco,
+          ...(updatedFields?.endereco || {}),
+        },
+      };
+
+      // Monta o payload completo exigido pelo backend
+      const payload = {
+        dataNascimento: mergedData.dataNascimento,
+        sexo: mergedData.sexo,
+        telefone: mergedData.telefone,
+        cep: mergedData.endereco?.cep || "",
+        rua: mergedData.endereco?.rua || "",
+        numero: mergedData.endereco?.numero || "",
+        complemento: mergedData.endereco?.complemento || "",
+        bairro: mergedData.endereco?.bairro || "",
+        cidade: mergedData.endereco?.cidade || "",
+        estado: mergedData.endereco?.estado || "",
+        novaSenha: mergedData.novaSenha || null,
+      };
+
+      console.log("📤 Enviando dados para salvar:", payload);
+
+      // Chama o backend
+      const updatedData = await updateUserProfile(payload);
+
+      Alert.alert("✅ Sucesso", "Dados atualizados com sucesso!");
+
+      if (updatedData) {
+        setUserData({ ...userData, ...updatedData });
+      }
+    } catch (error: any) {
+      console.error("Erro ao salvar perfil:", error.response?.data || error.message);
+      Alert.alert("❌ Erro", "Ocorreu um erro ao salvar. Tente novamente.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleBack = () => setScreen("main");
 
-  // 🔒 Logout do usuário, removendo token e redirecionando para login
   const handleLogout = async () => {
     try {
-      await AsyncStorage.removeItem("userToken"); // remove token
-      router.replace("/"); // volta para tela inicial
+      await AsyncStorage.removeItem("userToken");
+      router.replace("/");
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
     }
@@ -60,7 +119,7 @@ export default function UserEdit() {
 
   return (
     <View style={styles.container}>
-      {/* Cabeçalho fixo com avatar, nome e email */}
+      {/* Cabeçalho com avatar */}
       <View style={styles.header}>
         {loading ? (
           <ActivityIndicator size="large" color="#f5a623" />
@@ -70,21 +129,19 @@ export default function UserEdit() {
               source={
                 userData?.avatarUrl
                   ? { uri: userData.avatarUrl }
-                  : require("@/assets/default-user.png") // fallback seguro
+                  : require("@/assets/default-user.png")
               }
               style={styles.avatar}
             />
             <Text style={styles.name}>
               {userData ? `${userData.nome} ${userData.sobreNome}` : "Carregando..."}
             </Text>
-            <Text style={styles.email}>
-              {userData?.email || ""}
-            </Text>
+            <Text style={styles.email}>{userData?.email || ""}</Text>
           </>
         )}
       </View>
 
-      {/* Área dinâmica com as seções */}
+      {/* Área dinâmica */}
       <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
         {screen === "main" && (
           <Animated.View
@@ -93,7 +150,6 @@ export default function UserEdit() {
             exiting={FadeOutLeft.duration(300)}
             style={styles.center}
           >
-            {/* Opções do usuário */}
             <TouchableOpacity style={styles.option} onPress={() => setScreen("editData")}>
               <Text style={styles.optionText}>Editar Dados</Text>
             </TouchableOpacity>
@@ -106,7 +162,6 @@ export default function UserEdit() {
               <Text style={styles.optionText}>Alterar Senha</Text>
             </TouchableOpacity>
 
-            {/* 🔒 Botão de logoff */}
             <TouchableOpacity style={styles.logoutOption} onPress={handleLogout}>
               <MaterialIcons name="logout" size={24} color="#ff4d4d" style={{ marginRight: 8 }} />
               <Text style={[styles.optionText, { color: "#ff4d4d" }]}>Sair</Text>
@@ -114,7 +169,7 @@ export default function UserEdit() {
           </Animated.View>
         )}
 
-        {/* Seções de edição */}
+        {/* Editar Dados */}
         {screen === "editData" && userData && (
           <Animated.View
             key="editData"
@@ -125,33 +180,19 @@ export default function UserEdit() {
             <Text style={styles.subTitle}>📝 Editar Dados</Text>
 
             <ScrollView style={{ width: "100%" }}>
-
-              {/* Nome */}
               <Text style={styles.label}>Nome</Text>
-              <TextInput
-                style={styles.inputDisabled}
-                value={userData.nome}
-                editable={false}
-              />
+              <TextInput style={styles.inputDisabled} value={userData.nome} editable={false} />
 
-              {/* Sobrenome */}
               <Text style={styles.label}>Sobrenome</Text>
-              <TextInput
-                style={styles.inputDisabled}
-                value={userData.sobreNome}
-                editable={false}
-              />
+              <TextInput style={styles.inputDisabled} value={userData.sobreNome} editable={false} />
 
-              {/* Data de Nascimento */}
               <Text style={styles.label}>Data de Nascimento</Text>
-
               <TouchableOpacity onPress={() => setShowDatePicker(true)}>
                 <TextInput
                   style={styles.input}
                   value={
                     userData.dataNascimento
-                      ? new Date(userData.dataNascimento)
-                          .toLocaleDateString("pt-BR", { timeZone: "UTC" })
+                      ? new Date(userData.dataNascimento).toLocaleDateString("pt-BR", { timeZone: "UTC" })
                       : ""
                   }
                   placeholder="DD/MM/AAAA"
@@ -162,16 +203,13 @@ export default function UserEdit() {
               {showDatePicker && (
                 <DateTimePicker
                   value={
-                    userData.dataNascimento
-                      ? new Date(userData.dataNascimento)
-                      : new Date()
+                    userData.dataNascimento ? new Date(userData.dataNascimento) : new Date()
                   }
                   mode="date"
                   display={Platform.OS === "ios" ? "spinner" : "default"}
                   onChange={(event, selectedDate) => {
                     setShowDatePicker(false);
                     if (selectedDate) {
-                      // Converte para o formato yyyy-MM-dd para o backend, mas exibe como dd/MM/yyyy
                       const formattedDate = selectedDate.toISOString().split("T")[0];
                       setUserData({ ...userData, dataNascimento: formattedDate });
                     }
@@ -179,7 +217,6 @@ export default function UserEdit() {
                 />
               )}
 
-              {/* Sexo */}
               <Text style={styles.label}>Sexo</Text>
               <Picker
                 selectedValue={userData.sexo}
@@ -193,7 +230,6 @@ export default function UserEdit() {
                 <Picker.Item label="Outro" value="OUTRO" />
               </Picker>
 
-              {/* Telefone */}
               <Text style={styles.label}>Telefone</Text>
               <MaskedTextInput
                 mask="(99) 99999-9999"
@@ -205,21 +241,25 @@ export default function UserEdit() {
                 }
               />
 
-              {/* Email */}
               <Text style={styles.label}>Email</Text>
-              <TextInput
-                style={styles.inputDisabled}
-                value={userData.email}
-                editable={false}
-              />
+              <TextInput style={styles.inputDisabled} value={userData.email} editable={false} />
 
-              {/* Botão Salvar */}
+              {/* Botões */}
               <View style={styles.buttonsContainer}>
                 <TouchableOpacity
                   style={styles.saveButton}
-                  onPress={() => console.log("Salvar (em breve será implementado)")}
+                  onPress={() =>
+                    handleSave({
+                      dataNascimento: userData.dataNascimento,
+                      sexo: userData.sexo,
+                      telefone: userData.telefone,
+                    })
+                  }
+                  disabled={isSaving}
                 >
-                  <Text style={styles.saveText}>Salvar</Text>
+                  <Text style={styles.saveText}>
+                    {isSaving ? "Salvando..." : "Salvar"}
+                  </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.backButton} onPress={handleBack}>
@@ -227,38 +267,6 @@ export default function UserEdit() {
                 </TouchableOpacity>
               </View>
             </ScrollView>
-          </Animated.View>
-        )}
-
-        {/* Seções de endereço */}
-        {screen === "editAddress" && (
-          <Animated.View
-            key="editAddress"
-            entering={FadeInLeft.duration(300)}
-            exiting={FadeOutRight.duration(300)}
-            style={styles.center}
-          >
-            <Text style={styles.subTitle}>🏠 Editar Endereço</Text>
-            <Text style={styles.subText}>Formulário para editar o endereço do usuário.</Text>
-            <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-              <Text style={styles.backText}>Cancelar</Text>
-            </TouchableOpacity>
-          </Animated.View>
-        )}
-
-        {/* Seções de password */}
-        {screen === "changePassword" && (
-          <Animated.View
-            key="changePassword"
-            entering={FadeInLeft.duration(300)}
-            exiting={FadeOutRight.duration(300)}
-            style={styles.center}
-          >
-            <Text style={styles.subTitle}>🔒 Alterar Senha</Text>
-            <Text style={styles.subText}>Tela para troca de senha do usuário.</Text>
-            <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-              <Text style={styles.backText}>Voltar</Text>
-            </TouchableOpacity>
           </Animated.View>
         )}
       </ScrollView>
@@ -416,7 +424,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 20,
-    gap: 12, // espaçamento entre os dois botões
+    gap: 12, 
     width: "100%",
   },
 

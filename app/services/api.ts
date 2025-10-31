@@ -145,5 +145,15 @@ export const getUserProfile = async (): Promise<{
   }
 };
 
+// 💾 Atualiza os dados do perfil do usuário (flexível para qualquer campo)
+export const updateUserProfile = async (body: Record<string, any>) => {
+  try {
+    const response = await api.put("/api/cadastros/perfilEditar", body);
+    return response.data; // retorna os dados atualizados
+  } catch (error: any) {
+    console.error("Erro ao atualizar perfil:", error.response?.data || error.message);
+    throw error;
+  }
+};
 
 export default api;
