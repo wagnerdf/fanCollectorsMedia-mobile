@@ -8,13 +8,19 @@ import Animated, {
 } from "react-native-reanimated";
 import { useFocusEffect } from "@react-navigation/native";
 import { getUserProfile } from "../services/api";
+import { MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 
 export default function UserEdit() {
   const [screen, setScreen] = useState<"main" | "editData" | "editAddress" | "changePassword">("main");
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
-  // 🔁 Atualiza a tela principal e carrega os dados do usuário
+  // Router do Expo Router para navegação
+  const router = useRouter();
+
+  // 🔁 Atualiza a tela principal e carrega os dados do usuário ao ganhar foco
   useFocusEffect(
     useCallback(() => {
       setScreen("main");
@@ -22,6 +28,7 @@ export default function UserEdit() {
     }, [])
   );
 
+  // 📌 Função para buscar perfil do usuário logado
   const fetchUserData = async () => {
     try {
       setLoading(true);
@@ -34,7 +41,18 @@ export default function UserEdit() {
     }
   };
 
+  // 🔙 Volta para a tela principal do usuário
   const handleBack = () => setScreen("main");
+
+  // 🔒 Logout do usuário, removendo token e redirecionando para login
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem("userToken"); // remove token
+      router.replace("/"); // volta para tela inicial
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -48,7 +66,7 @@ export default function UserEdit() {
               source={
                 userData?.avatarUrl
                   ? { uri: userData.avatarUrl }
-                  : require("@/assets/default-user.png")
+                  : require("@/assets/default-user.png") // fallback seguro
               }
               style={styles.avatar}
             />
@@ -71,6 +89,7 @@ export default function UserEdit() {
             exiting={FadeOutLeft.duration(300)}
             style={styles.center}
           >
+            {/* Opções do usuário */}
             <TouchableOpacity style={styles.option} onPress={() => setScreen("editData")}>
               <Text style={styles.optionText}>Editar Dados</Text>
             </TouchableOpacity>
@@ -82,9 +101,16 @@ export default function UserEdit() {
             <TouchableOpacity style={styles.option} onPress={() => setScreen("changePassword")}>
               <Text style={styles.optionText}>Alterar Senha</Text>
             </TouchableOpacity>
+
+            {/* 🔒 Botão de logoff */}
+            <TouchableOpacity style={styles.logoutOption} onPress={handleLogout}>
+              <MaterialIcons name="logout" size={24} color="#ff4d4d" style={{ marginRight: 8 }} />
+              <Text style={[styles.optionText, { color: "#ff4d4d" }]}>Sair</Text>
+            </TouchableOpacity>
           </Animated.View>
         )}
 
+        {/* Seções de edição */}
         {screen === "editData" && (
           <Animated.View
             key="editData"
@@ -208,4 +234,21 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
   },
+  logoutOption: {
+    flexDirection: "row",
+    backgroundColor: "#1e1e1e",
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 10,
+    marginTop: 20,
+    width: "85%",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#ff4d4d",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+
 });
