@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from "react-native";
 import Animated, {
   FadeInRight,
   FadeOutLeft,
@@ -22,54 +22,83 @@ export default function UserEdit() {
 
   return (
     <View style={styles.container}>
-      {screen === "main" && (
-        <Animated.View key="main" entering={FadeInRight.duration(300)} exiting={FadeOutLeft.duration(300)} style={styles.center}>
-          <Image source={{ uri: "https://i.pravatar.cc/150?img=3" }} style={styles.avatar} />
-          <Text style={styles.name}>Wagner Andrade</Text>
+      {/* Cabeçalho fixo com avatar e nome */}
+      <View style={styles.header}>
+        <Image source={{ uri: "https://i.pravatar.cc/150?img=3" }} style={styles.avatar} />
+        <Text style={styles.name}>Wagner Andrade</Text>
+      </View>
 
-          <TouchableOpacity style={styles.option} onPress={() => setScreen("editData")}>
-            <Text style={styles.optionText}>Editar Dados</Text>
-          </TouchableOpacity>
+      {/* Área dinâmica com as seções */}
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        {screen === "main" && (
+          <Animated.View
+            key="main"
+            entering={FadeInRight.duration(300)}
+            exiting={FadeOutLeft.duration(300)}
+            style={styles.center}
+          >
+            <TouchableOpacity style={styles.option} onPress={() => setScreen("editData")}>
+              <Text style={styles.optionText}>Editar Dados</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity style={styles.option} onPress={() => setScreen("editAddress")}>
-            <Text style={styles.optionText}>Editar Endereço</Text>
-          </TouchableOpacity>
+            <TouchableOpacity style={styles.option} onPress={() => setScreen("editAddress")}>
+              <Text style={styles.optionText}>Editar Endereço</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity style={styles.option} onPress={() => setScreen("changePassword")}>
-            <Text style={styles.optionText}>Alterar Senha</Text>
-          </TouchableOpacity>
-        </Animated.View>
-      )}
+            <TouchableOpacity style={styles.option} onPress={() => setScreen("changePassword")}>
+              <Text style={styles.optionText}>Alterar Senha</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        )}
 
-      {screen === "editData" && (
-        <Animated.View key="editData" entering={FadeInLeft.duration(300)} exiting={FadeOutRight.duration(300)} style={styles.center}>
-          <Text style={styles.subTitle}>📝 Editar Dados</Text>
-          <Text style={styles.subText}>Aqui virá o formulário de atualização dos dados do usuário.</Text>
-          <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-            <Text style={styles.backText}>Voltar</Text>
-          </TouchableOpacity>
-        </Animated.View>
-      )}
+        {screen === "editData" && (
+          <Animated.View
+            key="editData"
+            entering={FadeInLeft.duration(300)}
+            exiting={FadeOutRight.duration(300)}
+            style={styles.center}
+          >
+            <Text style={styles.subTitle}>📝 Editar Dados</Text>
+            <Text style={styles.subText}>Aqui virá o formulário de atualização dos dados do usuário.</Text>
+            <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+              <Text style={styles.backText}>Voltar</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        )}
 
-      {screen === "editAddress" && (
-        <Animated.View key="editAddress" entering={FadeInLeft.duration(300)} exiting={FadeOutRight.duration(300)} style={styles.center}>
-          <Text style={styles.subTitle}>🏠 Editar Endereço</Text>
-          <Text style={styles.subText}>Formulário para editar o endereço do usuário.</Text>
-          <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-            <Text style={styles.backText}>Cancelar</Text>
-          </TouchableOpacity>
-        </Animated.View>
-      )}
+        {screen === "editAddress" && (
+          <Animated.View
+            key="editAddress"
+            entering={FadeInLeft.duration(300)}
+            exiting={FadeOutRight.duration(300)}
+            style={styles.center}
+          >
+            <Text style={styles.subTitle}>🏠 Editar Endereço</Text>
+            <Text style={styles.subText}>Formulário para editar o endereço do usuário.</Text>
+            <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+              <Text style={styles.backText}>Cancelar</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        )}
 
-      {screen === "changePassword" && (
-        <Animated.View key="changePassword" entering={FadeInLeft.duration(300)} exiting={FadeOutRight.duration(300)} style={styles.center}>
-          <Text style={styles.subTitle}>🔒 Alterar Senha</Text>
-          <Text style={styles.subText}>Tela para troca de senha do usuário.</Text>
-          <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-            <Text style={styles.backText}>Voltar</Text>
-          </TouchableOpacity>
-        </Animated.View>
-      )}
+        {screen === "changePassword" && (
+          <Animated.View
+            key="changePassword"
+            entering={FadeInLeft.duration(300)}
+            exiting={FadeOutRight.duration(300)}
+            style={styles.center}
+          >
+            <Text style={styles.subTitle}>🔒 Alterar Senha</Text>
+            <Text style={styles.subText}>Tela para troca de senha do usuário.</Text>
+            <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+              <Text style={styles.backText}>Voltar</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        )}
+      </ScrollView>
     </View>
   );
 }
@@ -78,28 +107,38 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#121212",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 60,
   },
 
-  center: {
+  header: {
     alignItems: "center",
-    justifyContent: "center",
+    marginBottom: 25,
   },
 
   avatar: {
     width: 120,
     height: 120,
     borderRadius: 60,
-    marginBottom: 15,
+    marginBottom: 10,
   },
 
   name: {
     color: "#fff",
     fontSize: 20,
     fontWeight: "bold",
-    marginBottom: 25,
+  },
+
+  scrollContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingBottom: 40,
+  },
+
+  center: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
   },
 
   option: {
@@ -108,7 +147,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     borderRadius: 10,
     marginBottom: 12,
-    width: "80%",
+    width: "85%",
     alignItems: "center",
   },
 
@@ -129,6 +168,7 @@ const styles = StyleSheet.create({
     color: "#ccc",
     textAlign: "center",
     marginBottom: 20,
+    paddingHorizontal: 10,
   },
 
   backButton: {
@@ -144,4 +184,3 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-
