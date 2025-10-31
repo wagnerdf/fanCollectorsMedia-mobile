@@ -48,6 +48,16 @@ export default function TabsLayout() {
               href: null,
             }}
           />
+           {/* 👤 Novo menu de Usuário */}
+          <Tabs.Screen
+            name="userEdit"
+            options={{
+              title: "Usuário",
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name="person" color={color} size={size} />
+              ),
+            }}
+          />
         </Tabs>
       </SafeAreaView>
     </SafeAreaProvider>
