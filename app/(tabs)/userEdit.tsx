@@ -57,6 +57,16 @@ export default function UserEdit() {
     }
   };
 
+  const validarEndereco = (endereco: any) => {
+    const obrigatorios = ["cep", "rua", "numero", "bairro", "cidade", "estado"];
+    for (const campo of obrigatorios) {
+      if (!endereco[campo] || endereco[campo].trim() === "") {
+        return false; // encontrou campo vazio
+      }
+    }
+    return true;
+  };
+
   // 💾 Função genérica para salvar dados (serve para dados, endereço ou senha)
   const handleSave = async (updatedFields?: Partial<typeof userData>) => {
     if (!userData) return;
@@ -429,19 +439,16 @@ export default function UserEdit() {
               <View style={styles.buttonsContainer}>
                 <TouchableOpacity
                   style={styles.saveButton}
-                  onPress={() =>
+                  onPress={() => {
+                    if (!validarEndereco(userData.endereco)) {
+                      alert("Por favor, preencha todos os campos obrigatórios antes de salvar.");
+                      return;
+                    }
+
                     handleSave({
-                      endereco: {
-                        cep: userData.endereco?.cep,
-                        rua: userData.endereco?.rua,
-                        numero: userData.endereco?.numero,
-                        complemento: userData.endereco?.complemento,
-                        bairro: userData.endereco?.bairro,
-                        cidade: userData.endereco?.cidade,
-                        estado: userData.endereco?.estado,
-                      },
-                    })
-                  }
+                      endereco: { ...userData.endereco },
+                    });
+                  }}
                   disabled={isSaving}
                 >
                   <Text style={styles.saveText}>
