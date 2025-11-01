@@ -18,7 +18,7 @@ import Animated, {
   FadeOutRight,
 } from "react-native-reanimated";
 import { useFocusEffect } from "@react-navigation/native";
-import { getUserProfile, updateUserProfile } from "../services/api";
+import { getUserProfile, updateUserProfile, buscarEnderecoPorCep } from "../services/api";
 import { MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
@@ -34,6 +34,7 @@ export default function UserEdit() {
   const [loading, setLoading] = useState<boolean>(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoadingCep, setIsLoadingCep] = useState(false);
 
   const router = useRouter();
 
@@ -288,13 +289,60 @@ export default function UserEdit() {
                 style={styles.input}
                 value={userData.endereco?.cep || ""}
                 keyboardType="numeric"
-                onChangeText={(text, rawText) =>
+                onChangeText={async (text, rawText) => {
+                  const novoCep = rawText.replace(/\D/g, "");
+
+                  // Atualiza o campo de CEP
                   setUserData({
                     ...userData,
                     endereco: { ...userData.endereco, cep: rawText },
-                  })
-                }
+                  });
+
+                  // Quando tiver 8 dígitos, dispara a busca
+                  if (novoCep.length === 8) {
+                    setIsLoadingCep(true);
+
+                    // 🔹 Limpa todos os campos antes da busca
+                    setUserData((prev: any) => ({
+                      ...prev,
+                      endereco: {
+                        cep: rawText,
+                        rua: "",
+                        numero: "",
+                        complemento: "",
+                        bairro: "",
+                        cidade: "",
+                        estado: "",
+                      },
+                    }));
+
+                    const endereco = await buscarEnderecoPorCep(novoCep);
+                    setIsLoadingCep(false);
+
+                    // 🔹 Se encontrou, preenche os dados retornados
+                    if (endereco) {
+                      setUserData((prev: any) => ({
+                        ...prev,
+                        endereco: {
+                          ...prev.endereco,
+                          ...endereco,
+                          cep: rawText, // mantém o formato com máscara
+                        },
+                      }));
+                    }
+                  }
+                }}
               />
+
+              {isLoadingCep && (
+                <Text style={{ textAlign: "center", color: "#888" }}>Buscando endereço...</Text>
+              )}
+
+
+              {isLoadingCep && (
+                <Text style={{ textAlign: "center", color: "#888" }}>Buscando endereço...</Text>
+              )}
+
 
               {/* Rua */}
               <Text style={styles.label}>Rua</Text>
