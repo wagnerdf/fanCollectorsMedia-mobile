@@ -8,7 +8,7 @@ export default function HomeScreen() {
   const [atualizando, setAtualizando] = useState(false);
 
   // Dados vindos do contexto global
-  const { totalMidias, generos, tiposMidia, carregarDadosIniciais, carregando, jaCarregado } = useAppData();
+  const { totalMidias, generos, tiposMidia, carregarDadosIniciais, carregando, jaCarregado, usuarioAtual } = useAppData();
 
   // Carrega apenas uma vez (ao logar)
   useEffect(() => {
@@ -16,6 +16,11 @@ export default function HomeScreen() {
       carregarDadosIniciais();
     }
   }, [jaCarregado]);
+
+  // Carrega dados iniciais na primeira vez ou quando trocar de usuário
+  useEffect(() => {
+    carregarDadosIniciais(true); // força recarregamento
+  }, [usuarioAtual]); // <-- sempre que mudar de usuário
 
   const biblioteca = [{ label: "Todos os meus filmes", total: totalMidias }];
 

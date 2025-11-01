@@ -16,9 +16,11 @@ interface AppDataContextType {
   totalMidias: number;
   generos: Genero[];
   tiposMidia: TipoMidia[];
-  carregarDadosIniciais: (forcar?: boolean) => Promise<void>; // adicionamos o parâmetro opcional
+  carregarDadosIniciais: (forcar?: boolean) => Promise<void>;
   carregando: boolean;
   jaCarregado: boolean;
+  usuarioAtual: string | null; // <-- ID ou email do usuário logado
+  setUsuarioAtual: (usuario: string | null) => void; // para atualizar o usuário
 }
 
 // Contexto
@@ -35,9 +37,10 @@ export const AppDataProvider = ({ children }: ProviderProps) => {
   const [tiposMidia, setTiposMidia] = useState<TipoMidia[]>([]);
   const [carregando, setCarregando] = useState<boolean>(false);
   const [jaCarregado, setJaCarregado] = useState<boolean>(false);
+  const [usuarioAtual, setUsuarioAtual] = useState<string | null>(null); // <-- novo
 
   const carregarDadosIniciais = async (forcar = false) => {
-    if (jaCarregado && !forcar) return; // evita recarregar, exceto quando forcar = true
+    if (jaCarregado && !forcar) return; // evita recarregar, exceto quando forçar
     setCarregando(true);
     try {
       const [total, generosData, tiposData] = await Promise.all([
@@ -46,7 +49,6 @@ export const AppDataProvider = ({ children }: ProviderProps) => {
         getTipos(),
       ]);
 
-      // Ajusta generos para formato correto
       const generosArray: Genero[] = generosData.map((item: any) => ({
         nome: item.genero,
         total: item.total,
@@ -54,7 +56,7 @@ export const AppDataProvider = ({ children }: ProviderProps) => {
 
       setTotalMidias(total);
       setGeneros(generosArray);
-      setTiposMidia(tiposData); // assumindo que getTipos já retorna { tipo: string, total: number }[]
+      setTiposMidia(tiposData); 
       setJaCarregado(true);
     } catch (error) {
       console.error("Erro ao carregar dados iniciais:", error);
@@ -72,6 +74,8 @@ export const AppDataProvider = ({ children }: ProviderProps) => {
         carregarDadosIniciais,
         carregando,
         jaCarregado,
+        usuarioAtual,        // <-- adicionado
+        setUsuarioAtual,     // <-- adicionado
       }}
     >
       {children}
