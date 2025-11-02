@@ -31,7 +31,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 
 export default function UserEdit() {
   const [screen, setScreen] = useState<
-    "main" | "editData" | "editAddress" | "changePassword"
+    "main" | "editData" | "editAddress" | "changePassword" | "confirmLogout"
   >("main");
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -258,7 +258,7 @@ export default function UserEdit() {
               <Text style={styles.optionText}>Alterar Senha</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.logoutOption} onPress={handleLogout}>
+            <TouchableOpacity style={styles.logoutOption} onPress={() => setScreen("confirmLogout")}>
               <MaterialIcons name="logout" size={24} color="#ff4d4d" style={{ marginRight: 8 }} />
               <Text style={[styles.optionText, { color: "#ff4d4d" }]}>Sair</Text>
             </TouchableOpacity>
@@ -663,6 +663,41 @@ export default function UserEdit() {
                 </TouchableOpacity>
               </View>
             </ScrollView>
+          </Animated.View>
+        )}
+
+        {/* Confirmação de Logout */}
+        {screen === "confirmLogout" && (
+          <Animated.View
+            key="confirmLogout"
+            entering={FadeInLeft.duration(300)}
+            exiting={FadeOutRight.duration(300)}
+            style={styles.center}
+          >
+            <Text style={styles.subTitle}>⚠️ Deseja realmente sair?</Text>
+
+            <View style={{ flexDirection: "row", justifyContent: "center", gap: 12, marginTop: 20, width: "100%" }}>
+              <TouchableOpacity
+                style={[styles.saveButton, { width: "45%" }]}
+                onPress={async () => {
+                  try {
+                    await AsyncStorage.removeItem("userToken");
+                    router.replace("/"); // Redireciona para tela de login
+                  } catch (error) {
+                    console.error("Erro ao fazer logout:", error);
+                  }
+                }}
+              >
+                <Text style={styles.saveText}>Sim</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.backButton, { width: "45%" }]}
+                onPress={() => setScreen("main")}
+              >
+                <Text style={styles.backText}>Não</Text>
+              </TouchableOpacity>
+            </View>
           </Animated.View>
         )}
 
