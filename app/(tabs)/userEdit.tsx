@@ -464,6 +464,82 @@ export default function UserEdit() {
           </Animated.View>
 
         )}
+
+        {/* Editar Senha */}
+        {screen === "changePassword" && (
+          <Animated.View
+            key="changePassword"
+            entering={FadeInLeft.duration(300)}
+            exiting={FadeOutRight.duration(300)}
+            style={styles.center}
+          >
+            <Text style={styles.subTitle}>🔒 Alterar Senha</Text>
+
+            <ScrollView style={{ width: "100%" }}>
+              {/* Nova Senha */}
+              <Text style={styles.label}>Nova Senha</Text>
+              <TextInput
+                style={styles.input}
+                value={userData.novaSenha || ""}
+                onChangeText={(text) =>
+                  setUserData({
+                    ...userData,
+                    novaSenha: text,
+                  })
+                }
+                secureTextEntry
+                placeholder="Digite a nova senha"
+              />
+
+              {/* Confirmar Senha */}
+              <Text style={styles.label}>Confirmar Senha</Text>
+              <TextInput
+                style={styles.input}
+                value={userData.confirmarSenha || ""}
+                onChangeText={(text) =>
+                  setUserData({
+                    ...userData,
+                    confirmarSenha: text,
+                  })
+                }
+                secureTextEntry
+                placeholder="Confirme a nova senha"
+              />
+
+              {/* Botões */}
+              <View style={styles.buttonsContainer}>
+                <TouchableOpacity
+                  style={styles.saveButton}
+                  onPress={() => {
+                    if (!userData.novaSenha || !userData.confirmarSenha) {
+                      alert("Por favor, preencha todos os campos obrigatórios.");
+                      return;
+                    }
+
+                    if (userData.novaSenha !== userData.confirmarSenha) {
+                      alert("As senhas não conferem.");
+                      return;
+                    }
+
+                    handleSave({
+                      senha: userData.novaSenha,
+                    });
+                  }}
+                  disabled={isSaving}
+                >
+                  <Text style={styles.saveText}>
+                    {isSaving ? "Salvando..." : "Salvar"}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+                  <Text style={styles.backText}>Voltar</Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+          </Animated.View>
+        )}
+
       </ScrollView>
     </View>
   );
