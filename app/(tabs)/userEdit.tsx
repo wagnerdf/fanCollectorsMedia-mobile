@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   Alert,
   View,
@@ -16,6 +16,9 @@ import Animated, {
   FadeOutLeft,
   FadeInLeft,
   FadeOutRight,
+  useSharedValue, 
+  withTiming, 
+  useAnimatedStyle
 } from "react-native-reanimated";
 import { useFocusEffect } from "@react-navigation/native";
 import { getUserProfile, updateUserProfile, buscarEnderecoPorCep } from "../services/api";
@@ -35,8 +38,16 @@ export default function UserEdit() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoadingCep, setIsLoadingCep] = useState(false);
+  const [senhasIguais, setSenhasIguais] = useState(false);
+  // Estado para acompanhar força da senha (nível, cor e porcentagem)
+  const [senhaForca, setSenhaForca] = useState({
+    nivel: "",
+    cor: "",
+    porcentagem: 0,
+  });
 
   const router = useRouter();
+  const barraWidth = useSharedValue(0);
 
   useFocusEffect(
     useCallback(() => {
@@ -128,12 +139,7 @@ export default function UserEdit() {
     }
   };
 
-    const [senhaForca, setSenhaForca] = useState({
-    nivel: "",
-    cor: "",
-    porcentagem: 0,
-  });
-
+  // Função de avaliação de força (a tua versão adaptada)
   const avaliarForcaSenha = (senha: string) => {
     let forca = 0;
     if (senha.length >= 8) forca++;
@@ -160,6 +166,52 @@ export default function UserEdit() {
     setSenhaForca({ nivel, cor, porcentagem });
   };
 
+  useEffect(() => {
+    // Garante que userData existe
+    if (!userData) return;
+
+    // Avalia força da senha
+    if (userData.novaSenha) {
+      avaliarForcaSenha(userData.novaSenha);
+    } else {
+      setSenhaForca({ nivel: "", cor: "", porcentagem: 0 });
+    }
+
+    // Confirmação da senha
+    setSenhasIguais(
+      !!userData.novaSenha &&
+        !!userData.confirmarSenha &&
+        userData.novaSenha === userData.confirmarSenha
+    );
+  }, [userData?.novaSenha, userData?.confirmarSenha]);
+
+  // Atualiza a largura quando a porcentagem muda
+  useEffect(() => {
+    barraWidth.value = withTiming(senhaForca.porcentagem, { duration: 300 });
+  }, [senhaForca.porcentagem]);
+
+  useEffect(() => {
+    if (screen === "changePassword") {
+      // Limpa os campos de senha e indicadores
+      setUserData((prev: any) => ({
+        ...prev,
+        novaSenha: "",
+        confirmarSenha: "",
+      }));
+      setSenhaForca({ nivel: "", cor: "", porcentagem: 0 });
+      setSenhasIguais(false);
+    }
+  }, [screen]);
+
+
+  const senhaForte = senhaForca.nivel === "Senha forte";
+  // Estilo animado
+  const barraAnimadaStyle = useAnimatedStyle(() => ({
+    width: `${barraWidth.value}%`,
+    height: '100%',
+    backgroundColor: senhaForca.cor,
+    borderRadius: 4,
+  }));
 
   return (
     <View style={styles.container}>
@@ -514,24 +566,27 @@ export default function UserEdit() {
               <TextInput
                 style={styles.input}
                 value={userData.novaSenha || ""}
-                onChangeText={(text) => {
+                onChangeText={(text) =>
                   setUserData({
                     ...userData,
                     novaSenha: text,
-                  });
-                  avaliarForcaSenha(text);
-                }}
+                  })
+                }
                 secureTextEntry
                 placeholder="Digite a nova senha"
+                placeholderTextColor="#fff"
               />
 
               {/* Barra de força da senha */}
-              {senhaForca.nivel !== "" && (
+              {userData.novaSenha?.length > 0 && senhaForca.nivel !== "" && (
                 <View style={styles.strengthContainer}>
-                  <View
+                  <Animated.View
                     style={[
                       styles.strengthBar,
-                      { backgroundColor: senhaForca.cor, width: `${senhaForca.porcentagem}%` },
+                      {
+                        width: `${senhaForca.porcentagem}%`,
+                        backgroundColor: senhaForca.cor,
+                      },
                     ]}
                   />
                   <Text style={[styles.strengthText, { color: senhaForca.cor }]}>
@@ -541,7 +596,7 @@ export default function UserEdit() {
               )}
 
               {/* Confirmar Senha */}
-              <Text style={styles.label}>Confirmar Senha</Text>
+              <Text style={[styles.label, { marginTop: 15 }]}>Confirmar Senha</Text>
               <TextInput
                 style={styles.input}
                 value={userData.confirmarSenha || ""}
@@ -553,31 +608,37 @@ export default function UserEdit() {
                 }
                 secureTextEntry
                 placeholder="Confirme a nova senha"
+                placeholderTextColor="#fff"
               />
 
-              {/* Validação de confirmação */}
+              {/* Validação visual de confirmação */}
               {userData.confirmarSenha?.length > 0 && (
                 <Text
                   style={{
-                    color:
-                      userData.confirmarSenha === userData.novaSenha ? "green" : "red",
+                    color: senhasIguais ? "green" : "red",
                     marginTop: 4,
-                    fontWeight: "500",
+                    fontWeight: "bold",
                   }}
                 >
-                  {userData.confirmarSenha === userData.novaSenha
-                    ? "✅ Senhas coincidem"
-                    : "❌ As senhas não coincidem"}
+                  {senhasIguais ? "✅ Senhas coincidem" : "❌ Senhas não conferem"}
                 </Text>
               )}
 
               {/* Botões */}
               <View style={styles.buttonsContainer}>
                 <TouchableOpacity
-                  style={styles.saveButton}
+                  style={[
+                    styles.saveButton,
+                    (!senhaForte || !senhasIguais) && { opacity: 0.5 },
+                  ]}
                   onPress={() => {
                     if (!userData.novaSenha || !userData.confirmarSenha) {
                       alert("Por favor, preencha todos os campos obrigatórios.");
+                      return;
+                    }
+
+                    if (!senhaForte) {
+                      alert("A senha deve ser forte antes de salvar.");
                       return;
                     }
 
@@ -590,7 +651,7 @@ export default function UserEdit() {
                       senha: userData.novaSenha,
                     });
                   }}
-                  disabled={isSaving}
+                  disabled={!senhaForte || !senhasIguais || isSaving}
                 >
                   <Text style={styles.saveText}>
                     {isSaving ? "Salvando..." : "Salvar"}
