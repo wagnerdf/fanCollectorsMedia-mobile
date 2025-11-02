@@ -128,6 +128,39 @@ export default function UserEdit() {
     }
   };
 
+    const [senhaForca, setSenhaForca] = useState({
+    nivel: "",
+    cor: "",
+    porcentagem: 0,
+  });
+
+  const avaliarForcaSenha = (senha: string) => {
+    let forca = 0;
+    if (senha.length >= 8) forca++;
+    if (/[A-Z]/.test(senha)) forca++;
+    if (/[a-z]/.test(senha)) forca++;
+    if (/\d/.test(senha)) forca++;
+    if (/[^A-Za-z0-9]/.test(senha)) forca++;
+
+    let nivel = "";
+    let cor = "";
+    let porcentagem = (forca / 5) * 100;
+
+    if (forca <= 2) {
+      nivel = "Senha fraca";
+      cor = "red";
+    } else if (forca === 3 || forca === 4) {
+      nivel = "Senha média";
+      cor = "orange";
+    } else {
+      nivel = "Senha forte";
+      cor = "green";
+    }
+
+    setSenhaForca({ nivel, cor, porcentagem });
+  };
+
+
   return (
     <View style={styles.container}>
       {/* Cabeçalho com avatar */}
@@ -481,15 +514,31 @@ export default function UserEdit() {
               <TextInput
                 style={styles.input}
                 value={userData.novaSenha || ""}
-                onChangeText={(text) =>
+                onChangeText={(text) => {
                   setUserData({
                     ...userData,
                     novaSenha: text,
-                  })
-                }
+                  });
+                  avaliarForcaSenha(text);
+                }}
                 secureTextEntry
                 placeholder="Digite a nova senha"
               />
+
+              {/* Barra de força da senha */}
+              {senhaForca.nivel !== "" && (
+                <View style={styles.strengthContainer}>
+                  <View
+                    style={[
+                      styles.strengthBar,
+                      { backgroundColor: senhaForca.cor, width: `${senhaForca.porcentagem}%` },
+                    ]}
+                  />
+                  <Text style={[styles.strengthText, { color: senhaForca.cor }]}>
+                    {senhaForca.nivel}
+                  </Text>
+                </View>
+              )}
 
               {/* Confirmar Senha */}
               <Text style={styles.label}>Confirmar Senha</Text>
@@ -505,6 +554,22 @@ export default function UserEdit() {
                 secureTextEntry
                 placeholder="Confirme a nova senha"
               />
+
+              {/* Validação de confirmação */}
+              {userData.confirmarSenha?.length > 0 && (
+                <Text
+                  style={{
+                    color:
+                      userData.confirmarSenha === userData.novaSenha ? "green" : "red",
+                    marginTop: 4,
+                    fontWeight: "500",
+                  }}
+                >
+                  {userData.confirmarSenha === userData.novaSenha
+                    ? "✅ Senhas coincidem"
+                    : "❌ As senhas não coincidem"}
+                </Text>
+              )}
 
               {/* Botões */}
               <View style={styles.buttonsContainer}>
@@ -698,5 +763,29 @@ const styles = StyleSheet.create({
     gap: 12, 
     width: "100%",
   },
+  strengthContainer: {
+  width: "100%",
+  height: 25,
+  marginTop: 6,
+  marginBottom: 12,
+  borderRadius: 12,
+  backgroundColor: "#eee",
+  overflow: "hidden",
+  justifyContent: "center",
+},
+
+strengthBar: {
+  position: "absolute",
+  left: 0,
+  top: 0,
+  bottom: 0,
+  borderRadius: 12,
+},
+
+strengthText: {
+  textAlign: "center",
+  fontSize: 13,
+  fontWeight: "600",
+},
 
 });
