@@ -48,6 +48,7 @@ export default function UserEdit() {
 
   const router = useRouter();
   const barraWidth = useSharedValue(0);
+  const [tempEndereco, setTempEndereco] = useState<any>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -195,6 +196,12 @@ export default function UserEdit() {
   }, [screen]);
 
   const senhaForte = senhaForca.nivel === "Senha forte";
+
+  useEffect(() => {
+    if (screen === "editAddress" && userData?.endereco) {
+      setTempEndereco({ ...userData.endereco });
+    }
+  }, [screen, userData]);
 
   return (
     <View style={styles.container}>
@@ -349,7 +356,7 @@ export default function UserEdit() {
           </Animated.View>
         )}
 
-       {/* Editar Endereço */}
+        {/* Editar Endereço */}
         {screen === "editAddress" && userData && (
           <Animated.View
             key="editAddress"
@@ -365,71 +372,51 @@ export default function UserEdit() {
               <MaskedTextInput
                 mask="99999-999"
                 style={styles.input}
-                value={userData.endereco?.cep || ""}
+                value={tempEndereco?.cep || ""}
                 keyboardType="numeric"
                 onChangeText={async (text, rawText) => {
                   const novoCep = rawText.replace(/\D/g, "");
 
-                  // Atualiza o campo de CEP
-                  setUserData({
-                    ...userData,
-                    endereco: { ...userData.endereco, cep: rawText },
-                  });
+                  // Atualiza apenas o CEP no tempEndereco
+                  setTempEndereco({ ...tempEndereco, cep: rawText });
 
                   // Quando tiver 8 dígitos, dispara a busca
                   if (novoCep.length === 8) {
                     setIsLoadingCep(true);
 
-                    // 🔹 Limpa todos os campos antes da busca
-                    setUserData((prev: any) => ({
-                      ...prev,
-                      endereco: {
-                        cep: rawText,
-                        rua: "",
-                        numero: "",
-                        complemento: "",
-                        bairro: "",
-                        cidade: "",
-                        estado: "",
-                      },
-                    }));
+                    try {
+                      const endereco = await buscarEnderecoPorCep(novoCep);
 
-                    const endereco = await buscarEnderecoPorCep(novoCep);
-                    setIsLoadingCep(false);
-
-                    // 🔹 Se encontrou, preenche os dados retornados
-                    if (endereco) {
-                      setUserData((prev: any) => ({
-                        ...prev,
-                        endereco: {
-                          ...prev.endereco,
-                          ...endereco,
-                          cep: rawText, // mantém o formato com máscara
-                        },
-                      }));
+                      if (endereco) {
+                        // Atualiza apenas os campos retornados pela API, mantendo os demais
+                        setTempEndereco({
+                          ...tempEndereco, // mantém os campos existentes
+                          ...endereco,     // preenche os campos retornados
+                          cep: rawText,    // mantém o CEP formatado
+                        });
+                      }
+                    } catch (error) {
+                      console.error("Erro ao buscar CEP:", error);
+                    } finally {
+                      setIsLoadingCep(false);
                     }
                   }
                 }}
               />
 
               {isLoadingCep && (
-                <Text style={{ textAlign: "center", color: "#888" }}>Buscando endereço...</Text>
-              )}
-
-              {isLoadingCep && (
-                <Text style={{ textAlign: "center", color: "#888" }}>Buscando endereço...</Text>
+                <Text style={{ textAlign: "center", color: "#888" }}>
+                  Buscando endereço...
+                </Text>
               )}
 
               {/* Rua */}
               <Text style={styles.label}>Rua</Text>
               <TextInput
                 style={styles.input}
-                value={userData.endereco?.rua || ""}
+                value={tempEndereco?.rua || ""}
                 onChangeText={(text) =>
-                  setUserData({
-                    ...userData,
-                    endereco: { ...userData.endereco, rua: text },
-                  })
+                  setTempEndereco({ ...tempEndereco, rua: text })
                 }
               />
 
@@ -437,12 +424,9 @@ export default function UserEdit() {
               <Text style={styles.label}>Número</Text>
               <TextInput
                 style={styles.input}
-                value={userData.endereco?.numero || ""}
+                value={tempEndereco?.numero || ""}
                 onChangeText={(text) =>
-                  setUserData({
-                    ...userData,
-                    endereco: { ...userData.endereco, numero: text },
-                  })
+                  setTempEndereco({ ...tempEndereco, numero: text })
                 }
                 keyboardType="numeric"
               />
@@ -451,12 +435,9 @@ export default function UserEdit() {
               <Text style={styles.label}>Complemento</Text>
               <TextInput
                 style={styles.input}
-                value={userData.endereco?.complemento || ""}
+                value={tempEndereco?.complemento || ""}
                 onChangeText={(text) =>
-                  setUserData({
-                    ...userData,
-                    endereco: { ...userData.endereco, complemento: text },
-                  })
+                  setTempEndereco({ ...tempEndereco, complemento: text })
                 }
               />
 
@@ -464,12 +445,9 @@ export default function UserEdit() {
               <Text style={styles.label}>Bairro</Text>
               <TextInput
                 style={styles.input}
-                value={userData.endereco?.bairro || ""}
+                value={tempEndereco?.bairro || ""}
                 onChangeText={(text) =>
-                  setUserData({
-                    ...userData,
-                    endereco: { ...userData.endereco, bairro: text },
-                  })
+                  setTempEndereco({ ...tempEndereco, bairro: text })
                 }
               />
 
@@ -477,12 +455,9 @@ export default function UserEdit() {
               <Text style={styles.label}>Cidade</Text>
               <TextInput
                 style={styles.input}
-                value={userData.endereco?.cidade || ""}
+                value={tempEndereco?.cidade || ""}
                 onChangeText={(text) =>
-                  setUserData({
-                    ...userData,
-                    endereco: { ...userData.endereco, cidade: text },
-                  })
+                  setTempEndereco({ ...tempEndereco, cidade: text })
                 }
               />
 
@@ -490,14 +465,11 @@ export default function UserEdit() {
               <Text style={styles.label}>Estado</Text>
               <TextInput
                 style={styles.input}
-                value={userData.endereco?.estado || ""}
+                value={tempEndereco?.estado || ""}
                 maxLength={2}
                 autoCapitalize="characters"
                 onChangeText={(text) =>
-                  setUserData({
-                    ...userData,
-                    endereco: { ...userData.endereco, estado: text.toUpperCase() },
-                  })
+                  setTempEndereco({ ...tempEndereco, estado: text.toUpperCase() })
                 }
               />
 
@@ -506,13 +478,13 @@ export default function UserEdit() {
                 <TouchableOpacity
                   style={styles.saveButton}
                   onPress={() => {
-                    if (!validarEndereco(userData.endereco)) {
+                    if (!validarEndereco(tempEndereco)) {
                       alert("Por favor, preencha todos os campos obrigatórios antes de salvar.");
                       return;
                     }
 
                     handleSave({
-                      endereco: { ...userData.endereco },
+                      endereco: { ...tempEndereco },
                     });
                   }}
                   disabled={isSaving}
@@ -528,8 +500,8 @@ export default function UserEdit() {
               </View>
             </ScrollView>
           </Animated.View>
-
         )}
+
 
         {/* Editar Senha */}
         {screen === "changePassword" && (
