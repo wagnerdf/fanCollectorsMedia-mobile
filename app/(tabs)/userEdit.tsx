@@ -1,33 +1,33 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
-  Alert,
   View,
   Text,
-  StyleSheet,
-  TouchableOpacity,
+  Alert,
   Image,
-  ScrollView,
-  ActivityIndicator,
-  TextInput,
   Platform,
+  StyleSheet,
+  ScrollView,
+  TextInput,
+  TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import Animated, {
-  FadeInRight,
-  FadeOutLeft,
+  useSharedValue,
+  withTiming,
   FadeInLeft,
   FadeOutRight,
-  useSharedValue, 
-  withTiming, 
-  useAnimatedStyle
+  FadeInRight,
+  FadeOutLeft,
 } from "react-native-reanimated";
 import { useFocusEffect } from "@react-navigation/native";
-import { getUserProfile, updateUserProfile, buscarEnderecoPorCep } from "../services/api";
-import { MaterialIcons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
+import { MaterialIcons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { MaskedTextInput } from "react-native-mask-text";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import { getUserProfile, updateUserProfile, buscarEnderecoPorCep } from "../services/api";
 
 export default function UserEdit() {
   const [screen, setScreen] = useState<
@@ -72,7 +72,7 @@ export default function UserEdit() {
     const obrigatorios = ["cep", "rua", "numero", "bairro", "cidade", "estado"];
     for (const campo of obrigatorios) {
       if (!endereco[campo] || endereco[campo].trim() === "") {
-        return false; // encontrou campo vazio
+        return false;
       }
     }
     return true;
@@ -130,16 +130,7 @@ export default function UserEdit() {
 
   const handleBack = () => setScreen("main");
 
-  const handleLogout = async () => {
-    try {
-      await AsyncStorage.removeItem("userToken");
-      router.replace("/");
-    } catch (error) {
-      console.error("Erro ao fazer logout:", error);
-    }
-  };
-
-  // Função de avaliação de força (a tua versão adaptada)
+  // Função de avaliação de força (versão adaptada)
   const avaliarForcaSenha = (senha: string) => {
     let forca = 0;
     if (senha.length >= 8) forca++;
@@ -203,15 +194,7 @@ export default function UserEdit() {
     }
   }, [screen]);
 
-
   const senhaForte = senhaForca.nivel === "Senha forte";
-  // Estilo animado
-  const barraAnimadaStyle = useAnimatedStyle(() => ({
-    width: `${barraWidth.value}%`,
-    height: '100%',
-    backgroundColor: senhaForca.cor,
-    borderRadius: 4,
-  }));
 
   return (
     <View style={styles.container}>
@@ -433,11 +416,9 @@ export default function UserEdit() {
                 <Text style={{ textAlign: "center", color: "#888" }}>Buscando endereço...</Text>
               )}
 
-
               {isLoadingCep && (
                 <Text style={{ textAlign: "center", color: "#888" }}>Buscando endereço...</Text>
               )}
-
 
               {/* Rua */}
               <Text style={styles.label}>Rua</Text>
