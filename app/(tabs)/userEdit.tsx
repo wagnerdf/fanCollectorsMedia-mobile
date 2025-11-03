@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
-  Alert,
   Image,
   Platform,
   StyleSheet,
@@ -28,6 +27,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { getUserProfile, updateUserProfile, buscarEnderecoPorCep } from "../services/api";
+import AppModal from "@/components/AppModal";
 
 export default function UserEdit() {
   const [screen, setScreen] = useState<
@@ -49,6 +49,18 @@ export default function UserEdit() {
   const router = useRouter();
   const barraWidth = useSharedValue(0);
   const [tempEndereco, setTempEndereco] = useState<any>(null);
+
+  // Estado do modal
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [modalType, setModalType] = useState<"success" | "error" | "info">("info");
+
+  // Função para exibir modal
+  const showModal = (message: string, type: "success" | "error" | "info" = "info") => {
+    setModalMessage(message);
+    setModalType(type);
+    setModalVisible(true);
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -116,18 +128,22 @@ export default function UserEdit() {
       // Chama o backend
       const updatedData = await updateUserProfile(payload);
 
-      Alert.alert("✅ Sucesso", "Dados atualizados com sucesso!");
+      // ✅ Mostra modal de sucesso
+      showModal("Dados atualizados com sucesso!", "success");
 
       if (updatedData) {
         setUserData({ ...userData, ...updatedData });
       }
     } catch (error: any) {
       console.error("Erro ao salvar perfil:", error.response?.data || error.message);
-      Alert.alert("❌ Erro", "Ocorreu um erro ao salvar. Tente novamente.");
+
+      // ❌ Mostra modal de erro
+      showModal("Ocorreu um erro ao salvar. Tente novamente.", "error");
     } finally {
       setIsSaving(false);
     }
   };
+
 
   const handleBack = () => setScreen("main");
 
@@ -655,6 +671,20 @@ export default function UserEdit() {
         )}
 
       </ScrollView>
+
+      <AppModal
+        visible={modalVisible}
+        message={modalMessage}
+        modalType={modalType}
+        onClose={() => {
+          setModalVisible(false);
+          // Se for modal de sucesso, volta para a tela principal
+          if (modalType === "success") {
+            setScreen("main");
+          }
+        }}
+      />
+
     </View>
   );
 }
