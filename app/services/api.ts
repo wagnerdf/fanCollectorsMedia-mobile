@@ -151,7 +151,7 @@ export const updateUserProfile = async (body: Record<string, any>) => {
     const response = await api.put("/api/cadastros/perfilEditar", body);
     return response.data; // retorna os dados atualizados
   } catch (error: any) {
-    console.error("Erro ao atualizar perfil:", error.response?.data || error.message);
+    //console.error("Erro ao atualizar perfil:", error.response?.data || error.message);
     throw error;
   }
 };

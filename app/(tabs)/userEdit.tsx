@@ -98,7 +98,7 @@ export default function UserEdit() {
     try {
       setIsSaving(true);
 
-      // Mescla o que o usuário alterou com o que já temos
+      // Mescla o que o usuário alterou com os dados existentes
       const mergedData = {
         ...userData,
         ...updatedFields,
@@ -121,6 +121,7 @@ export default function UserEdit() {
         cidade: mergedData.endereco?.cidade || "",
         estado: mergedData.endereco?.estado || "",
         novaSenha: mergedData.novaSenha || null,
+        senha: mergedData.senha || null,
       };
 
       console.log("📤 Enviando dados para salvar:", payload);
@@ -135,14 +136,26 @@ export default function UserEdit() {
         setUserData({ ...userData, ...updatedData });
       }
     } catch (error: any) {
-      console.error("Erro ao salvar perfil:", error.response?.data || error.message);
+      //console.error("Erro ao salvar perfil:", error);
 
-      // ❌ Mostra modal de erro
-      showModal("Ocorreu um erro ao salvar. Tente novamente.", "error");
+      // Captura a mensagem enviada pelo backend (JSON)
+      let backendMessage = "Ocorreu um erro ao salvar. Tente novamente.";
+
+      if (error.response?.status === 400 && error.response?.data) {
+        if (typeof error.response.data === "string") {
+          backendMessage = error.response.data;
+        } else if (error.response.data.message) {
+          backendMessage = error.response.data.message;
+        }
+      }
+
+      // ❌ Mostra modal de erro com a mensagem do backend
+      showModal(backendMessage, "error");
     } finally {
       setIsSaving(false);
     }
   };
+
 
 
   const handleBack = () => setScreen("main");
