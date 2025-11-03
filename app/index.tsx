@@ -2,10 +2,11 @@ import { useEffect } from "react";
 import { useRouter } from "expo-router";
 import { Platform } from "react-native";
 import Welcome from "app/auth/Welcome"; // importa o componente que seria a primeira tela
+import { deactivateKeepAwake } from "expo-keep-awake";
 
 export default function Index() {
   const router = useRouter();
-
+  deactivateKeepAwake();
   useEffect(() => {
     if (Platform.OS !== "web") {
       const timer = setTimeout(() => {
