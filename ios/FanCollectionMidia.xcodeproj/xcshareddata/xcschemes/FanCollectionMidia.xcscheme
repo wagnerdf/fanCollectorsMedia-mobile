@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "fancollectorsmediamobile.app"
-               BlueprintName = "fancollectorsmediamobile"
-               ReferencedContainer = "container:fancollectorsmediamobile.xcodeproj">
+               BuildableName = "FanCollectionMidia.app"
+               BlueprintName = "FanCollectionMidia"
+               ReferencedContainer = "container:FanCollectionMidia.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "fancollectorsmediamobileTests.xctest"
-               BlueprintName = "fancollectorsmediamobileTests"
-               ReferencedContainer = "container:fancollectorsmediamobile.xcodeproj">
+               BuildableName = "FanCollectionMidiaTests.xctest"
+               BlueprintName = "FanCollectionMidiaTests"
+               ReferencedContainer = "container:FanCollectionMidia.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "fancollectorsmediamobile.app"
-            BlueprintName = "fancollectorsmediamobile"
-            ReferencedContainer = "container:fancollectorsmediamobile.xcodeproj">
+            BuildableName = "FanCollectionMidia.app"
+            BlueprintName = "FanCollectionMidia"
+            ReferencedContainer = "container:FanCollectionMidia.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "fancollectorsmediamobile.app"
-            BlueprintName = "fancollectorsmediamobile"
-            ReferencedContainer = "container:fancollectorsmediamobile.xcodeproj">
+            BuildableName = "FanCollectionMidia.app"
+            BlueprintName = "FanCollectionMidia"
+            ReferencedContainer = "container:FanCollectionMidia.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

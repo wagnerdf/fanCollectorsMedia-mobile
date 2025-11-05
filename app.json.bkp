@@ -3,6 +3,7 @@
     "name": "FanCollectionMidia",
     "slug": "fancollectionmidia",
     "version": "1.0.0",
+    "runtimeVersion": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -11,7 +12,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.wagnerdf.fancollectorsmediamobile"
@@ -51,6 +54,11 @@
           "purpose": "maskable"
         }
       ]
+    },
+    "extra": {
+      "eas": {
+        "projectId": "6626d1e8-d091-409c-a382-77feb70985e6"
+      }
     }
   }
 }
