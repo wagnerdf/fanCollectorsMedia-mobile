@@ -508,7 +508,7 @@ export default function UserEdit() {
                   style={styles.saveButton}
                   onPress={() => {
                     if (!validarEndereco(tempEndereco)) {
-                      alert("Por favor, preencha todos os campos obrigatórios antes de salvar.");
+                      showModal("Por favor, preencha todos os campos obrigatórios antes de salvar.", "info");
                       return;
                     }
 
@@ -615,17 +615,17 @@ export default function UserEdit() {
                   ]}
                   onPress={() => {
                     if (!userData.novaSenha || !userData.confirmarSenha) {
-                      alert("Por favor, preencha todos os campos obrigatórios.");
+                      showModal("Por favor, preencha todos os campos obrigatórios.", "info");
                       return;
                     }
 
                     if (!senhaForte) {
-                      alert("A senha deve ser forte antes de salvar.");
+                      showModal("A senha deve ser forte antes de salvar.", "error");
                       return;
                     }
 
                     if (userData.novaSenha !== userData.confirmarSenha) {
-                      alert("As senhas não conferem.");
+                      showModal("As senhas não conferem.", "error");
                       return;
                     }
 
