@@ -106,6 +106,15 @@ export default function UserEdit() {
   const handleSave = async (updatedFields?: Partial<typeof userData>) => {
     if (!userData) return;
 
+    // ⚠️ Validação de telefone (formato brasileiro com DDD + 9 dígitos)
+    if (userData.telefone) {
+      const telefoneLimpo = userData.telefone.replace(/\D/g, "");
+      if (telefoneLimpo.length < 11) {
+        showModal("Por favor, insira um número de telefone completo com DDD.", "error");
+        return;
+      }
+    }
+
     try {
       setIsSaving(true);
 
