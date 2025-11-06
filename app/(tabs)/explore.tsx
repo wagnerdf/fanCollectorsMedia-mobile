@@ -1,21 +1,31 @@
+import React, { useState } from "react";
 import { useRouter } from "expo-router";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
-/* Import desabilitados por momento, será utilizados futuramente.
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-*/
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import AppModal from "@/components/AppModal"; // importa nosso modal customizado
 
 export default function ExplorerScreen() {
   const router = useRouter();
 
+  // Estado para controle do modal
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [modalType, setModalType] = useState<"success" | "error" | "info">("info");
+
+  // Função para abrir o modal com mensagem específica
+  const showModal = (message: string, type: "success" | "error" | "info" = "info") => {
+    setModalMessage(message);
+    setModalType(type);
+    setModalVisible(true);
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.scroll}>
-
       <View style={styles.card}>
         <Text style={styles.title}>Explorar</Text>
 
@@ -31,7 +41,7 @@ export default function ExplorerScreen() {
             </Text>
             <TouchableOpacity
               style={[styles.actionButton, styles.blueButton]}
-              onPress={() => alert("Funcionalidade em desenvolvimento!")}
+              onPress={() => showModal("Funcionalidade em desenvolvimento!", "info")}
             >
               <Text style={styles.actionText}>Ver novidades</Text>
             </TouchableOpacity>
@@ -44,7 +54,7 @@ export default function ExplorerScreen() {
             </Text>
             <TouchableOpacity
               style={[styles.actionButton, styles.greenButton]}
-              onPress={() => alert("Funcionalidade em desenvolvimento!")}
+              onPress={() => showModal("Funcionalidade em desenvolvimento!", "info")}
             >
               <Text style={styles.actionText}>Explorar fãs</Text>
             </TouchableOpacity>
@@ -57,7 +67,7 @@ export default function ExplorerScreen() {
             </Text>
             <TouchableOpacity
               style={[styles.actionButton, styles.purpleButton]}
-              onPress={() => alert("Funcionalidade em desenvolvimento!")}
+              onPress={() => showModal("Funcionalidade em desenvolvimento!", "info")}
             >
               <Text style={styles.actionText}>Ver mídias</Text>
             </TouchableOpacity>
@@ -71,6 +81,14 @@ export default function ExplorerScreen() {
           <Text style={styles.actionText}>Sair</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Modal de alerta customizado */}
+      <AppModal
+        visible={modalVisible}
+        message={modalMessage}
+        modalType={modalType}
+        onClose={() => setModalVisible(false)}
+      />
     </ScrollView>
   );
 }

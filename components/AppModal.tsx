@@ -1,17 +1,17 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import {
   Modal,
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  Animated as RNAnimated,
+  Animated,
 } from "react-native";
 
 type AppModalProps = {
   visible: boolean;
   message: string;
-  modalType?: "success" | "error" | "info"; // aqui incluímos "info"
+  modalType?: "success" | "error" | "info";
   onClose: () => void;
 };
 
@@ -21,39 +21,101 @@ export default function AppModal({
   modalType = "info",
   onClose,
 }: AppModalProps) {
-  // Define cores dinâmicas baseadas no tipo de modal
+  const opacity = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(-60)).current;
+  const scale = useRef(new Animated.Value(0.95)).current;
+
   const getColor = () => {
     switch (modalType) {
       case "success":
-        return "#4CAF50"; // verde
+        return "#4CAF50";
       case "error":
-        return "#F44336"; // vermelho
+        return "#F44336";
       default:
-        return "#f5a623"; // amarelo padrão
+        return "#f5a623";
     }
   };
 
+  useEffect(() => {
+    if (visible) {
+      // 🔄 Reseta os valores antes da animação
+      opacity.setValue(0);
+      translateY.setValue(-60);
+      scale.setValue(0.95);
+
+      // 🎬 Animação de entrada com bounce e vibração sutil
+      Animated.sequence([
+        Animated.parallel([
+          Animated.timing(opacity, {
+            toValue: 1,
+            duration: 250,
+            useNativeDriver: true,
+          }),
+          Animated.spring(translateY, {
+            toValue: 0,
+            friction: 7,
+            tension: 60,
+            useNativeDriver: true,
+          }),
+        ]),
+        Animated.sequence([
+          Animated.timing(scale, {
+            toValue: 1.03,
+            duration: 80,
+            useNativeDriver: true,
+          }),
+          Animated.spring(scale, {
+            toValue: 1,
+            friction: 4,
+            tension: 50,
+            useNativeDriver: true,
+          }),
+        ]),
+      ]).start();
+    } else {
+      // 🎞️ Animação de saída (fade + slide pra cima)
+      Animated.parallel([
+        Animated.timing(opacity, {
+          toValue: 0,
+          duration: 180,
+          useNativeDriver: true,
+        }),
+        Animated.timing(translateY, {
+          toValue: -50,
+          duration: 180,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+  }, [visible]);
+
   return (
     <Modal
-      animationType="fade"
+      animationType="none"
       transparent
       visible={visible}
       onRequestClose={onClose}
     >
-      <View style={styles.overlay}>
-        <RNAnimated.View style={[styles.modalContainer, { borderColor: getColor() }]}>
-          {/* Mensagem do modal */}
+      <Animated.View style={[styles.overlay, { opacity }]}>
+        <Animated.View
+          style={[
+            styles.modalContainer,
+            {
+              borderColor: getColor(),
+              transform: [{ translateY }, { scale }],
+            },
+          ]}
+        >
           <Text style={[styles.message, { color: getColor() }]}>{message}</Text>
 
-          {/* Botão de fechar */}
           <TouchableOpacity
             style={[styles.button, { backgroundColor: getColor() }]}
             onPress={onClose}
           >
             <Text style={styles.buttonText}>Fechar</Text>
           </TouchableOpacity>
-        </RNAnimated.View>
-      </View>
+        </Animated.View>
+      </Animated.View>
     </Modal>
   );
 }
@@ -61,22 +123,22 @@ export default function AppModal({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)", // fundo semitransparente
+    backgroundColor: "rgba(0,0,0,0.5)",
     justifyContent: "center",
     alignItems: "center",
   },
   modalContainer: {
     width: "80%",
     backgroundColor: "#1e1e1e",
-    borderRadius: 12,
+    borderRadius: 14,
     padding: 20,
     borderWidth: 2,
     alignItems: "center",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.8,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowRadius: 8,
+    elevation: 6,
   },
   message: {
     fontSize: 16,
