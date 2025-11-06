@@ -23,7 +23,8 @@ import { useRouter } from "expo-router";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { MaskedTextInput } from "react-native-mask-text";
-import DateTimePicker from "@react-native-community/datetimepicker";
+//import DateTimePicker from "@react-native-community/datetimepicker";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { getUserProfile, updateUserProfile, buscarEnderecoPorCep } from "../services/api";
@@ -36,6 +37,7 @@ export default function UserEdit() {
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoadingCep, setIsLoadingCep] = useState(false);
   const [senhasIguais, setSenhasIguais] = useState(false);
@@ -60,6 +62,15 @@ export default function UserEdit() {
     setModalMessage(message);
     setModalType(type);
     setModalVisible(true);
+  };
+
+  const handleConfirmDate = (date: Date) => {
+    setShowDatePicker(false);
+    setSelectedDate(date);
+    setUserData((prev: any) => ({
+      ...prev,
+      dataNascimento: date.toISOString(),
+    }));
   };
 
   useFocusEffect(
@@ -108,9 +119,14 @@ export default function UserEdit() {
         },
       };
 
+      // 🔄 Converte data de nascimento para formato ISO (YYYY-MM-DD)
+      const dataNascimentoISO = mergedData.dataNascimento
+        ? new Date(mergedData.dataNascimento).toISOString().split("T")[0]
+        : "";
+
       // Monta o payload completo exigido pelo backend
       const payload = {
-        dataNascimento: mergedData.dataNascimento,
+        dataNascimento: dataNascimentoISO,
         sexo: mergedData.sexo,
         telefone: mergedData.telefone,
         cep: mergedData.endereco?.cep || "",
@@ -155,8 +171,6 @@ export default function UserEdit() {
       setIsSaving(false);
     }
   };
-
-
 
   const handleBack = () => setScreen("main");
 
@@ -306,31 +320,27 @@ export default function UserEdit() {
                 <TextInput
                   style={styles.input}
                   value={
-                    userData.dataNascimento
-                      ? new Date(userData.dataNascimento).toLocaleDateString("pt-BR", { timeZone: "UTC" })
-                      : ""
+                    selectedDate
+                      ? selectedDate.toLocaleDateString("pt-BR", { timeZone: "UTC" })
+                      : userData.dataNascimento
+                      ? new Date(userData.dataNascimento).toISOString().split("T")[0]
+                        : ""
                   }
                   placeholder="DD/MM/AAAA"
                   editable={false}
                 />
               </TouchableOpacity>
 
-              {showDatePicker && (
-                <DateTimePicker
-                  value={
-                    userData.dataNascimento ? new Date(userData.dataNascimento) : new Date()
-                  }
-                  mode="date"
-                  display={Platform.OS === "ios" ? "spinner" : "default"}
-                  onChange={(event, selectedDate) => {
-                    setShowDatePicker(false);
-                    if (selectedDate) {
-                      const formattedDate = selectedDate.toISOString().split("T")[0];
-                      setUserData({ ...userData, dataNascimento: formattedDate });
-                    }
-                  }}
-                />
-              )}
+              <DateTimePickerModal
+                isVisible={showDatePicker}
+                mode="date"
+                display="spinner"
+                date={selectedDate || new Date(1990, 0, 1)} // começa no ano 1990
+                maximumDate={new Date()}
+                onConfirm={handleConfirmDate}
+                onCancel={() => setShowDatePicker(false)}
+              />
+
 
               <Text style={styles.label}>Sexo</Text>
               <Picker
