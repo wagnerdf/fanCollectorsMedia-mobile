@@ -9,7 +9,7 @@ import {
   Keyboard,
   ActivityIndicator,
 } from "react-native";
-
+import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLogin } from "hooks/useLogin";
 import AnimatedError from "components/AnimatedError";
@@ -41,7 +41,6 @@ export default function LoginScreen() {
 
     if (data?.token) {
       try {
-        // Salva o token JWT no AsyncStorage
         await AsyncStorage.setItem("userToken", data.token);
         router.replace("/(tabs)/home");
       } catch (e) {
@@ -68,19 +67,31 @@ export default function LoginScreen() {
           autoCapitalize="none"
         />
 
-        <TextInput
-          style={styles.input}
-          placeholder="Sua senha"
-          placeholderTextColor="#999"
-          secureTextEntry={!showPassword}
-          value={senha}
-          onChangeText={setSenha}
-        />
+        {/* Campo de senha com ícone de mostrar/ocultar */}
+        <View style={styles.passwordContainer}>
+          <TextInput
+            style={[styles.input, { flex: 1, marginBottom: 0 }]}
+            placeholder="Sua senha"
+            placeholderTextColor="#999"
+            secureTextEntry={!showPassword}
+            value={senha}
+            onChangeText={setSenha}
+          />
+          <TouchableOpacity
+            onPress={() => setShowPassword(!showPassword)}
+            style={styles.eyeButton}
+          >
+            <Ionicons
+              name={showPassword ? "eye-off" : "eye"}
+              size={22}
+              color="#60a5fa"
+            />
+          </TouchableOpacity>
+        </View>
 
-        <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-          <Text style={styles.togglePassword}>
-            {showPassword ? "Ocultar" : "Mostrar"} senha
-          </Text>
+        {/* Link para recuperar senha */}
+        <TouchableOpacity onPress={() => router.push("/auth/recover")}>
+          <Text style={styles.forgotPasswordText}>Esqueceu sua senha?</Text>
         </TouchableOpacity>
 
         {/* Mensagem de erro animada */}
@@ -111,7 +122,9 @@ export default function LoginScreen() {
           Ainda não tem conta?{" "}
           <Text
             style={styles.signupLink}
-            onPress={() => setErrorMessage("Função de cadastro ainda não implementada!")}
+            onPress={() =>
+              setErrorMessage("Função de cadastro ainda não implementada!")
+            }
           >
             Cadastre-se
           </Text>
@@ -149,10 +162,20 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 16,
   },
-  togglePassword: {
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  eyeButton: {
+    position: "absolute",
+    right: 16,
+  },
+  forgotPasswordText: {
     color: "#60a5fa",
     textAlign: "right",
     marginBottom: 16,
+    marginTop: 4,
   },
   buttonRow: {
     flexDirection: "row",

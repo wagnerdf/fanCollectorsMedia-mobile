@@ -3,7 +3,6 @@ import {
   View,
   Text,
   Image,
-  Platform,
   StyleSheet,
   ScrollView,
   TextInput,
@@ -227,7 +226,7 @@ export default function UserEdit() {
         !!userData.confirmarSenha &&
         userData.novaSenha === userData.confirmarSenha
     );
-  }, [userData?.novaSenha, userData?.confirmarSenha]);
+  }, [userData]);
 
   // Atualiza a largura quando a porcentagem muda
   useEffect(() => {
