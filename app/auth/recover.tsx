@@ -1,131 +1,152 @@
 import { useRouter } from "expo-router";
-import { useState } from "react";
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Keyboard,
+  ActivityIndicator,
+} from "react-native";
+import AppModal from "@/components/AppModal";
 
 export default function RecoverScreen() {
   const router = useRouter();
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [modalType, setModalType] = useState<"success" | "error" | "info">("info");
 
   const handleRecover = async () => {
+    Keyboard.dismiss();
+
     if (!email.trim()) {
-      Alert.alert("Atenção", "Digite seu email!");
+      setModalMessage("Digite seu email!");
+      setModalType("info");
+      setModalVisible(true);
       return;
     }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setModalMessage("Digite um email válido!");
+      setModalType("info");
+      setModalVisible(true);
+      return;
+    }
+
+    setLoading(true);
+
     try {
-      Alert.alert("Sucesso", "Link de redefinição enviado para seu email!");
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      setModalMessage("Link de redefinição enviado para seu email!");
+      setModalType("success");
+      setModalVisible(true);
+      setEmail("");
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error("Erro ao enviar link:", error.message);
-      }
-      Alert.alert("Erro", "Não foi possível enviar o link de recuperação.");
+      console.error("Erro ao enviar link:", error);
+      setModalMessage("Não foi possível enviar o link de recuperação.");
+      setModalType("error");
+      setModalVisible(true);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.card}>
+    <View style={styles.outerContainer}>
+      <View style={styles.container}>
         <Text style={styles.title}>Recuperar Senha</Text>
 
-        <Text style={styles.label}>Email</Text>
+        <Text style={styles.subtitle}>
+          Digite seu email abaixo e enviaremos um link para redefinir sua senha.
+        </Text>
+
         <TextInput
           style={styles.input}
-          placeholder="Digite seu email"
+          placeholder="Seu email"
           placeholderTextColor="#999"
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
+          autoCapitalize="none"
         />
 
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={[styles.button, styles.sendButton]} onPress={handleRecover}>
-            <Text style={styles.buttonText}>Enviar link de redefinição</Text>
-          </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.button, styles.recoverButton]}
+          onPress={handleRecover}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>Enviar Link</Text>
+          )}
+        </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={() => router.back()}>
-            <Text style={styles.buttonText}>Cancelar</Text>
-          </TouchableOpacity>
-        </View>
-
-        <TouchableOpacity onPress={() => router.push("/auth/login")} style={styles.linkContainer}>
-          <Text style={styles.linkText}>
-            Lembrou sua senha? <Text style={styles.linkHighlight}>Voltar para login</Text>
-          </Text>
+        <TouchableOpacity
+          style={[styles.button, styles.backButton]}
+          onPress={() => router.back()}
+        >
+          <Text style={styles.buttonText}>Voltar</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Modal animado para mensagens */}
+      <AppModal
+        visible={modalVisible}
+        message={modalMessage}
+        modalType={modalType}
+        onClose={() => setModalVisible(false)}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  outerContainer: {
     flex: 1,
-    backgroundColor: "#0c111c",
     justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: "#0d1117",
     padding: 24,
   },
-  card: {
-    width: "100%",
-    backgroundColor: "#141a26",
-    borderRadius: 20,
+  container: {
+    backgroundColor: "#161b22",
+    borderRadius: 24,
     padding: 24,
-    shadowColor: "#000",
-    shadowOpacity: 0.25,
-    shadowRadius: 6,
-    elevation: 5,
   },
   title: {
     fontSize: 26,
     fontWeight: "bold",
     color: "#fff",
     textAlign: "center",
-    marginBottom: 24,
+    marginBottom: 12,
   },
-  label: {
-    color: "#fff",
-    marginBottom: 8,
-    fontSize: 16,
+  subtitle: {
+    fontSize: 15,
+    color: "#cbd5e1",
+    textAlign: "center",
+    marginBottom: 20,
   },
   input: {
-    backgroundColor: "#1c2331",
+    backgroundColor: "#0d1117",
     color: "#fff",
-    borderRadius: 10,
-    padding: 14,
     borderWidth: 1,
-    borderColor: "#2b3244",
-    marginBottom: 24,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 12,
+    borderColor: "#444",
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
   },
   button: {
-    flex: 1,
-    paddingVertical: 14,
-    borderRadius: 12,
+    paddingVertical: 12,
+    borderRadius: 16,
     alignItems: "center",
+    marginBottom: 12,
   },
-  sendButton: {
-    backgroundColor: "#2563eb",
-  },
-  cancelButton: {
-    backgroundColor: "#dc2626",
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 15,
-  },
-  linkContainer: {
-    marginTop: 20,
-  },
-  linkText: {
-    color: "#b0b0b0",
-    textAlign: "center",
-  },
-  linkHighlight: {
-    color: "#3b82f6",
-    textDecorationLine: "underline",
-  },
+  recoverButton: { backgroundColor: "#2563eb" },
+  backButton: { backgroundColor: "#dc2626" },
+  buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
 });
