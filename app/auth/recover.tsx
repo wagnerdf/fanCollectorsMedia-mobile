@@ -9,6 +9,7 @@ import {
   Keyboard,
   ActivityIndicator,
 } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import AppModal from "@/components/AppModal";
 import { recuperarSenha } from "app/services/api";
 
@@ -40,54 +41,57 @@ export default function RecoverScreen() {
 
     setLoading(true);
 
-  try {
-    const response = await recuperarSenha(email);
-    const backendMessage =
-      response?.message ||
-      (typeof response === "string" ? response : "");
+    try {
+      const response = await recuperarSenha(email);
+      const backendMessage =
+        response?.message || (typeof response === "string" ? response : "");
 
-    setModalMessage(backendMessage);
-    setModalType("success");
-    setModalVisible(true);
-    setEmail("");
-  } catch (error: any) {
-    let backendMessage =
-      error?.response?.data?.message ||
-      error?.response?.data?.error ||
-      error?.message ||
-      "";
+      setModalMessage(backendMessage);
+      setModalType("success");
+      setModalVisible(true);
+      setEmail("");
+    } catch (error: any) {
+      let backendMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message ||
+        "";
 
-    if (typeof backendMessage === "object") {
-      backendMessage =
-        backendMessage.message ||
-        backendMessage.error ||
-        JSON.stringify(backendMessage);
-    }
-
-    backendMessage = String(backendMessage)
-      .replace(/^\s*\d{3}\s+\w+_?\w*\s*/i, "")
-      .replace(/^"|"$/g, "")
-      .trim();
-
-    setModalMessage(backendMessage);
-    setModalType("error");
-    setModalVisible(true);
-  } finally {
-    setLoading(false);
-  }
-
-    };
-
-    const handleModalClose = () => {
-      setModalVisible(false);
-      if (modalType === "success") {
-        router.push("auth/Login");
+      if (typeof backendMessage === "object") {
+        backendMessage =
+          backendMessage.message ||
+          backendMessage.error ||
+          JSON.stringify(backendMessage);
       }
+
+      backendMessage = String(backendMessage)
+        .replace(/^\s*\d{3}\s+\w+_?\w*\s*/i, "")
+        .replace(/^"|"$/g, "")
+        .trim();
+
+      setModalMessage(backendMessage);
+      setModalType("error");
+      setModalVisible(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleModalClose = () => {
+    setModalVisible(false);
+    if (modalType === "success") {
+      router.push("auth/Login");
+    }
   };
 
   return (
     <View style={styles.outerContainer}>
       <View style={styles.container}>
+        {/* Ícone de redefinição de senha */}
+        <View style={{ alignItems: "center", marginBottom: 12 }}>
+          <MaterialCommunityIcons name="lock-reset" size={60} color="#2563eb" />
+        </View>
+
         <Text style={styles.title}>Recuperar Senha</Text>
 
         <Text style={styles.subtitle}>
