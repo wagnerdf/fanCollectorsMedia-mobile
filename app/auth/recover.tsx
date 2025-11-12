@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import AppModal from "@/components/AppModal";
+import { recuperarSenha } from "app/services/api";
 
 export default function RecoverScreen() {
   const router = useRouter();
@@ -39,21 +40,49 @@ export default function RecoverScreen() {
 
     setLoading(true);
 
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+  try {
+    const response = await recuperarSenha(email);
+    const backendMessage =
+      response?.message ||
+      (typeof response === "string" ? response : "");
 
-      setModalMessage("Link de redefinição enviado para seu email!");
-      setModalType("success");
-      setModalVisible(true);
-      setEmail("");
-    } catch (error: unknown) {
-      console.error("Erro ao enviar link:", error);
-      setModalMessage("Não foi possível enviar o link de recuperação.");
-      setModalType("error");
-      setModalVisible(true);
-    } finally {
-      setLoading(false);
+    setModalMessage(backendMessage);
+    setModalType("success");
+    setModalVisible(true);
+    setEmail("");
+  } catch (error: any) {
+    let backendMessage =
+      error?.response?.data?.message ||
+      error?.response?.data?.error ||
+      error?.message ||
+      "";
+
+    if (typeof backendMessage === "object") {
+      backendMessage =
+        backendMessage.message ||
+        backendMessage.error ||
+        JSON.stringify(backendMessage);
     }
+
+    backendMessage = String(backendMessage)
+      .replace(/^\s*\d{3}\s+\w+_?\w*\s*/i, "")
+      .replace(/^"|"$/g, "")
+      .trim();
+
+    setModalMessage(backendMessage);
+    setModalType("error");
+    setModalVisible(true);
+  } finally {
+    setLoading(false);
+  }
+
+    };
+
+    const handleModalClose = () => {
+      setModalVisible(false);
+      if (modalType === "success") {
+        router.push("auth/Login");
+      }
   };
 
   return (
@@ -95,12 +124,11 @@ export default function RecoverScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Modal animado para mensagens */}
       <AppModal
         visible={modalVisible}
         message={modalMessage}
         modalType={modalType}
-        onClose={() => setModalVisible(false)}
+        onClose={handleModalClose}
       />
     </View>
   );

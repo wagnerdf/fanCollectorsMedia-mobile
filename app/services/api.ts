@@ -181,5 +181,20 @@ export const buscarEnderecoPorCep = async (cep: string) => {
   }
 };
 
+// 🔐 Envia solicitação para recuperação de senha
+export const recuperarSenha = async (email: string): Promise<{ message: string }> => {
+  try {
+    const response = await api.post("/auth/recuperar-senha", { email });
+    
+    return response.data;
+  } catch (error: any) {
+    console.error(
+      "❌ Erro ao enviar recuperação de senha:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
+
 
 export default api;
