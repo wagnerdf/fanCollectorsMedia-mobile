@@ -55,38 +55,52 @@ export default function LoginScreen() {
   return (
     <View style={styles.outerContainer}>
       <View style={styles.container}>
+        {/* Ícone acima do título */}
+        <Ionicons
+          name="lock-closed-outline"
+          size={52}
+          color="#60a5fa"
+          style={styles.icon}
+        />
         <Text style={styles.title}>Login</Text>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Seu email"
-          placeholderTextColor="#999"
-          value={login}
-          onChangeText={setLogin}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-
-        {/* Campo de senha com ícone de mostrar/ocultar */}
-        <View style={styles.passwordContainer}>
+        {/* Campo de Email */}
+        <View style={styles.fieldContainer}>
+          <Text style={styles.label}>Email</Text>
           <TextInput
-            style={[styles.input, { flex: 1, marginBottom: 0 }]}
-            placeholder="Sua senha"
+            style={styles.input}
+            placeholder="Seu email"
             placeholderTextColor="#999"
-            secureTextEntry={!showPassword}
-            value={senha}
-            onChangeText={setSenha}
+            value={login}
+            onChangeText={setLogin}
+            keyboardType="email-address"
+            autoCapitalize="none"
           />
-          <TouchableOpacity
-            onPress={() => setShowPassword(!showPassword)}
-            style={styles.eyeButton}
-          >
-            <Ionicons
-              name={showPassword ? "eye-off" : "eye"}
-              size={22}
-              color="#60a5fa"
+        </View>
+
+        {/* Campo de Senha */}
+        <View style={styles.fieldContainer}>
+          <Text style={styles.label}>Senha</Text>
+          <View style={styles.passwordContainer}>
+            <TextInput
+              style={[styles.input, { flex: 1, marginBottom: 0 }]}
+              placeholder="Sua senha"
+              placeholderTextColor="#999"
+              secureTextEntry={!showPassword}
+              value={senha}
+              onChangeText={setSenha}
             />
-          </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setShowPassword(!showPassword)}
+              style={styles.eyeButton}
+            >
+              <Ionicons
+                name={showPassword ? "eye-off" : "eye"}
+                size={22}
+                color="#60a5fa"
+              />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Link para recuperar senha */}
@@ -192,5 +206,22 @@ const styles = StyleSheet.create({
   backButton: { backgroundColor: "#dc2626", marginLeft: 6 },
   buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
   signupText: { color: "#cbd5e1", textAlign: "center" },
-  signupLink: { color: "#60a5fa" },
+  signupLink: { color: "#60a5fa" 
+  },
+    fieldContainer: {
+    marginBottom: 16,
+  },
+  label: {
+    color: "#cbd5e1",
+    fontSize: 14,
+    marginBottom: 6,
+    marginLeft: 4,
+  },
+    icon: {
+    alignSelf: "center",
+    marginBottom: 12,
+    textShadowColor: "rgba(0, 0, 0, 0.4)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 4,
+  },
 });
