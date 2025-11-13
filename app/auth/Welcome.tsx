@@ -37,7 +37,7 @@ export default function WelcomeScreen() {
         />
         <AppButton
           title={SIGNUP_BUTTON}
-          onPress={handleSignup}
+          onPress={() => router.push("/auth/Register")}
           color="#16a34a"
           flex={1}
           margin="left"

@@ -196,5 +196,36 @@ export const recuperarSenha = async (email: string): Promise<{ message: string }
   }
 };
 
+// 🧾 Cadastro completo de novo usuário (com endereço)
+export const cadastrarUsuarioCompleto = async (userData: {
+  nome: string;
+  sobreNome: string;
+  dataNascimento: string;
+  sexo: string;
+  telefone: string;
+  email: string;
+  senha: string;
+  avatarUrl: string;
+  status?: string;
+  endereco: {
+    rua: string;
+    numero: string;
+    complemento?: string;
+    bairro: string;
+    cidade: string;
+    estado: string;
+    cep: string;
+  };
+}) => {
+  try {
+    const response = await api.post("/auth/registerFull", userData);
+    return response.data;
+  } catch (error: any) {
+    console.error("❌ Erro ao cadastrar usuário:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+
 
 export default api;
