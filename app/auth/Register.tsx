@@ -19,6 +19,7 @@ export default function RegisterFullScreen() {
   const [loading, setLoading] = useState(false);
   const [senhaForca, setSenhaForca] = useState("");
   const [erroSenha, setErroSenha] = useState("");
+
   const [form, setForm] = useState({
     nome: "",
     sobreNome: "",
@@ -90,10 +91,10 @@ export default function RegisterFullScreen() {
     };
 
     try {
-      const response = await cadastrarUsuarioCompleto(payload);
+      await cadastrarUsuarioCompleto(payload);
       Alert.alert("Sucesso", "Usuário cadastrado com sucesso!");
       router.push("/login");
-    } catch (error: any) {
+    } catch (error) {
       Alert.alert("Erro", "Falha ao cadastrar. Verifique os dados e tente novamente.");
     } finally {
       setLoading(false);
@@ -106,154 +107,184 @@ export default function RegisterFullScreen() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>🧑‍💻 Cadastrar Fan Colecionador de Mídia</Text>
+        <Text style={styles.title}>🧑‍💻 Cadastro do Fan Colecionador de Mídia</Text>
 
-        {/* Campos principais */}
+        {/* Dados Pessoais */}
+        <Text style={styles.sectionTitle}>📌 Dados Pessoais</Text>
+
         <View style={styles.row}>
-          <TextInput
-            style={styles.input}
-            placeholder="Nome"
-            placeholderTextColor="#888"
-            value={form.nome}
-            onChangeText={(t) => handleChange("nome", t)}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Sobrenome"
-            placeholderTextColor="#888"
-            value={form.sobreNome}
-            onChangeText={(t) => handleChange("sobreNome", t)}
-          />
+          <View style={styles.inputBox}>
+            <Text style={styles.label}>Nome</Text>
+            <TextInput
+              style={styles.input}
+              value={form.nome}
+              onChangeText={(t) => handleChange("nome", t)}
+            />
+          </View>
+
+          <View style={styles.inputBox}>
+            <Text style={styles.label}>Sobrenome</Text>
+            <TextInput
+              style={styles.input}
+              value={form.sobreNome}
+              onChangeText={(t) => handleChange("sobreNome", t)}
+            />
+          </View>
         </View>
 
         <View style={styles.row}>
-          <TextInput
-            style={styles.input}
-            placeholder="Data Nascimento (AAAA-MM-DD)"
-            placeholderTextColor="#888"
-            value={form.dataNascimento}
-            onChangeText={(t) => handleChange("dataNascimento", t)}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Sexo"
-            placeholderTextColor="#888"
-            value={form.sexo}
-            onChangeText={(t) => handleChange("sexo", t)}
-          />
+          <View style={styles.inputBox}>
+            <Text style={styles.label}>Nascimento</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="AAAA-MM-DD"
+              placeholderTextColor="#777"
+              value={form.dataNascimento}
+              onChangeText={(t) => handleChange("dataNascimento", t)}
+            />
+          </View>
+
+          <View style={styles.inputBox}>
+            <Text style={styles.label}>Sexo</Text>
+            <TextInput
+              style={styles.input}
+              value={form.sexo}
+              onChangeText={(t) => handleChange("sexo", t)}
+            />
+          </View>
         </View>
 
         <View style={styles.row}>
+          <View style={styles.inputBox}>
+            <Text style={styles.label}>Telefone</Text>
+            <TextInput
+              style={styles.input}
+              value={form.telefone}
+              onChangeText={(t) => handleChange("telefone", t)}
+            />
+          </View>
+
+          <View style={styles.inputBox}>
+            <Text style={styles.label}>Email</Text>
+            <TextInput
+              style={styles.input}
+              keyboardType="email-address"
+              value={form.email}
+              onChangeText={(t) => handleChange("email", t)}
+            />
+          </View>
+        </View>
+
+        <View style={styles.inputBox}>
+          <Text style={styles.label}>Avatar URL</Text>
           <TextInput
             style={styles.input}
-            placeholder="Telefone"
-            placeholderTextColor="#888"
-            value={form.telefone}
-            onChangeText={(t) => handleChange("telefone", t)}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            placeholderTextColor="#888"
-            keyboardType="email-address"
-            value={form.email}
-            onChangeText={(t) => handleChange("email", t)}
+            value={form.avatarUrl}
+            onChangeText={(t) => handleChange("avatarUrl", t)}
           />
         </View>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Avatar URL"
-          placeholderTextColor="#888"
-          value={form.avatarUrl}
-          onChangeText={(t) => handleChange("avatarUrl", t)}
-        />
+        {/* Senha */}
+        <Text style={styles.sectionTitle}>🔐 Criação da Senha</Text>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Senha"
-          placeholderTextColor="#888"
-          secureTextEntry
-          value={form.senha}
-          onChangeText={(t) => {
-            handleChange("senha", t);
-            validarSenha(t);
-          }}
-        />
-        {senhaForca ? <Text style={styles.info}>{senhaForca}</Text> : null}
+        <View style={styles.inputBox}>
+          <Text style={styles.label}>Senha</Text>
+          <TextInput
+            style={styles.input}
+            secureTextEntry
+            value={form.senha}
+            onChangeText={(t) => {
+              handleChange("senha", t);
+              validarSenha(t);
+            }}
+          />
+          {senhaForca ? <Text style={styles.info}>{senhaForca}</Text> : null}
+        </View>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Confirmar Senha"
-          placeholderTextColor="#888"
-          secureTextEntry
-          value={form.confirmarSenha}
-          onChangeText={(t) => handleChange("confirmarSenha", t)}
-        />
-        {erroSenha ? <Text style={styles.error}>{erroSenha}</Text> : null}
+        <View style={styles.inputBox}>
+          <Text style={styles.label}>Confirmar Senha</Text>
+          <TextInput
+            style={styles.input}
+            secureTextEntry
+            value={form.confirmarSenha}
+            onChangeText={(t) => handleChange("confirmarSenha", t)}
+          />
+          {erroSenha ? <Text style={styles.error}>{erroSenha}</Text> : null}
+        </View>
 
         {/* Endereço */}
-        <Text style={styles.subTitle}>🏠 Endereço</Text>
+        <Text style={styles.sectionTitle}>🏠 Endereço</Text>
+
         <View style={styles.row}>
-          <TextInput
-            style={styles.input}
-            placeholder="CEP"
-            placeholderTextColor="#888"
-            keyboardType="numeric"
-            value={form.endereco.cep}
-            onChangeText={(t) => handleEnderecoChange("cep", t)}
-            onBlur={handleBuscarCep}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Rua"
-            placeholderTextColor="#888"
-            value={form.endereco.rua}
-            onChangeText={(t) => handleEnderecoChange("rua", t)}
-          />
+          <View style={styles.inputBox}>
+            <Text style={styles.label}>CEP</Text>
+            <TextInput
+              style={styles.input}
+              keyboardType="numeric"
+              value={form.endereco.cep}
+              onChangeText={(t) => handleEnderecoChange("cep", t)}
+              onBlur={handleBuscarCep}
+            />
+          </View>
+
+          <View style={styles.inputBox}>
+            <Text style={styles.label}>Rua</Text>
+            <TextInput
+              style={styles.input}
+              value={form.endereco.rua}
+              onChangeText={(t) => handleEnderecoChange("rua", t)}
+            />
+          </View>
         </View>
 
         <View style={styles.row}>
-          <TextInput
-            style={styles.input}
-            placeholder="Número"
-            placeholderTextColor="#888"
-            value={form.endereco.numero}
-            onChangeText={(t) => handleEnderecoChange("numero", t)}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Complemento"
-            placeholderTextColor="#888"
-            value={form.endereco.complemento}
-            onChangeText={(t) => handleEnderecoChange("complemento", t)}
-          />
+          <View style={styles.inputBox}>
+            <Text style={styles.label}>Número</Text>
+            <TextInput
+              style={styles.input}
+              value={form.endereco.numero}
+              onChangeText={(t) => handleEnderecoChange("numero", t)}
+            />
+          </View>
+
+          <View style={styles.inputBox}>
+            <Text style={styles.label}>Complemento</Text>
+            <TextInput
+              style={styles.input}
+              value={form.endereco.complemento}
+              onChangeText={(t) => handleEnderecoChange("complemento", t)}
+            />
+          </View>
         </View>
 
         <View style={styles.row}>
-          <TextInput
-            style={styles.input}
-            placeholder="Bairro"
-            placeholderTextColor="#888"
-            value={form.endereco.bairro}
-            onChangeText={(t) => handleEnderecoChange("bairro", t)}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Cidade"
-            placeholderTextColor="#888"
-            value={form.endereco.cidade}
-            onChangeText={(t) => handleEnderecoChange("cidade", t)}
-          />
+          <View style={styles.inputBox}>
+            <Text style={styles.label}>Bairro</Text>
+            <TextInput
+              style={styles.input}
+              value={form.endereco.bairro}
+              onChangeText={(t) => handleEnderecoChange("bairro", t)}
+            />
+          </View>
+
+          <View style={styles.inputBox}>
+            <Text style={styles.label}>Cidade</Text>
+            <TextInput
+              style={styles.input}
+              value={form.endereco.cidade}
+              onChangeText={(t) => handleEnderecoChange("cidade", t)}
+            />
+          </View>
         </View>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Estado"
-          placeholderTextColor="#888"
-          value={form.endereco.estado}
-          onChangeText={(t) => handleEnderecoChange("estado", t)}
-        />
+        <View style={styles.inputBox}>
+          <Text style={styles.label}>Estado</Text>
+          <TextInput
+            style={styles.input}
+            value={form.endereco.estado}
+            onChangeText={(t) => handleEnderecoChange("estado", t)}
+          />
+        </View>
 
         {/* Botões */}
         <View style={styles.buttonRow}>
@@ -288,21 +319,29 @@ const styles = StyleSheet.create({
   },
   title: {
     color: "#fff",
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
-    marginVertical: 10,
+    marginVertical: 15,
   },
-  subTitle: {
-    color: "#fff",
-    fontSize: 16,
+  sectionTitle: {
+    color: "#60a5fa",
     fontWeight: "bold",
+    fontSize: 16,
     marginTop: 20,
+    marginBottom: 5,
+  },
+  label: {
+    color: "#ccc",
+    marginBottom: 3,
+    fontSize: 14,
+  },
+  inputBox: {
+    flex: 1,
     marginBottom: 10,
   },
   row: {
     flexDirection: "row",
-    justifyContent: "space-between",
     gap: 10,
   },
   input: {
@@ -310,17 +349,15 @@ const styles = StyleSheet.create({
     color: "#fff",
     borderRadius: 10,
     padding: 10,
-    marginVertical: 5,
-    flex: 1,
+    marginTop: 2,
   },
   buttonRow: {
     flexDirection: "row",
-    justifyContent: "space-around",
     marginTop: 20,
+    gap: 10,
   },
   button: {
     flex: 1,
-    marginHorizontal: 5,
     paddingVertical: 12,
     borderRadius: 10,
   },
@@ -337,10 +374,10 @@ const styles = StyleSheet.create({
   },
   info: {
     color: "#facc15",
-    marginBottom: 5,
+    marginTop: 2,
   },
   error: {
     color: "#f87171",
-    marginBottom: 5,
+    marginTop: 2,
   },
 });
