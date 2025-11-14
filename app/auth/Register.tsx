@@ -12,7 +12,12 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { cadastrarUsuarioCompleto, buscarEnderecoPorCep } from "../services/api";
+import {
+  cadastrarUsuarioCompleto,
+  buscarEnderecoPorCep,
+} from "../services/api";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { Picker } from "@react-native-picker/picker";
 
 export default function RegisterFullScreen() {
   const router = useRouter();
@@ -41,6 +46,17 @@ export default function RegisterFullScreen() {
       estado: "",
     },
   });
+
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const openDatePicker = () => setShowDatePicker(true);
+  const closeDatePicker = () => setShowDatePicker(false);
+
+  const handleConfirmDate = (date: Date) => {
+    setSelectedDate(date);
+    closeDatePicker();
+  };
 
   const handleChange = (field: string, value: string) => {
     setForm({ ...form, [field]: value });
@@ -95,7 +111,10 @@ export default function RegisterFullScreen() {
       Alert.alert("Sucesso", "Usuário cadastrado com sucesso!");
       router.push("/login");
     } catch (error) {
-      Alert.alert("Erro", "Falha ao cadastrar. Verifique os dados e tente novamente.");
+      Alert.alert(
+        "Erro",
+        "Falha ao cadastrar. Verifique os dados e tente novamente."
+      );
     } finally {
       setLoading(false);
     }
@@ -107,7 +126,9 @@ export default function RegisterFullScreen() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>🧑‍💻 Cadastro do Fan Colecionador de Mídia</Text>
+        <Text style={styles.title}>
+          🧑‍💻 Cadastro do Fan Colecionador de Mídia
+        </Text>
 
         {/* Dados Pessoais */}
         <Text style={styles.sectionTitle}>📌 Dados Pessoais</Text>
@@ -133,24 +154,45 @@ export default function RegisterFullScreen() {
         </View>
 
         <View style={styles.row}>
-          <View style={styles.inputBox}>
+          <View style={styles.inputGroup}>
             <Text style={styles.label}>Nascimento</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="AAAA-MM-DD"
-              placeholderTextColor="#777"
-              value={form.dataNascimento}
-              onChangeText={(t) => handleChange("dataNascimento", t)}
+
+            <TouchableOpacity onPress={openDatePicker} activeOpacity={0.8}>
+              <TextInput
+                style={styles.input}
+                value={
+                  selectedDate ? selectedDate.toLocaleDateString("pt-BR") : ""
+                }
+                placeholder="DD/MM/AAAA"
+                editable={false}
+                pointerEvents="none"
+              />
+            </TouchableOpacity>
+
+            <DateTimePickerModal
+              isVisible={showDatePicker}
+              mode="date"
+              onConfirm={handleConfirmDate}
+              onCancel={closeDatePicker}
+              maximumDate={new Date()}
             />
           </View>
 
           <View style={styles.inputBox}>
             <Text style={styles.label}>Sexo</Text>
-            <TextInput
-              style={styles.input}
-              value={form.sexo}
-              onChangeText={(t) => handleChange("sexo", t)}
-            />
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={form.sexo}
+                onValueChange={(value) => handleChange("sexo", value)}
+                dropdownIconColor="#fff"
+                style={styles.picker}
+              >
+                <Picker.Item label="Selecione..." value="" />
+                <Picker.Item label="Masculino" value="MASCULINO" />
+                <Picker.Item label="Feminino" value="FEMININO" />
+                <Picker.Item label="Outro" value="OUTRO" />
+              </Picker>
+            </View>
           </View>
         </View>
 
@@ -342,7 +384,8 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: "row",
-    gap: 10,
+    justifyContent: "space-between",
+    gap: 12,
   },
   input: {
     backgroundColor: "#1a2233",
@@ -379,5 +422,18 @@ const styles = StyleSheet.create({
   error: {
     color: "#f87171",
     marginTop: 2,
+  },
+  inputGroup: {
+    marginBottom: 16,
+  },
+  pickerContainer: {
+    backgroundColor: "#1a2233",
+    borderRadius: 10,
+    marginBottom: 10,
+    height: 45,
+  },
+  picker: {
+    color: "#9F9F5F",
+    width: "100%",
   },
 });
