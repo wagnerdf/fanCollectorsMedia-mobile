@@ -29,9 +29,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   getUserProfile,
   updateUserProfile,
-  buscarEnderecoPorCep,
 } from "../services/api";
 import AppModal from "@/components/AppModal";
+import { buscarEnderecoPorCep } from "../services/viaCep";
 
 export default function UserEdit() {
   const [screen, setScreen] = useState<
