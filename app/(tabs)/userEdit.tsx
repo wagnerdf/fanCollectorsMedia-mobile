@@ -26,7 +26,11 @@ import { MaskedTextInput } from "react-native-mask-text";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { getUserProfile, updateUserProfile, buscarEnderecoPorCep } from "../services/api";
+import {
+  getUserProfile,
+  updateUserProfile,
+  buscarEnderecoPorCep,
+} from "../services/api";
 import AppModal from "@/components/AppModal";
 
 export default function UserEdit() {
@@ -54,10 +58,15 @@ export default function UserEdit() {
   // Estado do modal
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
-  const [modalType, setModalType] = useState<"success" | "error" | "info">("info");
+  const [modalType, setModalType] = useState<"success" | "error" | "info">(
+    "info"
+  );
 
   // Função para exibir modal
-  const showModal = (message: string, type: "success" | "error" | "info" = "info") => {
+  const showModal = (
+    message: string,
+    type: "success" | "error" | "info" = "info"
+  ) => {
     setModalMessage(message);
     setModalType(type);
     setModalVisible(true);
@@ -109,7 +118,10 @@ export default function UserEdit() {
     if (userData.telefone) {
       const telefoneLimpo = userData.telefone.replace(/\D/g, "");
       if (telefoneLimpo.length < 11) {
-        showModal("Por favor, insira um número de telefone completo com DDD.", "error");
+        showModal(
+          "Por favor, insira um número de telefone completo com DDD.",
+          "error"
+        );
         return;
       }
     }
@@ -271,7 +283,9 @@ export default function UserEdit() {
               style={styles.avatar}
             />
             <Text style={styles.name}>
-              {userData ? `${userData.nome} ${userData.sobreNome}` : "Carregando..."}
+              {userData
+                ? `${userData.nome} ${userData.sobreNome}`
+                : "Carregando..."}
             </Text>
             <Text style={styles.email}>{userData?.email || ""}</Text>
           </>
@@ -279,7 +293,10 @@ export default function UserEdit() {
       </View>
 
       {/* Área dinâmica */}
-      <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+      >
         {screen === "main" && (
           <Animated.View
             key="main"
@@ -287,21 +304,40 @@ export default function UserEdit() {
             exiting={FadeOutLeft.duration(300)}
             style={styles.center}
           >
-            <TouchableOpacity style={styles.option} onPress={() => setScreen("editData")}>
+            <TouchableOpacity
+              style={styles.option}
+              onPress={() => setScreen("editData")}
+            >
               <Text style={styles.optionText}>Editar Dados</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.option} onPress={() => setScreen("editAddress")}>
+            <TouchableOpacity
+              style={styles.option}
+              onPress={() => setScreen("editAddress")}
+            >
               <Text style={styles.optionText}>Editar Endereço</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.option} onPress={() => setScreen("changePassword")}>
+            <TouchableOpacity
+              style={styles.option}
+              onPress={() => setScreen("changePassword")}
+            >
               <Text style={styles.optionText}>Alterar Senha</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.logoutOption} onPress={() => setScreen("confirmLogout")}>
-              <MaterialIcons name="logout" size={24} color="#ff4d4d" style={{ marginRight: 8 }} />
-              <Text style={[styles.optionText, { color: "#ff4d4d" }]}>Sair</Text>
+            <TouchableOpacity
+              style={styles.logoutOption}
+              onPress={() => setScreen("confirmLogout")}
+            >
+              <MaterialIcons
+                name="logout"
+                size={24}
+                color="#ff4d4d"
+                style={{ marginRight: 8 }}
+              />
+              <Text style={[styles.optionText, { color: "#ff4d4d" }]}>
+                Sair
+              </Text>
             </TouchableOpacity>
           </Animated.View>
         )}
@@ -318,10 +354,18 @@ export default function UserEdit() {
 
             <ScrollView style={{ width: "100%" }}>
               <Text style={styles.label}>Nome</Text>
-              <TextInput style={styles.inputDisabled} value={userData.nome} editable={false} />
+              <TextInput
+                style={styles.inputDisabled}
+                value={userData.nome}
+                editable={false}
+              />
 
               <Text style={styles.label}>Sobrenome</Text>
-              <TextInput style={styles.inputDisabled} value={userData.sobreNome} editable={false} />
+              <TextInput
+                style={styles.inputDisabled}
+                value={userData.sobreNome}
+                editable={false}
+              />
 
               <Text style={styles.label}>Data de Nascimento</Text>
               <TouchableOpacity onPress={() => setShowDatePicker(true)}>
@@ -329,10 +373,12 @@ export default function UserEdit() {
                   style={styles.input}
                   value={
                     selectedDate
-                      ? selectedDate.toLocaleDateString("pt-BR", { timeZone: "UTC" })
+                      ? selectedDate.toLocaleDateString("pt-BR")
                       : userData.dataNascimento
-                      ? new Date(userData.dataNascimento).toISOString().split("T")[0]
-                        : ""
+                      ? new Date(userData.dataNascimento).toLocaleDateString(
+                          "pt-BR"
+                        )
+                      : ""
                   }
                   placeholder="DD/MM/AAAA"
                   editable={false}
@@ -342,13 +388,18 @@ export default function UserEdit() {
               <DateTimePickerModal
                 isVisible={showDatePicker}
                 mode="date"
-                display="spinner"
-                date={selectedDate || new Date(1990, 0, 1)} // começa no ano 1990
+                display="inline"
+                themeVariant="dark"
+                date={
+                  selectedDate ||
+                  (userData.dataNascimento
+                    ? new Date(userData.dataNascimento)
+                    : new Date(1990, 0, 1))
+                }
                 maximumDate={new Date()}
                 onConfirm={handleConfirmDate}
                 onCancel={() => setShowDatePicker(false)}
               />
-
 
               <Text style={styles.label}>Sexo</Text>
               <Picker
@@ -375,7 +426,11 @@ export default function UserEdit() {
               />
 
               <Text style={styles.label}>Email</Text>
-              <TextInput style={styles.inputDisabled} value={userData.email} editable={false} />
+              <TextInput
+                style={styles.inputDisabled}
+                value={userData.email}
+                editable={false}
+              />
 
               {/* Botões */}
               <View style={styles.buttonsContainer}>
@@ -395,7 +450,10 @@ export default function UserEdit() {
                   </Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+                <TouchableOpacity
+                  style={styles.backButton}
+                  onPress={handleBack}
+                >
                   <Text style={styles.backText}>Voltar</Text>
                 </TouchableOpacity>
               </View>
@@ -438,8 +496,8 @@ export default function UserEdit() {
                         // Atualiza apenas os campos retornados pela API, mantendo os demais
                         setTempEndereco({
                           ...tempEndereco, // mantém os campos existentes
-                          ...endereco,     // preenche os campos retornados
-                          cep: rawText,    // mantém o CEP formatado
+                          ...endereco, // preenche os campos retornados
+                          cep: rawText, // mantém o CEP formatado
                         });
                       }
                     } catch (error) {
@@ -516,7 +574,10 @@ export default function UserEdit() {
                 maxLength={2}
                 autoCapitalize="characters"
                 onChangeText={(text) =>
-                  setTempEndereco({ ...tempEndereco, estado: text.toUpperCase() })
+                  setTempEndereco({
+                    ...tempEndereco,
+                    estado: text.toUpperCase(),
+                  })
                 }
               />
 
@@ -526,7 +587,10 @@ export default function UserEdit() {
                   style={styles.saveButton}
                   onPress={() => {
                     if (!validarEndereco(tempEndereco)) {
-                      showModal("Por favor, preencha todos os campos obrigatórios antes de salvar.", "info");
+                      showModal(
+                        "Por favor, preencha todos os campos obrigatórios antes de salvar.",
+                        "info"
+                      );
                       return;
                     }
 
@@ -541,14 +605,16 @@ export default function UserEdit() {
                   </Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+                <TouchableOpacity
+                  style={styles.backButton}
+                  onPress={handleBack}
+                >
                   <Text style={styles.backText}>Voltar</Text>
                 </TouchableOpacity>
               </View>
             </ScrollView>
           </Animated.View>
         )}
-
 
         {/* Editar Senha */}
         {screen === "changePassword" && (
@@ -589,14 +655,18 @@ export default function UserEdit() {
                       },
                     ]}
                   />
-                  <Text style={[styles.strengthText, { color: senhaForca.cor }]}>
+                  <Text
+                    style={[styles.strengthText, { color: senhaForca.cor }]}
+                  >
                     {senhaForca.nivel}
                   </Text>
                 </View>
               )}
 
               {/* Confirmar Senha */}
-              <Text style={[styles.label, { marginTop: 15 }]}>Confirmar Senha</Text>
+              <Text style={[styles.label, { marginTop: 15 }]}>
+                Confirmar Senha
+              </Text>
               <TextInput
                 style={styles.input}
                 value={userData.confirmarSenha || ""}
@@ -620,7 +690,9 @@ export default function UserEdit() {
                     fontWeight: "bold",
                   }}
                 >
-                  {senhasIguais ? "✅ Senhas coincidem" : "❌ Senhas não conferem"}
+                  {senhasIguais
+                    ? "✅ Senhas coincidem"
+                    : "❌ Senhas não conferem"}
                 </Text>
               )}
 
@@ -633,12 +705,18 @@ export default function UserEdit() {
                   ]}
                   onPress={() => {
                     if (!userData.novaSenha || !userData.confirmarSenha) {
-                      showModal("Por favor, preencha todos os campos obrigatórios.", "info");
+                      showModal(
+                        "Por favor, preencha todos os campos obrigatórios.",
+                        "info"
+                      );
                       return;
                     }
 
                     if (!senhaForte) {
-                      showModal("A senha deve ser forte antes de salvar.", "error");
+                      showModal(
+                        "A senha deve ser forte antes de salvar.",
+                        "error"
+                      );
                       return;
                     }
 
@@ -658,7 +736,10 @@ export default function UserEdit() {
                   </Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+                <TouchableOpacity
+                  style={styles.backButton}
+                  onPress={handleBack}
+                >
                   <Text style={styles.backText}>Voltar</Text>
                 </TouchableOpacity>
               </View>
@@ -676,7 +757,15 @@ export default function UserEdit() {
           >
             <Text style={styles.subTitle}>⚠️ Deseja realmente sair?</Text>
 
-            <View style={{ flexDirection: "row", justifyContent: "center", gap: 12, marginTop: 20, width: "100%" }}>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "center",
+                gap: 12,
+                marginTop: 20,
+                width: "100%",
+              }}
+            >
               <TouchableOpacity
                 style={[styles.saveButton, { width: "45%" }]}
                 onPress={async () => {
@@ -700,7 +789,6 @@ export default function UserEdit() {
             </View>
           </Animated.View>
         )}
-
       </ScrollView>
 
       <AppModal
@@ -715,7 +803,6 @@ export default function UserEdit() {
           }
         }}
       />
-
     </View>
   );
 }
@@ -790,7 +877,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
     width: "60%",
-    marginTop: 12, 
+    marginTop: 12,
   },
   backText: {
     color: "#f5a623",
@@ -870,32 +957,31 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 20,
-    gap: 12, 
+    gap: 12,
     width: "100%",
   },
   strengthContainer: {
-  width: "100%",
-  height: 25,
-  marginTop: 6,
-  marginBottom: 12,
-  borderRadius: 12,
-  backgroundColor: "#eee",
-  overflow: "hidden",
-  justifyContent: "center",
-},
+    width: "100%",
+    height: 25,
+    marginTop: 6,
+    marginBottom: 12,
+    borderRadius: 12,
+    backgroundColor: "#eee",
+    overflow: "hidden",
+    justifyContent: "center",
+  },
 
-strengthBar: {
-  position: "absolute",
-  left: 0,
-  top: 0,
-  bottom: 0,
-  borderRadius: 12,
-},
+  strengthBar: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    bottom: 0,
+    borderRadius: 12,
+  },
 
-strengthText: {
-  textAlign: "center",
-  fontSize: 13,
-  fontWeight: "600",
-},
-
+  strengthText: {
+    textAlign: "center",
+    fontSize: 13,
+    fontWeight: "600",
+  },
 });
