@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   View,
   Text,
@@ -12,18 +12,24 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useRouter } from "expo-router";
-import {
-  cadastrarUsuarioCompleto,
-  buscarEnderecoPorCep,
-} from "../services/api";
+import { cadastrarUsuarioCompleto } from "../services/api";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Picker } from "@react-native-picker/picker";
+import { buscarEnderecoPorCep } from "../services/viaCep";
+import AppModal from "components/AppModal";
 
 export default function RegisterFullScreen() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [senhaForca, setSenhaForca] = useState("");
   const [erroSenha, setErroSenha] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [modalType, setModalType] = useState<"success" | "error" | "info">(
+    "info"
+  );
+  const numeroRef = useRef<TextInput>(null);
+  const [isLoadingCep, setIsLoadingCep] = useState(false);
 
   const [form, setForm] = useState({
     nome: "",
@@ -47,6 +53,12 @@ export default function RegisterFullScreen() {
     },
   });
 
+  const formatarCep = (valor: string) => {
+    const apenasNumeros = valor.replace(/\D/g, "");
+    if (apenasNumeros.length <= 5) return apenasNumeros;
+    return `${apenasNumeros.slice(0, 5)}-${apenasNumeros.slice(5, 8)}`;
+  };
+
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
 
@@ -69,23 +81,46 @@ export default function RegisterFullScreen() {
     });
   };
 
-  const handleBuscarCep = async () => {
-    if (!form.endereco.cep) return;
-    const data = await buscarEnderecoPorCep(form.endereco.cep);
-    if (data) {
-      setForm({
-        ...form,
-        endereco: {
-          ...form.endereco,
-          rua: data.rua,
-          bairro: data.bairro,
-          cidade: data.cidade,
-          estado: data.estado,
-        },
-      });
-    } else {
-      Alert.alert("CEP inválido", "Não foi possível encontrar o endereço.");
+  const handleBuscarCep = async (cepArg?: string) => {
+    // usa o cep passado ou o que está no form
+    const cepParaBuscar = (cepArg ?? form.endereco.cep).replace(/\D/g, "");
+
+    if (!cepParaBuscar || cepParaBuscar.length !== 8) return null;
+
+    try {
+      setIsLoadingCep(true);
+      const data = await buscarEnderecoPorCep(cepParaBuscar);
+      if (data) {
+        setForm((prev) => ({
+          ...prev,
+          endereco: {
+            ...prev.endereco,
+            rua: data.rua,
+            bairro: data.bairro,
+            cidade: data.cidade,
+            estado: data.estado,
+          },
+        }));
+
+        // foca no número
+        setTimeout(() => {
+          numeroRef.current?.focus();
+        }, 100);
+      } else {
+        setModalMessage("CEP inválido! Não foi possível encontrar o endereço.");
+        setModalType("error");
+        setModalVisible(true);
+      }
+    } catch (err) {
+      console.error("Erro buscar CEP:", err);
+      setModalMessage("Erro ao buscar CEP. Tente novamente.");
+      setModalType("error");
+      setModalVisible(true);
+    } finally {
+      setIsLoadingCep(false);
     }
+
+    return null;
   };
 
   const validarSenha = (senha: string) => {
@@ -153,7 +188,7 @@ export default function RegisterFullScreen() {
           </View>
         </View>
 
-        <View style={styles.row}>Nascimento
+        <View style={styles.row}>
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Nascimento</Text>
 
@@ -178,7 +213,6 @@ export default function RegisterFullScreen() {
               maximumDate={new Date()}
             />
           </View>
-
           <View style={styles.inputBox}>
             <Text style={styles.label}>Sexo</Text>
             <View style={styles.pickerContainer}>
@@ -264,9 +298,25 @@ export default function RegisterFullScreen() {
             <TextInput
               style={styles.input}
               keyboardType="numeric"
+              maxLength={9} // 99999-999
               value={form.endereco.cep}
-              onChangeText={(t) => handleEnderecoChange("cep", t)}
-              onBlur={handleBuscarCep}
+              onChangeText={(t) => {
+                const cepMascarado = formatarCep(t);
+                setForm((prev) => ({
+                  ...prev,
+                  endereco: {
+                    ...prev.endereco,
+                    cep: cepMascarado,
+                  },
+                }));
+
+                // chama a busca imediatamente com o valor formatado (não depende do state)
+                if (cepMascarado.replace(/\D/g, "").length === 8) {
+                  handleBuscarCep(cepMascarado);
+                }
+              }}
+              // você pode manter onBlur={handleBuscarCep} se quiser fallback
+              onBlur={() => handleBuscarCep()}
             />
           </View>
 
@@ -285,6 +335,7 @@ export default function RegisterFullScreen() {
             <Text style={styles.label}>Número</Text>
             <TextInput
               style={styles.input}
+              ref={numeroRef}
               value={form.endereco.numero}
               onChangeText={(t) => handleEnderecoChange("numero", t)}
             />
@@ -351,6 +402,13 @@ export default function RegisterFullScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
+      {/* ✅ Modal */}
+      <AppModal
+        visible={modalVisible}
+        message={modalMessage}
+        modalType={modalType}
+        onClose={() => setModalVisible(false)}
+      />
     </KeyboardAvoidingView>
   );
 }

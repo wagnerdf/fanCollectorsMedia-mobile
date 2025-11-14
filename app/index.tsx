@@ -1,27 +1,29 @@
 import { useEffect } from "react";
 import { useRouter } from "expo-router";
 import { Platform } from "react-native";
-import Welcome from "app/auth/Welcome"; // importa o componente que seria a primeira tela
+import Welcome from "app/auth/Welcome";
 import { deactivateKeepAwake } from "expo-keep-awake";
 
 export default function Index() {
   const router = useRouter();
-  deactivateKeepAwake();
+
   useEffect(() => {
+    // Desativa apenas no mobile (onde o KeepAwake funciona de verdade)
     if (Platform.OS !== "web") {
+      deactivateKeepAwake();
+
       const timer = setTimeout(() => {
         router.replace("../auth/Welcome");
       }, 0);
+
       return () => clearTimeout(timer);
     }
   }, []);
 
   // --- Renderização ---
-  // Para web, mostra diretamente a tela Welcome
-  // Para mobile, a tela será substituída pelo redirecionamento
   if (Platform.OS === "web") {
-    return <Welcome />; // mostra conteúdo completo do app
+    return <Welcome />;
   }
 
-  return null; // mobile só usa redirecionamento
+  return null;
 }
