@@ -153,7 +153,7 @@ export default function RegisterFullScreen() {
           </View>
         </View>
 
-        <View style={styles.row}>
+        <View style={styles.row}>Nascimento
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Nascimento</Text>
 
@@ -164,6 +164,7 @@ export default function RegisterFullScreen() {
                   selectedDate ? selectedDate.toLocaleDateString("pt-BR") : ""
                 }
                 placeholder="DD/MM/AAAA"
+                placeholderTextColor="#9F9F5F"
                 editable={false}
                 pointerEvents="none"
               />
@@ -431,6 +432,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 10,
     height: 45,
+    justifyContent: "center",
   },
   picker: {
     color: "#9F9F5F",
