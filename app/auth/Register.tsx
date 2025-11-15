@@ -328,10 +328,16 @@ export default function RegisterFullScreen() {
         <View style={styles.rowCepRua}>
           <View style={styles.inputBoxCep}>
             <Text style={styles.label}>CEP</Text>
+
             <TextInput
               style={styles.input}
-              keyboardType="numeric"
+              keyboardType="number-pad"
               maxLength={9}
+              autoCorrect={false}
+              spellCheck={false}
+              autoCapitalize="none"
+              autoComplete="off" // este é o único válido hoje
+              textContentType="none"
               value={form.endereco.cep}
               onChangeText={(t) => {
                 const cepMascarado = formatarCep(t);
