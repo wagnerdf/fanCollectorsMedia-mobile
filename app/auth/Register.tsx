@@ -292,35 +292,31 @@ export default function RegisterFullScreen() {
         {/* Endereço */}
         <Text style={styles.sectionTitle}>🏠 Endereço</Text>
 
-        <View style={styles.row}>
-          <View style={styles.inputBox}>
+        {/* CEP + Rua */}
+        <View style={styles.rowCepRua}>
+          <View style={styles.inputBoxCep}>
             <Text style={styles.label}>CEP</Text>
             <TextInput
               style={styles.input}
               keyboardType="numeric"
-              maxLength={9} // 99999-999
+              maxLength={9}
               value={form.endereco.cep}
               onChangeText={(t) => {
                 const cepMascarado = formatarCep(t);
                 setForm((prev) => ({
                   ...prev,
-                  endereco: {
-                    ...prev.endereco,
-                    cep: cepMascarado,
-                  },
+                  endereco: { ...prev.endereco, cep: cepMascarado },
                 }));
 
-                // chama a busca imediatamente com o valor formatado (não depende do state)
                 if (cepMascarado.replace(/\D/g, "").length === 8) {
                   handleBuscarCep(cepMascarado);
                 }
               }}
-              // você pode manter onBlur={handleBuscarCep} se quiser fallback
               onBlur={() => handleBuscarCep()}
             />
           </View>
 
-          <View style={styles.inputBox}>
+          <View style={styles.inputBoxRua}>
             <Text style={styles.label}>Rua</Text>
             <TextInput
               style={styles.input}
@@ -331,7 +327,7 @@ export default function RegisterFullScreen() {
         </View>
 
         <View style={styles.row}>
-          <View style={styles.inputBox}>
+          <View style={styles.inputBoxNumero}>
             <Text style={styles.label}>Número</Text>
             <TextInput
               style={styles.input}
@@ -341,7 +337,7 @@ export default function RegisterFullScreen() {
             />
           </View>
 
-          <View style={styles.inputBox}>
+          <View style={styles.inputBoxMaior}>
             <Text style={styles.label}>Complemento</Text>
             <TextInput
               style={styles.input}
@@ -361,22 +357,22 @@ export default function RegisterFullScreen() {
             />
           </View>
 
-          <View style={styles.inputBox}>
-            <Text style={styles.label}>Cidade</Text>
+          <View style={styles.inputBoxEstado}>
+            <Text style={styles.label}>Estado</Text>
             <TextInput
               style={styles.input}
-              value={form.endereco.cidade}
-              onChangeText={(t) => handleEnderecoChange("cidade", t)}
+              value={form.endereco.estado}
+              onChangeText={(t) => handleEnderecoChange("estado", t)}
             />
           </View>
         </View>
 
-        <View style={styles.inputBox}>
-          <Text style={styles.label}>Estado</Text>
+        <View style={styles.inputBoxMaior}>
+          <Text style={styles.label}>Cidade</Text>
           <TextInput
             style={styles.input}
-            value={form.endereco.estado}
-            onChangeText={(t) => handleEnderecoChange("estado", t)}
+            value={form.endereco.cidade}
+            onChangeText={(t) => handleEnderecoChange("cidade", t)}
           />
         </View>
 
@@ -443,19 +439,24 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 12,
+    alignItems: "flex-start",
+    marginBottom: 12,
+    gap: 10,
   },
   input: {
     backgroundColor: "#1a2233",
     color: "#fff",
-    borderRadius: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#ccc",
     padding: 10,
     marginTop: 2,
+    fontSize: 16,
+    width: "100%",
   },
   buttonRow: {
     flexDirection: "row",
-    marginTop: 20,
+    justifyContent: "space-between",
     gap: 10,
   },
   button: {
@@ -495,5 +496,28 @@ const styles = StyleSheet.create({
   picker: {
     color: "#9F9F5F",
     width: "100%",
+  },
+  inputBoxMaior: {
+    flex: 2,
+    marginBottom: 10,
+  },
+  inputBoxCep: {
+    width: 110,
+    marginRight: 10,
+  },
+  inputBoxRua: {
+    flex: 1,
+  },
+  rowCepRua: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginBottom: 10,
+  },
+  inputBoxNumero: {
+    width: 80,
+    marginRight: 10,
+  },
+  inputBoxEstado: {
+    width: 60,
   },
 });
