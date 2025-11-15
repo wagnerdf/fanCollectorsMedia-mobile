@@ -21,7 +21,6 @@ import AppModal from "components/AppModal";
 export default function RegisterFullScreen() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [senhaForca, setSenhaForca] = useState("");
   const [erroSenha, setErroSenha] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
@@ -30,6 +29,12 @@ export default function RegisterFullScreen() {
   );
   const numeroRef = useRef<TextInput>(null);
   const [isLoadingCep, setIsLoadingCep] = useState(false);
+
+  const [senhaForca, setSenhaForca] = useState("");
+  const [senhaCor, setSenhaCor] = useState("#000");
+
+  const [confirmMsg, setConfirmMsg] = useState("");
+  const [confirmColor, setConfirmColor] = useState("");
 
   const [form, setForm] = useState({
     nome: "",
@@ -123,10 +128,6 @@ export default function RegisterFullScreen() {
     return null;
   };
 
-  const validarSenha = (senha: string) => {
-    setSenhaForca(senha.length < 6 ? "Senha fraca" : "Senha forte");
-  };
-
   const handleCadastrar = async () => {
     if (form.senha !== form.confirmarSenha) {
       setErroSenha("As senhas não coincidem.");
@@ -169,6 +170,27 @@ export default function RegisterFullScreen() {
     return somenteNumeros
       .replace(/^(\d{2})(\d)/, "($1) $2")
       .replace(/(\d{5})(\d)/, "$1-$2");
+  };
+
+  const validarSenha = (senha: string) => {
+    let forca = 0;
+
+    if (senha.length >= 6) forca++;
+    if (/[a-z]/.test(senha)) forca++;
+    if (/[A-Z]/.test(senha)) forca++;
+    if (/[0-9]/.test(senha)) forca++;
+    if (/[^A-Za-z0-9]/.test(senha)) forca++;
+
+    if (forca <= 2) {
+      setSenhaForca("Senha fraca");
+      setSenhaCor("#FF4D4D");
+    } else if (forca === 3 || forca === 4) {
+      setSenhaForca("Senha média");
+      setSenhaCor("#FFC300");
+    } else if (forca === 5) {
+      setSenhaForca("Senha forte");
+      setSenhaCor("#2ECC71");
+    }
   };
 
   return (
@@ -299,7 +321,7 @@ export default function RegisterFullScreen() {
         <View style={styles.inputBox}>
           <Text style={styles.label}>Senha</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { borderColor: senhaCor, borderWidth: 1 }]}
             secureTextEntry
             value={form.senha}
             onChangeText={(t) => {
@@ -307,17 +329,40 @@ export default function RegisterFullScreen() {
               validarSenha(t);
             }}
           />
-          {senhaForca ? <Text style={styles.info}>{senhaForca}</Text> : null}
+          {senhaForca ? (
+            <Text style={[styles.info, { color: senhaCor }]}>{senhaForca}</Text>
+          ) : null}
         </View>
 
-        <View style={styles.inputBox}>
+        <View style={[styles.inputBox, { marginTop: 20 }]}>
           <Text style={styles.label}>Confirmar Senha</Text>
           <TextInput
             style={styles.input}
             secureTextEntry
             value={form.confirmarSenha}
-            onChangeText={(t) => handleChange("confirmarSenha", t)}
+            onChangeText={(t) => {
+              handleChange("confirmarSenha", t);
+
+              if (t.length === 0) {
+                setConfirmMsg("");
+                setConfirmColor("");
+                return;
+              }
+
+              if (t === form.senha) {
+                setConfirmMsg("As senhas conferem");
+                setConfirmColor("#2ECC71");
+              } else {
+                setConfirmMsg("As senhas não conferem");
+                setConfirmColor("red");
+              }
+            }}
           />
+          {confirmMsg !== "" && (
+            <Text style={{ color: confirmColor, marginTop: 4 }}>
+              {confirmMsg}
+            </Text>
+          )}
           {erroSenha ? <Text style={styles.error}>{erroSenha}</Text> : null}
         </View>
 
