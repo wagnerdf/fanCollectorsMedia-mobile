@@ -155,6 +155,22 @@ export default function RegisterFullScreen() {
     }
   };
 
+  const formatarTelefone = (valor: string) => {
+    const somenteNumeros = valor.replace(/\D/g, "");
+
+    if (somenteNumeros.length <= 10) {
+      // formato fixo: (99) 9999-9999
+      return somenteNumeros
+        .replace(/^(\d{2})(\d)/, "($1) $2")
+        .replace(/(\d{4})(\d)/, "$1-$2");
+    }
+
+    // formato celular: (99) 99999-9999
+    return somenteNumeros
+      .replace(/^(\d{2})(\d)/, "($1) $2")
+      .replace(/(\d{5})(\d)/, "$1-$2");
+  };
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -215,17 +231,28 @@ export default function RegisterFullScreen() {
           </View>
           <View style={styles.inputBox}>
             <Text style={styles.label}>Sexo</Text>
-            <View style={styles.pickerContainer}>
+            <View style={styles.selectWrapper}>
+              {/* Select de sexo do usuário */}
               <Picker
                 selectedValue={form.sexo}
                 onValueChange={(value) => handleChange("sexo", value)}
+                style={styles.selectPicker}
                 dropdownIconColor="#fff"
-                style={styles.picker}
+                mode="dialog"
               >
-                <Picker.Item label="Selecione..." value="" />
-                <Picker.Item label="Masculino" value="MASCULINO" />
-                <Picker.Item label="Feminino" value="FEMININO" />
-                <Picker.Item label="Outro" value="OUTRO" />
+                {/* Opções do select */}
+                <Picker.Item label="Selecione..." value="" color="#9F9F5F" />
+                <Picker.Item
+                  label="Masculino"
+                  value="MASCULINO"
+                  color="#0A0F1C"
+                />
+                <Picker.Item
+                  label="Feminino"
+                  value="FEMININO"
+                  color="#0A0F1C"
+                />
+                <Picker.Item label="Outro" value="OUTRO" color="#0A0F1C" />
               </Picker>
             </View>
           </View>
@@ -235,9 +262,14 @@ export default function RegisterFullScreen() {
           <View style={styles.inputBox}>
             <Text style={styles.label}>Telefone</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, styles.telefoneInput]}
+              keyboardType="phone-pad"
+              maxLength={15} // (99) 99999-9999
               value={form.telefone}
-              onChangeText={(t) => handleChange("telefone", t)}
+              onChangeText={(t) => {
+                const telefoneMasc = formatarTelefone(t);
+                handleChange("telefone", telefoneMasc);
+              }}
             />
           </View>
 
@@ -337,7 +369,7 @@ export default function RegisterFullScreen() {
             />
           </View>
 
-          <View style={styles.inputBoxMaior}>
+          <View style={styles.inputBoxComplemento}>
             <Text style={styles.label}>Complemento</Text>
             <TextInput
               style={styles.input}
@@ -515,9 +547,33 @@ const styles = StyleSheet.create({
   },
   inputBoxNumero: {
     width: 80,
-    marginRight: 10,
   },
   inputBoxEstado: {
     width: 60,
+  },
+  inputBoxComplemento: {
+    flex: 1,
+  },
+  telefoneInput: {
+    width: 15 * 12,
+    maxWidth: "100%",
+  },
+  selectWrapper: {
+    backgroundColor: "#1A2233", // fundo real
+    borderWidth: 1,
+    borderColor: "#fff",
+    borderRadius: 8,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    height: 41, // igual aos outros inputs
+    justifyContent: "center",
+    overflow: "hidden",
+  },
+  selectPicker: {
+    color: "#fff", // cor da fonte
+    backgroundColor: "transparent", // evitar fundo branco interno
+    fontSize: 18,
+    height: 50,
+    width: "100%",
   },
 });
