@@ -11,7 +11,6 @@ const baseURL =
     ? API_BASE_URL
     : "https://fancollectorsmedia-production.up.railway.app"; // fallback definitivo de produção
 
-
 console.log("🌐 API_BASE_URL:", baseURL);
 
 // 🧩 Cria uma instância do axios com base na URL da API
@@ -35,7 +34,10 @@ export const apiPost = async (endpoint: string, body: any) => {
     const response = await api.post(endpoint, body);
     return response.data;
   } catch (error: any) {
-    console.error("Erro na requisição POST:", error.response?.data || error.message);
+    console.error(
+      "Erro na requisição POST:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 };
@@ -46,7 +48,10 @@ export const getTotalMidias = async (): Promise<number> => {
     const response = await api.get("/api/midias/usuario/total");
     return response.data.totalMidias;
   } catch (error: any) {
-    console.error("Erro ao buscar total de mídias:", error.response?.data || error.message);
+    console.error(
+      "Erro ao buscar total de mídias:",
+      error.response?.data || error.message
+    );
     return 0;
   }
 };
@@ -59,7 +64,10 @@ export const getUserMidias = async (offset: number = 0, limit: number = 10) => {
     });
     return response.data; // { total, midias, hasMore }
   } catch (error: any) {
-    console.error("Erro ao buscar mídias do usuário:", error.response?.data || error.message);
+    console.error(
+      "Erro ao buscar mídias do usuário:",
+      error.response?.data || error.message
+    );
     return { total: 0, midias: [], hasMore: false };
   }
 };
@@ -71,23 +79,33 @@ export const getMidiaById = async (id: number) => {
 };
 
 // 📊 Retorna todos os gêneros do usuário com contagem de mídias
-export const getGeneros = async (): Promise<{ genero: string; total: number }[]> => {
+export const getGeneros = async (): Promise<
+  { genero: string; total: number }[]
+> => {
   try {
     const response = await api.get("/api/midias/generos");
     return response.data; // agora data é um array de DTOs: [{ genero, total }]
   } catch (error: any) {
-    console.error("Erro ao buscar gêneros:", error.response?.data || error.message);
+    console.error(
+      "Erro ao buscar gêneros:",
+      error.response?.data || error.message
+    );
     return [];
   }
 };
 
 // 📊 Retorna todos os tipos de mídia do usuário com contagem
-export const getTipos = async (): Promise<{ tipo: string; total: number }[]> => {
+export const getTipos = async (): Promise<
+  { tipo: string; total: number }[]
+> => {
   try {
     const response = await api.get("/api/midias/tipos");
     return response.data; // array de DTOs: [{ tipo, total }]
   } catch (error: any) {
-    console.error("Erro ao buscar tipos de mídia:", error.response?.data || error.message);
+    console.error(
+      "Erro ao buscar tipos de mídia:",
+      error.response?.data || error.message
+    );
     return [];
   }
 };
@@ -97,16 +115,34 @@ export const getMidiasByGenero = async (
   genero: string,
   page: number = 0,
   size: number = 10
-): Promise<{ content: any[]; currentPage: number; totalItems: number; totalPages: number; hasMore: boolean }> => {
+): Promise<{
+  content: any[];
+  currentPage: number;
+  totalItems: number;
+  totalPages: number;
+  hasMore: boolean;
+}> => {
   try {
-    const response = await api.get(`/api/midias/generos/${encodeURIComponent(genero)}`, {
-      params: { page, size },
-    });
+    const response = await api.get(
+      `/api/midias/generos/${encodeURIComponent(genero)}`,
+      {
+        params: { page, size },
+      }
+    );
 
     return response.data; // objeto { content, currentPage, totalItems, totalPages, hasMore }
   } catch (error: any) {
-    console.error("Erro ao buscar mídias por gênero:", error.response?.data || error.message);
-    return { content: [], currentPage: 0, totalItems: 0, totalPages: 0, hasMore: false };
+    console.error(
+      "Erro ao buscar mídias por gênero:",
+      error.response?.data || error.message
+    );
+    return {
+      content: [],
+      currentPage: 0,
+      totalItems: 0,
+      totalPages: 0,
+      hasMore: false,
+    };
   }
 };
 
@@ -115,16 +151,34 @@ export const getMidiasByTipo = async (
   tipo: string,
   page: number = 0,
   size: number = 10
-): Promise<{ content: any[]; currentPage: number; totalItems: number; totalPages: number; hasMore: boolean }> => {
+): Promise<{
+  content: any[];
+  currentPage: number;
+  totalItems: number;
+  totalPages: number;
+  hasMore: boolean;
+}> => {
   try {
-    const response = await api.get(`/api/midias/tipo-midia/${encodeURIComponent(tipo)}`, {
-      params: { page, size },
-    });
+    const response = await api.get(
+      `/api/midias/tipo-midia/${encodeURIComponent(tipo)}`,
+      {
+        params: { page, size },
+      }
+    );
 
     return response.data; // objeto { content, currentPage, totalItems, totalPages, hasMore }
   } catch (error: any) {
-    console.error("Erro ao buscar mídias por tipo:", error.response?.data || error.message);
-    return { content: [], currentPage: 0, totalItems: 0, totalPages: 0, hasMore: false };
+    console.error(
+      "Erro ao buscar mídias por tipo:",
+      error.response?.data || error.message
+    );
+    return {
+      content: [],
+      currentPage: 0,
+      totalItems: 0,
+      totalPages: 0,
+      hasMore: false,
+    };
   }
 };
 
@@ -140,7 +194,10 @@ export const getUserProfile = async (): Promise<{
     const response = await api.get("/api/cadastros/perfil");
     return response.data;
   } catch (error: any) {
-    console.error("Erro ao buscar perfil do usuário:", error.response?.data || error.message);
+    console.error(
+      "Erro ao buscar perfil do usuário:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 };
@@ -157,10 +214,12 @@ export const updateUserProfile = async (body: Record<string, any>) => {
 };
 
 // 🔐 Envia solicitação para recuperação de senha
-export const recuperarSenha = async (email: string): Promise<{ message: string }> => {
+export const recuperarSenha = async (
+  email: string
+): Promise<{ message: string }> => {
   try {
     const response = await api.post("/auth/recuperar-senha", { email });
-    
+
     return response.data;
   } catch (error: any) {
     console.error(
@@ -196,11 +255,15 @@ export const cadastrarUsuarioCompleto = async (userData: {
     const response = await api.post("/auth/registerFull", userData);
     return response.data;
   } catch (error: any) {
-    console.error("❌ Erro ao cadastrar usuário:", error.response?.data || error.message);
-    throw error;
+    // Remover console.error para não aparecer erro vermelho na tela
+    //console.error(
+    //"❌ Erro ao cadastrar usuário:",
+    //error.response?.data || error.message
+    //);
+
+    // devolve o erro, mas sem quebrar
+    return Promise.reject(error);
   }
 };
-
-
 
 export default api;

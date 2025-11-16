@@ -158,9 +158,22 @@ export default function RegisterFullScreen() {
       setModalType("success");
       setModalVisible(true);
 
-      setTimeout(() => router.push("/login"), 1500);
-    } catch (error) {
-      setModalMessage("Falha ao cadastrar. Verifique os dados.");
+      setTimeout(() => router.push("/auth/Login"), 1500);
+    } catch (error: any) {
+      let msg = "Falha ao cadastrar. Verifique os dados.";
+
+      // Se a API retornou mensagem estruturada (ex: {campo: "mensagem"})
+      if (error.response?.data) {
+        const data = error.response.data;
+
+        // Pegar primeira mensagem de erro da API
+        if (typeof data === "object") {
+          const firstKey = Object.keys(data)[0];
+          msg = data[firstKey]; 
+        }
+      }
+
+      setModalMessage(msg);
       setModalType("error");
       setModalVisible(true);
     } finally {
