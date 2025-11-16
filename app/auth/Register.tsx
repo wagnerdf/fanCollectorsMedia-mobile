@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   ScrollView,
   StyleSheet,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
@@ -57,6 +56,9 @@ export default function RegisterFullScreen() {
       estado: "",
     },
   });
+
+  type FormErrors = { [key: string]: string };
+  const [formErrors, setFormErrors] = useState<FormErrors>({});
 
   const formatarCep = (valor: string) => {
     const apenasNumeros = valor.replace(/\D/g, "");
@@ -129,28 +131,38 @@ export default function RegisterFullScreen() {
   };
 
   const handleCadastrar = async () => {
-    if (form.senha !== form.confirmarSenha) {
-      setErroSenha("As senhas não coincidem.");
+    const errors = validateFields();
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+
+      setModalMessage("Preencha os campos obrigatórios antes de continuar.");
+      setModalType("error");
+      setModalVisible(true);
+
       return;
     }
-    setErroSenha("");
+
     setLoading(true);
 
     const payload = {
       ...form,
-      endereco: { ...form.endereco },
-      dataNascimento: form.dataNascimento || "2000-01-01",
+      dataNascimento: selectedDate
+        ? selectedDate.toISOString().split("T")[0]
+        : "",
     };
 
     try {
       await cadastrarUsuarioCompleto(payload);
-      Alert.alert("Sucesso", "Usuário cadastrado com sucesso!");
-      router.push("/login");
+      setModalMessage("Usuário cadastrado com sucesso!");
+      setModalType("success");
+      setModalVisible(true);
+
+      setTimeout(() => router.push("/login"), 1500);
     } catch (error) {
-      Alert.alert(
-        "Erro",
-        "Falha ao cadastrar. Verifique os dados e tente novamente."
-      );
+      setModalMessage("Falha ao cadastrar. Verifique os dados.");
+      setModalType("error");
+      setModalVisible(true);
     } finally {
       setLoading(false);
     }
@@ -193,6 +205,60 @@ export default function RegisterFullScreen() {
     }
   };
 
+  const validateFields = () => {
+    const errors: any = {};
+
+    // Dados pessoais
+    if (!form.nome.trim()) errors.nome = "Nome é obrigatório";
+
+    if (!form.sobreNome.trim()) errors.sobreNome = "Sobrenome é obrigatório";
+
+    if (!selectedDate)
+      errors.dataNascimento = "Data de nascimento é obrigatória";
+
+    if (!form.sexo) errors.sexo = "Selecione um sexo";
+
+    // Telefone
+    if (!form.telefone.trim() || form.telefone.replace(/\D/g, "").length < 10)
+      errors.telefone = "Telefone inválido";
+
+    // Email
+    if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
+      errors.email = "Email inválido";
+
+    // Senha
+    if (!form.senha) errors.senha = "Senha é obrigatória";
+
+    if (
+      form.senha &&
+      !/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
+        form.senha
+      )
+    ) {
+      errors.senha =
+        "A senha deve ter 8 caracteres, 1 maiúscula, 1 número e 1 caractere especial";
+    }
+
+    if (form.senha !== form.confirmarSenha)
+      errors.confirmarSenha = "As senhas não conferem";
+
+    // Endereço
+    if (!form.endereco.cep || form.endereco.cep.replace(/\D/g, "").length !== 8)
+      errors.cep = "CEP inválido";
+
+    if (!form.endereco.rua.trim()) errors.rua = "Rua é obrigatória";
+
+    if (!form.endereco.numero.trim()) errors.numero = "Número é obrigatório";
+
+    if (!form.endereco.bairro.trim()) errors.bairro = "Bairro é obrigatório";
+
+    if (!form.endereco.cidade.trim()) errors.cidade = "Cidade é obrigatória";
+
+    if (!form.endereco.estado.trim()) errors.estado = "Estado é obrigatório";
+
+    return errors;
+  };
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -215,6 +281,9 @@ export default function RegisterFullScreen() {
               value={form.nome}
               onChangeText={(t) => handleChange("nome", t)}
             />
+            {formErrors.nome && (
+              <Text style={styles.error}>{formErrors.nome}</Text>
+            )}
           </View>
 
           <View style={styles.inputBox}>
@@ -224,6 +293,9 @@ export default function RegisterFullScreen() {
               value={form.sobreNome}
               onChangeText={(t) => handleChange("sobreNome", t)}
             />
+            {formErrors.sobreNome && (
+              <Text style={styles.error}>{formErrors.sobreNome}</Text>
+            )}
           </View>
         </View>
 
@@ -251,6 +323,9 @@ export default function RegisterFullScreen() {
               onCancel={closeDatePicker}
               maximumDate={new Date()}
             />
+            {formErrors.dataNascimento && (
+              <Text style={styles.error}>{formErrors.dataNascimento}</Text>
+            )}
           </View>
           <View style={styles.inputBox}>
             <Text style={styles.label}>Sexo</Text>
@@ -278,6 +353,9 @@ export default function RegisterFullScreen() {
                 <Picker.Item label="Outro" value="OUTRO" color="#0A0F1C" />
               </Picker>
             </View>
+            {formErrors.sexo && (
+              <Text style={styles.error}>{formErrors.sexo}</Text>
+            )}
           </View>
         </View>
 
@@ -294,6 +372,9 @@ export default function RegisterFullScreen() {
                 handleChange("telefone", telefoneMasc);
               }}
             />
+            {formErrors.telefone && (
+              <Text style={styles.error}>{formErrors.telefone}</Text>
+            )}
           </View>
 
           <View style={styles.inputBox}>
@@ -304,6 +385,9 @@ export default function RegisterFullScreen() {
               value={form.email}
               onChangeText={(t) => handleChange("email", t)}
             />
+            {formErrors.email && (
+              <Text style={styles.error}>{formErrors.email}</Text>
+            )}
           </View>
         </View>
 
@@ -331,13 +415,22 @@ export default function RegisterFullScreen() {
               validarSenha(t);
             }}
           />
-          {senhaForca ? (
-            <Text style={[styles.info, { color: senhaCor }]}>{senhaForca}</Text>
-          ) : null}
+          <View style={styles.linhaMensagem}>
+            {senhaForca ? (
+              <Text style={[styles.info, { color: senhaCor, marginRight: 10 }]}>
+                {senhaForca}
+              </Text>
+            ) : null}
+
+            {formErrors.senha ? (
+              <Text style={styles.error}>{formErrors.senha}</Text>
+            ) : null}
+          </View>
         </View>
 
         <View style={[styles.inputBox, { marginTop: 20, marginBottom: 20 }]}>
           <Text style={styles.label}>Confirmar Senha</Text>
+
           <TextInput
             style={styles.input}
             secureTextEntry
@@ -360,12 +453,17 @@ export default function RegisterFullScreen() {
               }
             }}
           />
-          {confirmMsg !== "" && (
-            <Text style={{ color: confirmColor, marginTop: 4 }}>
-              {confirmMsg}
-            </Text>
-          )}
-          {erroSenha ? <Text style={styles.error}>{erroSenha}</Text> : null}
+
+          {/* 🔥 Mensagens lado a lado */}
+          <View style={styles.linhaMensagem}>
+            {confirmMsg !== "" && (
+              <Text style={{ color: confirmColor, marginRight: 10 }}>
+                {confirmMsg}
+              </Text>
+            )}
+
+            {erroSenha ? <Text style={styles.error}>{erroSenha}</Text> : null}
+          </View>
         </View>
 
         {/* Endereço */}
@@ -400,6 +498,9 @@ export default function RegisterFullScreen() {
               }}
               onBlur={() => handleBuscarCep()}
             />
+            {formErrors.cep && (
+              <Text style={styles.error}>{formErrors.cep}</Text>
+            )}
           </View>
 
           <View style={styles.inputBoxRua}>
@@ -409,6 +510,9 @@ export default function RegisterFullScreen() {
               value={form.endereco.rua}
               onChangeText={(t) => handleEnderecoChange("rua", t)}
             />
+            {formErrors.rua && (
+              <Text style={styles.error}>{formErrors.rua}</Text>
+            )}
           </View>
         </View>
 
@@ -421,6 +525,9 @@ export default function RegisterFullScreen() {
               value={form.endereco.numero}
               onChangeText={(t) => handleEnderecoChange("numero", t)}
             />
+            {formErrors.numero && (
+              <Text style={styles.error}>{formErrors.numero}</Text>
+            )}
           </View>
 
           <View style={styles.inputBoxComplemento}>
@@ -441,6 +548,9 @@ export default function RegisterFullScreen() {
               value={form.endereco.bairro}
               onChangeText={(t) => handleEnderecoChange("bairro", t)}
             />
+            {formErrors.bairro && (
+              <Text style={styles.error}>{formErrors.bairro}</Text>
+            )}
           </View>
 
           <View style={styles.inputBoxEstado}>
@@ -450,6 +560,9 @@ export default function RegisterFullScreen() {
               value={form.endereco.estado}
               onChangeText={(t) => handleEnderecoChange("estado", t)}
             />
+            {formErrors.estado && (
+              <Text style={styles.error}>{formErrors.estado}</Text>
+            )}
           </View>
         </View>
 
@@ -460,6 +573,9 @@ export default function RegisterFullScreen() {
             value={form.endereco.cidade}
             onChangeText={(t) => handleEnderecoChange("cidade", t)}
           />
+          {formErrors.cidade && (
+            <Text style={styles.error}>{formErrors.cidade}</Text>
+          )}
         </View>
 
         {/* Botões */}
@@ -566,8 +682,9 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   error: {
-    color: "#f87171",
-    marginTop: 2,
+    color: "red",
+    fontSize: 12,
+    marginTop: 4,
   },
   inputGroup: {
     marginBottom: 16,
@@ -636,5 +753,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#2f3b52", // pode clarear ou escurecer, como quiser
     marginTop: 5,
     marginBottom: 15,
+  },
+  linhaMensagem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 4,
   },
 });
