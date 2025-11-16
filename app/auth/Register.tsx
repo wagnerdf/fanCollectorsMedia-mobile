@@ -282,7 +282,7 @@ export default function RegisterFullScreen() {
         </View>
 
         <View style={styles.row}>
-          <View style={styles.inputBox}>
+          <View style={{ width: 180 }}>
             <Text style={styles.label}>Telefone</Text>
             <TextInput
               style={[styles.input, styles.telefoneInput]}
