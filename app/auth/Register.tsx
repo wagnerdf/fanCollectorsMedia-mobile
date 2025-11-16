@@ -205,6 +205,7 @@ export default function RegisterFullScreen() {
 
         {/* Dados Pessoais */}
         <Text style={styles.sectionTitle}>📌 Dados Pessoais</Text>
+        <View style={styles.divider} />
 
         <View style={styles.row}>
           <View style={styles.inputBox}>
@@ -317,6 +318,7 @@ export default function RegisterFullScreen() {
 
         {/* Senha */}
         <Text style={styles.sectionTitle}>🔐 Criação da Senha</Text>
+        <View style={styles.divider} />
 
         <View style={styles.inputBox}>
           <Text style={styles.label}>Senha</Text>
@@ -334,7 +336,7 @@ export default function RegisterFullScreen() {
           ) : null}
         </View>
 
-        <View style={[styles.inputBox, { marginTop: 20 }]}>
+        <View style={[styles.inputBox, { marginTop: 20, marginBottom: 20 }]}>
           <Text style={styles.label}>Confirmar Senha</Text>
           <TextInput
             style={styles.input}
@@ -368,6 +370,7 @@ export default function RegisterFullScreen() {
 
         {/* Endereço */}
         <Text style={styles.sectionTitle}>🏠 Endereço</Text>
+        <View style={styles.divider} />
 
         {/* CEP + Rua */}
         <View style={styles.rowCepRua}>
@@ -430,7 +433,7 @@ export default function RegisterFullScreen() {
           </View>
         </View>
 
-        <View style={styles.row}>
+        <View style={[styles.row, { marginBottom: 5 }]}>
           <View style={styles.inputBox}>
             <Text style={styles.label}>Bairro</Text>
             <TextInput
@@ -626,5 +629,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     height: 50,
     width: "100%",
+  },
+  divider: {
+    width: "100%",
+    height: 1,
+    backgroundColor: "#2f3b52", // pode clarear ou escurecer, como quiser
+    marginTop: 5,
+    marginBottom: 15,
   },
 });
