@@ -266,4 +266,12 @@ export const cadastrarUsuarioCompleto = async (userData: {
   }
 };
 
+export async function getMediaTypes() {
+  return [
+    { id: 1, name: "DVD" },
+    { id: 2, name: "Blu-Ray" },
+    { id: 3, name: "VHS" },
+  ];
+}
+
 export default api;

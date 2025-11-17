@@ -7,17 +7,15 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import AppModal from "@/components/AppModal"; // importa nosso modal customizado
+import AppModal from "@/components/AppModal";
 
 export default function ExplorerScreen() {
   const router = useRouter();
 
-  // Estado para controle do modal
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [modalType, setModalType] = useState<"success" | "error" | "info">("info");
 
-  // Função para abrir o modal com mensagem específica
   const showModal = (message: string, type: "success" | "error" | "info" = "info") => {
     setModalMessage(message);
     setModalType(type);
@@ -34,19 +32,23 @@ export default function ExplorerScreen() {
         </Text>
 
         <View style={styles.section}>
+
+          {/* 🔥 GERENCIAR MÍDIAS */}
           <View style={styles.item}>
-            <Text style={styles.itemTitle}>📀 Novas Coleções</Text>
+            <Text style={styles.itemTitle}>📀 Gerenciar Mídias</Text>
             <Text style={styles.itemText}>
-              Veja as coleções mais recentes adicionadas pelos fãs da comunidade.
+              Cadastre, edite e organize sua coleção de filmes e séries.
             </Text>
+
             <TouchableOpacity
               style={[styles.actionButton, styles.blueButton]}
-              onPress={() => showModal("Funcionalidade em desenvolvimento!", "info")}
+              onPress={() => router.push("/(tabs)/midiaBase")}
             >
-              <Text style={styles.actionText}>Ver novidades</Text>
+              <Text style={styles.actionText}>Gerenciar Mídias</Text>
             </TouchableOpacity>
           </View>
 
+          {/* Mantendo o restante igual */}
           <View style={styles.item}>
             <Text style={styles.itemTitle}>⭐ Fãs em Destaque</Text>
             <Text style={styles.itemText}>
@@ -82,7 +84,6 @@ export default function ExplorerScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Modal de alerta customizado */}
       <AppModal
         visible={modalVisible}
         message={modalMessage}
