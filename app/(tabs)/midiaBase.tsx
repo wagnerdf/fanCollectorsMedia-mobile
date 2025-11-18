@@ -20,9 +20,7 @@ import { getMediaTypes } from "../services/api";
 
 export default function MidiaBase() {
   // ------------------- ESTADOS PRINCIPAIS -------------------
-  const [mode, setMode] = useState<"" | "cadastrar" | "editar" | "excluir">(
-    ""
-  );
+  const [mode, setMode] = useState<"" | "cadastrar" | "editar" | "excluir">("");
 
   const [mediaTypes, setMediaTypes] = useState<any[]>([]);
   const [selectedType, setSelectedType] = useState<string>("");
@@ -35,6 +33,7 @@ export default function MidiaBase() {
   const [temporada, setTemporada] = useState<string>("");
   const [observacao, setObservacao] = useState<string>("");
   const [saving, setSaving] = useState<boolean>(false);
+  const [showSelectMediaType, setShowSelectMediaType] = useState(false);
 
   // ------------------- MODAL -------------------
   const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -43,10 +42,7 @@ export default function MidiaBase() {
     "info"
   );
 
-  function showModal(
-    msg: string,
-    type: "success" | "error" | "info" = "info"
-  ) {
+  function showModal(msg: string, type: "success" | "error" | "info" = "info") {
     setModalMessage(msg);
     setModalType(type);
     setModalVisible(true);
@@ -84,7 +80,10 @@ export default function MidiaBase() {
         const tv = await searchTvShows(text);
         // anexa média de fonte: movies/tv devem trazer media_type, mas caso nao venham, normalizamos
         const normalizedMovies = Array.isArray(movies)
-          ? movies.map((m: any) => ({ ...m, media_type: m.media_type ?? "movie" }))
+          ? movies.map((m: any) => ({
+              ...m,
+              media_type: m.media_type ?? "movie",
+            }))
           : [];
         const normalizedTv = Array.isArray(tv)
           ? tv.map((t: any) => ({ ...t, media_type: t.media_type ?? "tv" }))
@@ -118,7 +117,8 @@ export default function MidiaBase() {
 
   // ------------------- SALVAR (placeholder) -------------------
   async function salvarMidia() {
-    if (!selectedType) return showModal("Selecione o tipo de mídia física", "error");
+    if (!selectedType)
+      return showModal("Selecione o tipo de mídia física", "error");
     if (!selectedItem) return showModal("Selecione um filme ou série", "error");
     if (isSerie && !temporada) return showModal("Informe a temporada", "error");
 
@@ -159,7 +159,10 @@ export default function MidiaBase() {
     return (
       <View style={styles.menuBox}>
         <TouchableOpacity
-          style={[styles.menuButton, mode === "cadastrar" && styles.menuSelected]}
+          style={[
+            styles.menuButton,
+            mode === "cadastrar" && styles.menuSelected,
+          ]}
           onPress={() => setMode("cadastrar")}
         >
           <Text style={styles.menuText}>Cadastrar</Text>
@@ -206,73 +209,103 @@ export default function MidiaBase() {
   function renderCadastrar() {
     return (
       <View style={{ marginTop: 20 }}>
+        {/* SELECT TIPO DE MÍDIA */}
         <Text style={styles.label}>Tipo de Mídia Física</Text>
-        <View style={styles.selectBox}>
-          {mediaTypes.length === 0 && (
-            <Text style={{ color: "#888", marginBottom: 8 }}>
-              Nenhum tipo disponível
-            </Text>
-          )}
-          {mediaTypes.map((t: any) => {
-            // Suporte para backend que use 'name' ou 'nome'
-            const displayName = t.nome ?? t.name ?? t.label ?? String(t.id);
-            return (
+
+        <TouchableOpacity
+          style={styles.dropdownButton}
+          onPress={() => setShowSelectMediaType(!showSelectMediaType)}
+        >
+          <Text style={styles.dropdownButtonText}>
+            {selectedType || "Selecione o tipo de mídia física"}
+          </Text>
+        </TouchableOpacity>
+
+        {/* LISTA EXPANDIDA DO SELECT */}
+        {showSelectMediaType && (
+          <View style={styles.dropdownList}>
+            {mediaTypes.map((t: any) => {
+              const displayName = t.nome ?? t.name ?? t.label ?? String(t.id);
+              return (
+                <TouchableOpacity
+                  key={t.id}
+                  style={[
+                    styles.dropdownItem,
+                    selectedType === displayName && styles.dropdownItemSelected,
+                  ]}
+                  onPress={() => {
+                    setSelectedType(displayName);
+                    setShowSelectMediaType(false);
+                  }}
+                >
+                  <Text style={styles.dropdownItemText}>{displayName}</Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        )}
+
+        {/* CAMPO DE BUSCA SOMENTE APÓS ESCOLHER O TIPO */}
+        {selectedType && (
+          <>
+            <Text style={styles.label}>Buscar Título</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Digite para buscar..."
+              placeholderTextColor="#555"
+              onChangeText={buscar}
+              value={query}
+            />
+
+            {loadingSearch && (
+              <ActivityIndicator color="#fff" style={{ marginTop: 8 }} />
+            )}
+
+            {searchResults.map((item) => (
               <TouchableOpacity
-                key={t.id}
-                style={[
-                  styles.selectItem,
-                  selectedType === displayName && styles.selected,
-                ]}
-                onPress={() => setSelectedType(displayName)}
+                key={String(item.id) + (item.media_type ?? "")}
+                style={styles.resultItem}
+                onPress={() => handleSelect(item)}
               >
-                <Text style={styles.selectText}>{displayName}</Text>
+                <Text style={styles.resultText}>
+                  {item.title || item.name} ({item.media_type})
+                </Text>
+
+                {(item.release_date || item.first_air_date) && (
+                  <Text
+                    style={{
+                      color: "#9ca3af",
+                      marginTop: 4,
+                      fontSize: 12,
+                    }}
+                  >
+                    {item.release_date ?? item.first_air_date}
+                  </Text>
+                )}
               </TouchableOpacity>
-            );
-          })}
-        </View>
+            ))}
+          </>
+        )}
 
-        <Text style={styles.label}>Buscar Título</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Digite para buscar..."
-          placeholderTextColor="#555"
-          onChangeText={buscar}
-          value={query}
-        />
-
-        {loadingSearch && <ActivityIndicator color="#fff" style={{ marginTop: 8 }} />}
-
-        {searchResults.map((item) => (
-          <TouchableOpacity
-            key={String(item.id) + (item.media_type ?? "")}
-            style={styles.resultItem}
-            onPress={() => handleSelect(item)}
-          >
-            <Text style={styles.resultText}>
-              {item.title || item.name} ({item.media_type})
-            </Text>
-            {item.release_date || item.first_air_date ? (
-              <Text style={{ color: "#9ca3af", marginTop: 4, fontSize: 12 }}>
-                {item.release_date ?? item.first_air_date}
-              </Text>
-            ) : null}
-          </TouchableOpacity>
-        ))}
-
-        {/* Detalhes */}
+        {/* DETALHES SOMENTE SE O USUÁRIO ESCOLHEU UMA MÍDIA */}
         {details && (
           <View style={styles.detailsBox}>
-            <Text style={styles.detailsTitle}>{details.title || details.name}</Text>
+            <Text style={styles.detailsTitle}>
+              {details.title || details.name}
+            </Text>
 
             {details.poster_path && (
               <Image
-                source={{ uri: `https://image.tmdb.org/t/p/w300${details.poster_path}` }}
+                source={{
+                  uri: `https://image.tmdb.org/t/p/w300${details.poster_path}`,
+                }}
                 style={styles.poster}
               />
             )}
 
+            {/* SE FOR SÉRIE MOSTRA CAMPO DE TEMPORADA */}
             {isSerie && (
-              <View>
+              <>
                 <Text style={styles.label}>Temporada</Text>
                 <TextInput
                   style={styles.input}
@@ -282,7 +315,7 @@ export default function MidiaBase() {
                   value={temporada}
                   onChangeText={setTemporada}
                 />
-              </View>
+              </>
             )}
 
             <Text style={styles.label}>Observação</Text>
@@ -297,17 +330,20 @@ export default function MidiaBase() {
           </View>
         )}
 
-        <TouchableOpacity
-          style={styles.saveButton}
-          onPress={salvarMidia}
-          disabled={saving}
-        >
-          {saving ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.saveText}>Salvar Mídia</Text>
-          )}
-        </TouchableOpacity>
+        {/* BOTÃO SALVAR SOMENTE APÓS TER DETALHES */}
+        {details && (
+          <TouchableOpacity
+            style={styles.saveButton}
+            onPress={salvarMidia}
+            disabled={saving}
+          >
+            {saving ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.saveText}>Salvar Mídia</Text>
+            )}
+          </TouchableOpacity>
+        )}
       </View>
     );
   }
@@ -325,12 +361,16 @@ export default function MidiaBase() {
       {mode === "cadastrar" && renderCadastrar()}
       {mode === "editar" && (
         <View style={{ marginTop: 20 }}>
-          <Text style={styles.placeholder}>Tela de edição em desenvolvimento...</Text>
+          <Text style={styles.placeholder}>
+            Tela de edição em desenvolvimento...
+          </Text>
         </View>
       )}
       {mode === "excluir" && (
         <View style={{ marginTop: 20 }}>
-          <Text style={styles.placeholder}>Tela de exclusão em desenvolvimento...</Text>
+          <Text style={styles.placeholder}>
+            Tela de exclusão em desenvolvimento...
+          </Text>
         </View>
       )}
 
@@ -456,5 +496,50 @@ const styles = StyleSheet.create({
   placeholder: {
     color: "#cbd5e1",
     fontStyle: "italic",
+  },
+  dropdownContainer: {
+    backgroundColor: "#1f2937",
+    borderRadius: 8,
+    marginTop: 4,
+    paddingVertical: 4,
+  },
+  dropdownText: {
+    color: "#fff",
+    fontSize: 16,
+  },
+  dropdownButton: {
+    backgroundColor: "#161b22",
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderWidth: 1,
+    borderColor: "#2b2f33",
+    marginTop: 6,
+  },
+  dropdownButtonText: {
+    color: "#cbd5e1",
+    fontSize: 16,
+  },
+  dropdownList: {
+    backgroundColor: "#161b22",
+    borderRadius: 8,
+    marginTop: 6,
+    borderWidth: 1,
+    borderColor: "#2b2f33",
+  },
+  dropdownItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: "#2b2f33",
+  },
+
+  dropdownItemSelected: {
+    backgroundColor: "#2563eb33",
+  },
+
+  dropdownItemText: {
+    color: "#fff",
+    fontSize: 15,
   },
 });

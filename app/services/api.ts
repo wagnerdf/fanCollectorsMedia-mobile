@@ -266,12 +266,16 @@ export const cadastrarUsuarioCompleto = async (userData: {
   }
 };
 
+// Listar tipos de mídia ativos
 export async function getMediaTypes() {
-  return [
-    { id: 1, name: "DVD" },
-    { id: 2, name: "Blu-Ray" },
-    { id: 3, name: "VHS" },
-  ];
+  try {
+    const response = await api.get("/api/midia-tipos/ativos");
+    return response.data;
+  } catch (error: any) {
+    console.error("Erro ao buscar tipos de mídia:", error);
+    throw error.response?.data || "Erro ao carregar tipos de mídia";
+  }
 }
+
 
 export default api;
