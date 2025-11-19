@@ -1,3 +1,5 @@
+import api from "./api";
+
 export async function searchMovies(query: string) {
   return [];
 }
@@ -20,4 +22,24 @@ export async function getTvDetails(id: number) {
     name: "",
     overview: "",
   };
+}
+
+/**
+ * Novo método de busca no TMDB
+ * Usando o endpoint do backend que criamos:
+ * GET /api/tmdb/buscar/{query}
+ */
+export async function buscarTituloTMDB(query: string) {
+  try {
+    if (!query || query.length < 2) return [];
+
+    
+
+    const response = await api.get(`/api/tmdb/buscar/${query}`);
+    console.log("url busca:",api);
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao buscar título no TMDB:", error);
+    return [];
+  }
 }

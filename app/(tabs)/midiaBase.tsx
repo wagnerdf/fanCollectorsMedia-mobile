@@ -15,6 +15,7 @@ import {
   searchTvShows,
   getMovieDetails,
   getTvDetails,
+  buscarTituloTMDB,
 } from "../services/tmdb";
 import { getMediaTypes } from "../services/api";
 
@@ -41,6 +42,24 @@ export default function MidiaBase() {
   const [modalType, setModalType] = useState<"success" | "error" | "info">(
     "info"
   );
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showResults, setShowResults] = useState(false);
+
+  async function handleSearch(text: string) {
+    setSearchQuery(text);
+    setShowResults(true);
+
+    if (text.length < 2) {
+      setSearchResults([]);
+      return;
+    }
+
+    setLoadingSearch(true);
+    const results = await buscarTituloTMDB(text);
+    setSearchResults(results);
+    setLoadingSearch(false);
+  }
 
   function showModal(msg: string, type: "success" | "error" | "info" = "info") {
     setModalMessage(msg);
@@ -248,42 +267,56 @@ export default function MidiaBase() {
         {/* CAMPO DE BUSCA SOMENTE APÓS ESCOLHER O TIPO */}
         {selectedType && (
           <>
-            <Text style={styles.label}>Buscar Título</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Digite para buscar..."
-              placeholderTextColor="#555"
-              onChangeText={buscar}
-              value={query}
-            />
+            <View style={{ marginTop: 20 }}>
+              <Text style={styles.label}>Título</Text>
 
-            {loadingSearch && (
-              <ActivityIndicator color="#fff" style={{ marginTop: 8 }} />
-            )}
+              <TextInput
+                style={styles.input}
+                placeholder="Digite para buscar..."
+                value={searchQuery}
+                onChangeText={handleSearch}
+              />
 
-            {searchResults.map((item) => (
-              <TouchableOpacity
-                key={String(item.id) + (item.media_type ?? "")}
-                style={styles.resultItem}
-                onPress={() => handleSelect(item)}
-              >
-                <Text style={styles.resultText}>
-                  {item.title || item.name} ({item.media_type})
+              {loadingSearch && (
+                <Text style={{ marginTop: 10, color: "#999" }}>
+                  Buscando...
                 </Text>
+              )}
 
-                {(item.release_date || item.first_air_date) && (
-                  <Text
-                    style={{
-                      color: "#9ca3af",
-                      marginTop: 4,
-                      fontSize: 12,
-                    }}
-                  >
-                    {item.release_date ?? item.first_air_date}
-                  </Text>
-                )}
-              </TouchableOpacity>
-            ))}
+              {showResults && searchResults.length > 0 && (
+                <View
+                  style={{
+                    backgroundColor: "#f9f9f9",
+                    marginTop: 5,
+                    borderRadius: 8,
+                    padding: 10,
+                    maxHeight: 200, // limita o tamanho
+                  }}
+                >
+                  <ScrollView nestedScrollEnabled>
+                    {searchResults.map((item) => (
+                      <TouchableOpacity
+                        key={item.id}
+                        style={{ paddingVertical: 8 }}
+                        onPress={() => {
+                          setSearchQuery(item.titulo_alternativo);
+                          setDetails(item);
+                          setShowResults(false);
+                        }}
+                      >
+                        <Text style={{ fontWeight: "bold" }}>
+                          {item.titulo_alternativo}
+                        </Text>
+
+                        <Text style={{ color: "#555" }}>
+                          {item.ano} • {item.tipo}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+                </View>
+              )}
+            </View>
           </>
         )}
 
