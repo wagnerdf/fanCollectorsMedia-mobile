@@ -272,6 +272,15 @@ export default function MidiaBase() {
                   onPress={() => {
                     setSelectedType(displayName);
                     setShowSelectMediaType(false);
+                    // 🔥 limpar tudo ao trocar o tipo de mídia
+                    setSearchQuery("");
+                    setSearchResults([]);
+                    setDetails(null);
+                    setSelectedItem(null);
+                    setIsSerie(false);
+                    setTemporada("");
+                    setObservacao("");
+                    setShowResults(false);
                   }}
                 >
                   <Text style={styles.dropdownItemText}>{displayName}</Text>
@@ -288,10 +297,15 @@ export default function MidiaBase() {
               <Text style={styles.label}>Título</Text>
 
               <TextInput
-                style={styles.input}
+                style={[
+                  styles.input,
+                  !selectedType && { opacity: 0.4 }, // 🔥 efeito visual de desabilitado
+                ]}
                 placeholder="Digite para buscar..."
                 value={searchQuery}
                 onChangeText={handleSearch}
+                editable={!!selectedType} // 🔥 desabilita quando não há tipo selecionado
+                placeholderTextColor="#555"
               />
 
               {loadingSearch && (

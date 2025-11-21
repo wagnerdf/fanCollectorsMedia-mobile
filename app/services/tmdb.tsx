@@ -34,7 +34,6 @@ export async function buscarTituloTMDB(query: string) {
     if (!query || query.length < 2) return [];
 
     const response = await api.get(`/api/tmdb/buscar/${query}`);
-    console.log("url busca:", api);
     return response.data;
   } catch (error) {
     console.error("Erro ao buscar título no TMDB:", error);
