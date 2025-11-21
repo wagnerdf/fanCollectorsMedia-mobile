@@ -16,6 +16,7 @@ import {
   getMovieDetails,
   getTvDetails,
   buscarTituloTMDB,
+  buscarDetalhes as buscarDetalhesService,
 } from "../services/tmdb";
 import { getMediaTypes } from "../services/api";
 
@@ -225,6 +226,22 @@ export default function MidiaBase() {
   // --------------------------------------------------------------
   // ------------------- TELA DE CADASTRAR ------------------------
   // --------------------------------------------------------------
+
+  async function buscarDetalhes(id: number) {
+    try {
+      setLoadingSearch(true);
+
+      const data = await buscarDetalhesService(id);
+
+      setDetails(data);
+      setShowResults(false);
+    } catch (error) {
+      console.log("Erro ao carregar detalhes da mídia TMDB:", error);
+    } finally {
+      setLoadingSearch(false);
+    }
+  }
+
   function renderCadastrar() {
     return (
       <View style={{ marginTop: 20 }}>
@@ -300,8 +317,7 @@ export default function MidiaBase() {
                         style={{ paddingVertical: 8 }}
                         onPress={() => {
                           setSearchQuery(item.titulo_alternativo);
-                          setDetails(item);
-                          setShowResults(false);
+                          buscarDetalhes(item.id); // busca detalhes completos
                         }}
                       >
                         <Text style={{ fontWeight: "bold" }}>
@@ -324,7 +340,47 @@ export default function MidiaBase() {
         {details && (
           <View style={styles.detailsBox}>
             <Text style={styles.detailsTitle}>
-              {details.title || details.name}
+              {details && (
+                <View style={styles.detailsBox}>
+                  <Text style={styles.detailsTitle}>
+                    {details.titulo_alternativo}
+                  </Text>
+
+                  {details.capa_url && (
+                    <Image
+                      source={{ uri: details.capa_url }}
+                      style={styles.poster}
+                    />
+                  )}
+
+                  <Text style={styles.label}>Ano de Lançamento</Text>
+                  <Text>{details.ano_lancamento}</Text>
+
+                  <Text style={styles.label}>Gêneros</Text>
+                  <Text>{details.generos?.join(", ")}</Text>
+
+                  <Text style={styles.label}>Duração</Text>
+                  <Text>{details.duracao} min</Text>
+
+                  <Text style={styles.label}>Linguagem</Text>
+                  <Text>{details.linguagem}</Text>
+
+                  <Text style={styles.label}>Sinopse</Text>
+                  <Text>{details.sinopse}</Text>
+
+                  <Text style={styles.label}>Classificação</Text>
+                  <Text>{details.classificacao_etaria}</Text>
+
+                  <Text style={styles.label}>Estúdio(s)</Text>
+                  <Text>{details.estudio?.join(", ")}</Text>
+
+                  <Text style={styles.label}>Nota Média</Text>
+                  <Text>{details.nota_media}</Text>
+
+                  <Text style={styles.label}>Formato Mídia</Text>
+                  <Text>{details.formato_midia}</Text>
+                </View>
+              )}
             </Text>
 
             {details.poster_path && (
