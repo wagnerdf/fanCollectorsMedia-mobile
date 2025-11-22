@@ -8,6 +8,7 @@ import {
   ScrollView,
   ActivityIndicator,
   Image,
+  Switch,
 } from "react-native";
 import AppModal from "@/components/AppModal";
 import {
@@ -46,6 +47,8 @@ export default function MidiaBase() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [showResults, setShowResults] = useState(false);
+
+  const [assistido, setAssistido] = useState(false);
 
   async function handleSearch(text: string) {
     setSearchQuery(text);
@@ -351,65 +354,50 @@ export default function MidiaBase() {
         )}
 
         {/* DETALHES SOMENTE SE O USUÁRIO ESCOLHEU UMA MÍDIA */}
+        {/* DETALHES APENAS SE A MÍDIA FOI SELECIONADA */}
         {details && (
           <View style={styles.detailsBox}>
+            {/* TÍTULO */}
             <Text style={styles.detailsTitle}>
-              {details && (
-                <View style={styles.detailsBox}>
-                  <Text style={styles.detailsTitle}>
-                    {details.titulo_alternativo}
-                  </Text>
-
-                  {details.capa_url && (
-                    <Image
-                      source={{ uri: details.capa_url }}
-                      style={styles.poster}
-                    />
-                  )}
-
-                  <Text style={styles.label}>Ano de Lançamento</Text>
-                  <Text>{details.ano_lancamento}</Text>
-
-                  <Text style={styles.label}>Gêneros</Text>
-                  <Text>{details.generos?.join(", ")}</Text>
-
-                  <Text style={styles.label}>Duração</Text>
-                  <Text>{details.duracao} min</Text>
-
-                  <Text style={styles.label}>Linguagem</Text>
-                  <Text>{details.linguagem}</Text>
-
-                  <Text style={styles.label}>Sinopse</Text>
-                  <Text>{details.sinopse}</Text>
-
-                  <Text style={styles.label}>Classificação</Text>
-                  <Text>{details.classificacao_etaria}</Text>
-
-                  <Text style={styles.label}>Estúdio(s)</Text>
-                  <Text>{details.estudio?.join(", ")}</Text>
-
-                  <Text style={styles.label}>Nota Média</Text>
-                  <Text>{details.nota_media}</Text>
-
-                  <Text style={styles.label}>Formato Mídia</Text>
-                  <Text>{details.formato_midia}</Text>
-                </View>
-              )}
+              {details.titulo_alternativo}
             </Text>
 
-            {details.poster_path && (
-              <Image
-                source={{
-                  uri: `https://image.tmdb.org/t/p/w300${details.poster_path}`,
-                }}
-                style={styles.poster}
-              />
+            {/* CAPA */}
+            {details.capa_url && (
+              <Image source={{ uri: details.capa_url }} style={styles.poster} />
             )}
 
-            {/* SE FOR SÉRIE MOSTRA CAMPO DE TEMPORADA */}
+            {/* ----------------------------- */}
+            {/* CAMPO ASSISTIDO */}
+            {/* ----------------------------- */}
+            <View style={styles.row}>
+              <Text style={styles.label}>Assistido</Text>
+              <Switch
+                value={assistido}
+                onValueChange={setAssistido}
+                style={{ marginLeft: 10 }}
+              />
+            </View>
+
+            {/* ----------------------------- */}
+            {/* OBSERVAÇÃO */}
+            {/* ----------------------------- */}
+            <Text style={styles.label}>Observação</Text>
+            <TextInput
+              style={[styles.input, { height: 100 }]}
+              multiline
+              placeholder="Observações da mídia"
+              placeholderTextColor="#555"
+              value={observacao}
+              onChangeText={setObservacao}
+            />
+
+            {/* ----------------------------- */}
+            {/* SE FOR SÉRIE → CAMPO TEMPORADA */}
+            {/* ----------------------------- */}
             {isSerie && (
               <>
-                <Text style={styles.label}>Temporada</Text>
+                <Text style={styles.label}>Temporada *</Text>
                 <TextInput
                   style={styles.input}
                   placeholder="Informe a temporada"
@@ -421,14 +409,73 @@ export default function MidiaBase() {
               </>
             )}
 
-            <Text style={styles.label}>Observação</Text>
+            {/* ----------------------------- */}
+            {/* DETALHES DA MÍDIA (READONLY) */}
+            {/* ----------------------------- */}
+            <View style={styles.divider} />
+
+            <Text style={styles.label}>Formato Mídia</Text>
             <TextInput
-              style={[styles.input, { height: 100 }]}
+              style={styles.readonly}
+              editable={false}
+              value={details.formato_midia}
+            />
+
+            <Text style={styles.label}>Ano de Lançamento</Text>
+            <TextInput
+              style={styles.readonly}
+              editable={false}
+              value={String(details.ano_lancamento)}
+            />
+
+            <Text style={styles.label}>Gêneros</Text>
+            <TextInput
+              style={styles.readonly}
+              editable={false}
+              value={details.generos?.join(", ")}
+            />
+
+            <Text style={styles.label}>Duração</Text>
+            <TextInput
+              style={styles.readonly}
+              editable={false}
+              value={`${details.duracao} min`}
+            />
+
+            <Text style={styles.label}>Linguagem</Text>
+            <TextInput
+              style={styles.readonly}
+              editable={false}
+              value={details.linguagem}
+            />
+
+            <Text style={styles.label}>Classificação</Text>
+            <TextInput
+              style={styles.readonly}
+              editable={false}
+              value={details.classificacao_etaria}
+            />
+
+            <Text style={styles.label}>Estúdio(s)</Text>
+            <TextInput
+              style={styles.readonly}
+              editable={false}
+              value={details.estudio?.join(", ")}
+            />
+
+            <Text style={styles.label}>Nota Média</Text>
+            <TextInput
+              style={styles.readonly}
+              editable={false}
+              value={String(details.nota_media)}
+            />
+
+            <Text style={styles.label}>Sinopse</Text>
+            <TextInput
+              style={[styles.readonly, { height: 120 }]}
+              editable={false}
               multiline
-              placeholder="Observações da mídia"
-              placeholderTextColor="#555"
-              value={observacao}
-              onChangeText={setObservacao}
+              value={details.sinopse}
             />
           </View>
         )}
@@ -644,5 +691,26 @@ const styles = StyleSheet.create({
   dropdownItemText: {
     color: "#fff",
     fontSize: 15,
+  },
+  readonly: {
+    backgroundColor: "#eee",
+    padding: 10,
+    borderRadius: 8,
+    color: "#333",
+    marginBottom: 10,
+  },
+
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start", // agora ficam juntos
+    gap: 10, // OU marginRight no Text
+    marginVertical: 10,
+  },
+
+  divider: {
+    height: 1,
+    backgroundColor: "#666",
+    marginVertical: 15,
   },
 });
