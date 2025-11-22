@@ -456,6 +456,22 @@ export default function MidiaBase() {
               value={details.classificacao_etaria}
             />
 
+            <Text style={styles.label}>Artistas</Text>
+            <TextInput
+              style={[styles.readonly, { height: 80 }]}
+              editable={false}
+              multiline
+              value={details.artistas?.join(", ")}
+            />
+
+            <Text style={styles.label}>Diretores</Text>
+            <TextInput
+              style={[styles.readonly, { height: 80 }]}
+              editable={false}
+              multiline
+              value={details.diretores?.join(", ")}
+            />
+
             <Text style={styles.label}>Estúdio(s)</Text>
             <TextInput
               style={styles.readonly}
