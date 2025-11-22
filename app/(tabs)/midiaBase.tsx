@@ -142,7 +142,6 @@ export default function MidiaBase() {
   async function salvarMidia() {
     if (!selectedType)
       return showModal("Selecione o tipo de mídia física", "error");
-    if (!selectedItem) return showModal("Selecione um filme ou série", "error");
     if (isSerie && !temporada) return showModal("Informe a temporada", "error");
 
     setSaving(true);
@@ -335,8 +334,18 @@ export default function MidiaBase() {
                         style={{ paddingVertical: 8 }}
                         onPress={() => {
                           setSearchQuery(item.titulo_alternativo);
+
                           const tipoTMDB =
                             item.tipo === "Filme" ? "movie" : "tv";
+
+                          // Define se é série para exibir o campo temporada
+                          setIsSerie(item.tipo === "Série");
+
+                          // Limpar temporada quando for filme
+                          if (item.tipo === "Filme") {
+                            setTemporada("");
+                          }
+
                           buscarDetalhes(item.id, tipoTMDB);
                         }}
                       >
