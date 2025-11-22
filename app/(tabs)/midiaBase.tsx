@@ -230,11 +230,12 @@ export default function MidiaBase() {
   // ------------------- TELA DE CADASTRAR ------------------------
   // --------------------------------------------------------------
 
-  async function buscarDetalhes(id: number) {
+  async function buscarDetalhes(id: number, tipoTMDB: string) {
     try {
       setLoadingSearch(true);
 
-      const data = await buscarDetalhesService(id);
+      // Agora enviamos corretamente o tipo recebido do item
+      const data = await buscarDetalhesService(id, tipoTMDB);
 
       setDetails(data);
       setShowResults(false);
@@ -334,7 +335,9 @@ export default function MidiaBase() {
                         style={{ paddingVertical: 8 }}
                         onPress={() => {
                           setSearchQuery(item.titulo_alternativo);
-                          buscarDetalhes(item.id); // busca detalhes completos
+                          const tipoTMDB =
+                            item.tipo === "Filme" ? "movie" : "tv";
+                          buscarDetalhes(item.id, tipoTMDB);
                         }}
                       >
                         <Text style={{ fontWeight: "bold" }}>

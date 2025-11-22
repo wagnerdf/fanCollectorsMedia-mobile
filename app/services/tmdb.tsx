@@ -41,12 +41,13 @@ export async function buscarTituloTMDB(query: string) {
   }
 }
 
-export async function buscarDetalhes(id: number) {
+export async function buscarDetalhes(id: number, tipo: string) {
   try {
-    const response = await api.get(`/api/tmdb/detalhes/${id}`);
+    const response = await api.get(`/api/tmdb/detalhes/${id}?tipo=${tipo}`);
     return response.data; // retorna TODOS os detalhes da mídia
   } catch (error) {
     console.error("Erro ao buscar detalhes da mídia TMDB:", error);
     throw error;
   }
 }
+
