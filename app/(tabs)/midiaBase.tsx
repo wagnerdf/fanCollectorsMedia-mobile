@@ -12,8 +12,6 @@ import {
 } from "react-native";
 import AppModal from "@/components/AppModal";
 import {
-  searchMovies,
-  searchTvShows,
   buscarTituloTMDB,
   buscarDetalhes as buscarDetalhesService,
 } from "../services/tmdb";
@@ -86,42 +84,6 @@ export default function MidiaBase() {
     } catch (err) {
       showModal("Erro ao carregar tipos de mídia", "error");
     }
-  }
-
-  // ------------------- BUSCA TMDB -------------------
-  // Debounce simples: disparado pelo onChangeText (aumente se precisar)
-  let searchTimeout: ReturnType<typeof setTimeout> | null = null;
-  async function buscar(text: string) {
-    setQuery(text);
-    if (searchTimeout) clearTimeout(searchTimeout);
-    if (text.length < 3) {
-      setSearchResults([]);
-      return;
-    }
-
-    searchTimeout = setTimeout(async () => {
-      try {
-        setLoadingSearch(true);
-        const movies = await searchMovies(text);
-        const tv = await searchTvShows(text);
-        // anexa média de fonte: movies/tv devem trazer media_type, mas caso nao venham, normalizamos
-        const normalizedMovies = Array.isArray(movies)
-          ? movies.map((m: any) => ({
-              ...m,
-              media_type: m.media_type ?? "movie",
-            }))
-          : [];
-        const normalizedTv = Array.isArray(tv)
-          ? tv.map((t: any) => ({ ...t, media_type: t.media_type ?? "tv" }))
-          : [];
-        setSearchResults([...normalizedMovies, ...normalizedTv]);
-      } catch (err) {
-        showModal("Erro ao buscar mídias", "error");
-        setSearchResults([]);
-      } finally {
-        setLoadingSearch(false);
-      }
-    }, 350);
   }
 
   // ------------------- SALVAR (placeholder) -------------------
