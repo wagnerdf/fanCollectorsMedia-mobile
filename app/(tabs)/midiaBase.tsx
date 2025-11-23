@@ -14,8 +14,6 @@ import AppModal from "@/components/AppModal";
 import {
   searchMovies,
   searchTvShows,
-  getMovieDetails,
-  getTvDetails,
   buscarTituloTMDB,
   buscarDetalhes as buscarDetalhesService,
 } from "../services/tmdb";
@@ -124,23 +122,6 @@ export default function MidiaBase() {
         setLoadingSearch(false);
       }
     }, 350);
-  }
-
-  async function handleSelect(item: any) {
-    setSelectedItem(item);
-    setIsSerie(item.media_type === "tv");
-    await loadDetails(item);
-  }
-
-  async function loadDetails(item: any) {
-    try {
-      let info = null;
-      if (item.media_type === "tv") info = await getTvDetails(item.id);
-      else info = await getMovieDetails(item.id);
-      setDetails(info ?? item); // se details vier vazio, mantemos o item básico
-    } catch (err) {
-      showModal("Erro ao carregar detalhes", "error");
-    }
   }
 
   // ------------------- SALVAR (placeholder) -------------------
@@ -386,6 +367,7 @@ export default function MidiaBase() {
                           setFormatoMidia(item.tipo);
 
                           buscarDetalhes(item.id, tipoTMDB);
+                          setAssistido(false);
                         }}
                       >
                         <Text style={{ fontWeight: "bold" }}>
