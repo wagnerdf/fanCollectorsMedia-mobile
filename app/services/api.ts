@@ -277,5 +277,16 @@ export async function getMediaTypes() {
   }
 }
 
+// 💾 Salvar mídia no backend
+export const salvarMidiaApi = async (body: any) => {
+  try {
+    const response = await api.post("/api/midias", body);
+    return response.data;
+  } catch (error: any) {
+    console.error("Erro ao salvar mídia:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
 
 export default api;

@@ -19,7 +19,7 @@ import {
   buscarTituloTMDB,
   buscarDetalhes as buscarDetalhesService,
 } from "../services/tmdb";
-import { getMediaTypes } from "../services/api";
+import { getMediaTypes, salvarMidiaApi } from "../services/api";
 
 export default function MidiaBase() {
   // ------------------- ESTADOS PRINCIPAIS -------------------
@@ -49,6 +49,11 @@ export default function MidiaBase() {
   const [showResults, setShowResults] = useState(false);
 
   const [assistido, setAssistido] = useState(false);
+
+  const [numeroSerie, setNumeroSerie] = useState("");
+  const [selectedTypeId, setSelectedTypeId] = useState<number | null>(null);
+
+  const [formatoMidia, setFormatoMidia] = useState("");
 
   async function handleSearch(text: string) {
     setSearchQuery(text);
@@ -142,32 +147,63 @@ export default function MidiaBase() {
   async function salvarMidia() {
     if (!selectedType)
       return showModal("Selecione o tipo de mídia física", "error");
+
     if (isSerie && !temporada) return showModal("Informe a temporada", "error");
 
+    if (!details)
+      return showModal("Nenhum item do TMDB foi carregado", "error");
+
     setSaving(true);
+
     try {
-      // TODO: chamar endpoint backend para persistir
-      // Exemplo payload:
-      // {
-      //  typeId: selectedTypeId,
-      //  category: selectedItem.media_type,
-      //  tmdbId: details.id,
-      //  title: details.title || details.name,
-      //  season: temporada (se tv),
-      //  observation: observacao
-      // }
+      const body = {
+        tituloOriginal: details.titulo_original || "",
+        tituloAlternativo: details.titulo_alternativo || "",
+        capaUrl: details.capa_url || "",
+        assistido: !!assistido,
+        observacoes: observacao || "",
+        temporada: temporada || "",
+        midiaTipoNome: selectedType,
+        anoLancamento: Number(details.ano_lancamento) || null,
+        generos: Array.isArray(details.generos)
+          ? details.generos.join(", ")
+          : details.generos || "",
+        duracao: Number(details.duracao) || 0,
+        linguagem: Array.isArray(details.linguagem)
+          ? details.linguagem.join(", ")
+          : details.linguagem || "",
+        classificacaoEtaria: details.classificacao_etaria || "Livre",
+        artistas: Array.isArray(details.artistas)
+          ? details.artistas.join(", ")
+          : details.artistas || "",
+        diretores: Array.isArray(details.diretores)
+          ? details.diretores.join(", ")
+          : details.diretores || "",
+        estudio: Array.isArray(details.estudio)
+          ? details.estudio.join(", ")
+          : details.estudio || "",
+        notaMedia: Number(details.nota_media) || 0,
+        sinopse: details.sinopse || "",
+        midiaTipoId: selectedTypeId || null,
+        formatoMidia: formatoMidia,
+      };
+
+      await salvarMidiaApi(body);
+
       showModal("Mídia cadastrada com sucesso!", "success");
 
-      // limpar seleção após salvar (opcional)
+      // limpar seleção após salvar
       setSelectedItem(null);
       setDetails(null);
       setQuery("");
       setSearchResults([]);
       setSelectedType("");
       setTemporada("");
+      setNumeroSerie("");
       setObservacao("");
       setMode(""); // volta para home
     } catch (err) {
+      console.error("Erro ao salvar mídia:", err);
       showModal("Erro ao salvar mídia", "error");
     } finally {
       setSaving(false);
@@ -274,6 +310,7 @@ export default function MidiaBase() {
                   ]}
                   onPress={() => {
                     setSelectedType(displayName);
+                    setSelectedTypeId(t.id);
                     setShowSelectMediaType(false);
                     // 🔥 limpar tudo ao trocar o tipo de mídia
                     setSearchQuery("");
@@ -345,6 +382,8 @@ export default function MidiaBase() {
                           if (item.tipo === "Filme") {
                             setTemporada("");
                           }
+
+                          setFormatoMidia(item.tipo);
 
                           buscarDetalhes(item.id, tipoTMDB);
                         }}
@@ -430,7 +469,7 @@ export default function MidiaBase() {
             <TextInput
               style={styles.readonly}
               editable={false}
-              value={details.formato_midia}
+              value={selectedType}
             />
 
             <Text style={styles.label}>Ano de Lançamento</Text>
