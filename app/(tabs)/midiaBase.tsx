@@ -23,9 +23,8 @@ export default function MidiaBase() {
 
   const [mediaTypes, setMediaTypes] = useState<any[]>([]);
   const [selectedType, setSelectedType] = useState<string>("");
-  const [selectedItem, setSelectedItem] = useState<any | null>(null);
+
   const [details, setDetails] = useState<any | null>(null);
-  const [query, setQuery] = useState<string>("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [loadingSearch, setLoadingSearch] = useState<boolean>(false);
   const [isSerie, setIsSerie] = useState<boolean>(false);
@@ -46,7 +45,6 @@ export default function MidiaBase() {
 
   const [assistido, setAssistido] = useState(false);
 
-  const [numeroSerie, setNumeroSerie] = useState("");
   const [selectedTypeId, setSelectedTypeId] = useState<number | null>(null);
 
   const [formatoMidia, setFormatoMidia] = useState("");
@@ -82,6 +80,7 @@ export default function MidiaBase() {
       const data = await getMediaTypes();
       setMediaTypes(Array.isArray(data) ? data : []);
     } catch (err) {
+      console.error("Erro ao carregar tipos de mídia:", err);
       showModal("Erro ao carregar tipos de mídia", "error");
     }
   }
@@ -136,13 +135,11 @@ export default function MidiaBase() {
       showModal("Mídia cadastrada com sucesso!", "success");
 
       // limpar seleção após salvar
-      setSelectedItem(null);
+
       setDetails(null);
-      setQuery("");
       setSearchResults([]);
       setSelectedType("");
       setTemporada("");
-      setNumeroSerie("");
       setObservacao("");
       setMode(""); // volta para home
     } catch (err) {
@@ -259,7 +256,6 @@ export default function MidiaBase() {
                     setSearchQuery("");
                     setSearchResults([]);
                     setDetails(null);
-                    setSelectedItem(null);
                     setIsSerie(false);
                     setTemporada("");
                     setObservacao("");
