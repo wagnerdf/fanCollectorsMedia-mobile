@@ -137,20 +137,27 @@ Você pode acessar a aplicação em produção pelo link abaixo:
 
 ## 🧩 Funcionalidades
 
-- [x] Autenticação com JWT (Login, Cadastro, Validação)
-- [x] Perfil do usuário com edição
-- [x] Cadastro de mídias com dados preenchidos automaticamente via TMDB para Filmes e Series
-- [ ] Cadastro de mídias com dados preenchidos automaticamente MusicBrainz API para Musicas (em breve)
-- [ ] Cadastro de mídias com dados preenchidos automaticamente RAWG Video Games Database para Games (em breve)
-- [x] Notícias de entretenimento** (cinema, música e jogos) no sidebar, rotativas a cada 10 minutos.
-- [ ] Upload de imagem de capa
-- [x] Validação de campos obrigatórios
-- [x] Dashboard com exibição das mídias cadastradas
-- [x] Filtro e busca por título 
-- [ ] Edição de titulo 
-- [ ] Exlusão de título
-- [ ] Postagens e publicação de midias dos usuários compartilhados (em breve)
-- [x] Responsividade para mobile
+Abaixo está a tabela de funcionalidades organizadas por área do projeto.
+
+| Funcionalidade                                                                 | Backend | Web | Mobile |
+|-------------------------------------------------------------------------------|:-------:|:---:|:------:|
+| Autenticação com JWT (Login, Cadastro, Validação)                             |   ✓     |  ✓  |   ✓    |
+| Perfil do usuário com edição                                                  |   ✓     |  ✓  |   ✓    |
+| Cadastro de mídias com dados do TMDB (Filmes e Séries)                       |   ✓     |  ✓  |   ✓    |
+| Cadastro de mídias com dados do MusicBrainz API (Músicas)                    |   ⏳     |  ⏳ |   ⏳   |
+| Cadastro de mídias com dados do RAWG API (Games)                             |   ⏳     |  ⏳ |   ⏳   |
+| Notícias de entretenimento rotativas a cada 10 min                            |   ✓     |  ✓  |   -    |
+| Upload de imagem de capa                                                      |   ⏳     |  ⏳ |   ⏳   |
+| Validação de campos obrigatórios                                              |   ✓     |  ✓  |   ✓    |
+| Dashboard com exibição das mídias cadastradas                                |   ✓     |  ✓  |   ✓    |
+| Filtro e busca por título                                                     |   ✓     |  ✓  |   ⏳    |
+| Edição de título                                                              |   ✓     |  ✓ |   ⏳   |
+| Exclusão de título                                                            |   ✓     |  ✓ |   ⏳   |
+| Postagens e publicação de mídias pelos usuários                               |   ⏳     |  ⏳ |   ⏳   |
+| Responsividade para mobile                                                    |   -     |  ✓  |   ✓    |
+
+Legenda:  
+**✓ concluído** — **⏳ em andamento** — **- não se aplica**
 
 ---
 
