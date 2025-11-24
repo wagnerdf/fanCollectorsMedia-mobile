@@ -47,32 +47,36 @@ Você pode acessar a aplicação em produção pelo link abaixo:
 
 ## 📱 Layout mobile
 
-<p align="center">
-  <img src="https://i.imgur.com/uZTG6rh.jpeg" width="220" style="margin:10px;" />
-  <img src="https://i.imgur.com/Y9vGG3V.jpeg" width="220" style="margin:10px;" />
-</p>
-<p align="center">
-  <span style="color:#ff6b6b; font-size:18px;">🟢 Tela Inicial Usuário</span> 
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <span style="color:#4dabf7; font-size:18px;">🟣 Tela de Login</span>
-</p>
+<div style="display:flex; flex-wrap: wrap; justify-content: center; gap: 20px;">
 
-<p align="center">
-  <img src="https://i.imgur.com/4H88Umu.jpeg" width="220" style="margin:10px;" />
-  <img src="https://i.imgur.com/FAFZoCk.jpeg" width="220" style="margin:10px;" />
-</p>
-<p align="center">
-  <span style="color:#51cf66; font-size:18px;">🔵 Tela de Biblioteca</span> 
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <span style="color:#ffd43b; font-size:18px;">🟠 Detalhes da Mídia</span>
-</p>
+<div style="text-align: center; margin-bottom: 20px;">
+  <img src="https://i.imgur.com/uZTG6rh.jpeg" width="220" />
+  <div style="color:#ff6b6b; font-size:16px; margin-top:5px;">🟢 Tela Inicial Usuário</div>
+</div>
 
-<p align="center">
-  <img src="https://i.imgur.com/qEQceER.jpeg" width="220" style="margin:10px;" />
-</p>
-<p align="center">
-  <span style="color:#845ef7; font-size:18px;">🟡 Tela de Edição de Usuário</span>
-</p>
+<div style="text-align: center; margin-bottom: 20px;">
+  <img src="https://i.imgur.com/Y9vGG3V.jpeg" width="220" />
+  <div style="color:#4dabf7; font-size:16px; margin-top:5px;">🟣 Tela de Login</div>
+</div>
+
+<div style="text-align: center; margin-bottom: 20px;">
+  <img src="https://i.imgur.com/4H88Umu.jpeg" width="220" />
+  <div style="color:#51cf66; font-size:16px; margin-top:5px;">🔵 Tela de Biblioteca</div>
+</div>
+
+<div style="text-align: center; margin-bottom: 20px;">
+  <img src="https://i.imgur.com/FAFZoCk.jpeg" width="220" />
+  <div style="color:#ffd43b; font-size:16px; margin-top:5px;">🟠 Detalhes da Mídia</div>
+</div>
+
+<div style="text-align: center; margin-bottom: 20px;">
+  <img src="https://i.imgur.com/qEQceER.jpeg" width="220" />
+  <div style="color:#845ef7; font-size:16px; margin-top:5px;">🟡 Tela de Edição de Usuário</div>
+</div>
+
+
+</div>
+
 
 ---
 
