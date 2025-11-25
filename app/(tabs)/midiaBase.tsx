@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Image,
   Switch,
+  Modal,
 } from "react-native";
 import AppModal from "@/components/AppModal";
 import {
@@ -56,6 +57,13 @@ export default function MidiaBase() {
   const [queryExcluir, setQueryExcluir] = useState("");
   const [listaExcluir, setListaExcluir] = useState<any[]>([]);
   const [loadingExcluir, setLoadingExcluir] = useState(false);
+
+  const [midiaSelecionada, setMidiaSelecionada] = useState<any>(null);
+
+  function abrirModalExcluir(midia: any) {
+    setMidiaSelecionada(midia);
+    setModalVisible(true);
+  }
 
   async function handleSearch(text: string) {
     setSearchQuery(text);
@@ -562,10 +570,83 @@ export default function MidiaBase() {
                     💿 {item.midiaTipoNome}
                   </Text>
                 </View>
+                <TouchableOpacity
+                  style={styles.botaoExcluir}
+                  onPress={() => abrirModalExcluir(item)}
+                >
+                  <Text style={styles.textoBotaoExcluir}>Excluir</Text>
+                </TouchableOpacity>
               </View>
             ))}
           </View>
         )}
+        <Modal
+          visible={modalVisible}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Confirmação de exclusão</Text>
+
+              <Text style={styles.modalDescription}>
+                Esta ação irá excluir permanentemente a mídia selecionada.
+              </Text>
+
+              <Text style={styles.modalSubtitle}>
+                Tem certeza que deseja excluir a seguinte mídia?
+              </Text>
+
+              {midiaSelecionada && (
+                <View style={styles.infoBox}>
+                  {midiaSelecionada.capaUrl && (
+                    <Image
+                      source={{ uri: midiaSelecionada.capaUrl }}
+                      style={styles.capaImagem}
+                    />
+                  )}
+
+                  <Text style={styles.infoTexto}>
+                    <Text style={styles.label}>Título: </Text>
+                    {midiaSelecionada.tituloAlternativo}
+                  </Text>
+
+                  <Text style={styles.infoTexto}>
+                    <Text style={styles.label}>Tipo: </Text>
+                    {midiaSelecionada.midiaTipoNome}
+                  </Text>
+
+                  <Text style={styles.infoTexto}>
+                    <Text style={styles.label}>Assistido: </Text>
+                    {midiaSelecionada.assistido ? "Sim" : "Não"}
+                  </Text>
+
+                  <Text style={styles.infoTexto}>
+                    <Text style={styles.label}>Observações: </Text>
+                    {midiaSelecionada.observacoes || "—"}
+                  </Text>
+                </View>
+              )}
+
+              <View style={styles.modalBotoes}>
+                <TouchableOpacity
+                  style={styles.botaoCancelar}
+                  onPress={() => setModalVisible(false)}
+                >
+                  <Text style={styles.botaoCancelarTexto}>Cancelar</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.botaoConfirmarExcluir}
+                  onPress={() => console.log("Excluir futuramente")}
+                >
+                  <Text style={styles.botaoConfirmarExcluirTexto}>Excluir</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
     );
   }
@@ -637,6 +718,7 @@ const styles = StyleSheet.create({
     color: "#cbd5e1",
     marginTop: 10,
     marginBottom: 4,
+    fontWeight: "bold",
   },
   input: {
     backgroundColor: "#161b22",
@@ -780,32 +862,123 @@ const styles = StyleSheet.create({
     marginVertical: 15,
   },
   excluirTitle: {
-  color: "#fff",
-  fontSize: 22,
-  fontWeight: "700",
-  marginBottom: 12,
-},
+    color: "#fff",
+    fontSize: 22,
+    fontWeight: "700",
+    marginBottom: 12,
+  },
 
-excluirItem: {
-  backgroundColor: "#161b22",
-  padding: 12,
-  borderRadius: 10,
-  borderWidth: 1,
-  borderColor: "#2b2f33",
-  marginBottom: 10,
-  flexDirection: "row",
-  alignItems: "center",
-},
+  excluirItem: {
+    backgroundColor: "#161b22",
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#2b2f33",
+    marginBottom: 10,
+    flexDirection: "row",
+    alignItems: "center",
+  },
 
-excluirTitulo: {
-  color: "#fff",
-  fontSize: 16,
-  fontWeight: "600",
-},
+  excluirTitulo: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+  },
 
-excluirInfo: {
-  color: "#cbd5e1",
-  fontSize: 13,
-},
+  excluirInfo: {
+    color: "#cbd5e1",
+    fontSize: 13,
+  },
+  botaoExcluir: {
+    backgroundColor: "#d9534f",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+  },
 
+  textoBotaoExcluir: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+
+  modalContent: {
+    width: "85%",
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 20,
+  },
+
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+
+  modalDescription: {
+    fontSize: 14,
+    marginBottom: 15,
+    color: "#444",
+  },
+
+  modalSubtitle: {
+    fontSize: 15,
+    fontWeight: "600",
+    marginBottom: 12,
+  },
+
+  infoBox: {
+    backgroundColor: "#f1f1f1",
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 20,
+  },
+
+  capaImagem: {
+    width: 120,
+    height: 160,
+    alignSelf: "center",
+    borderRadius: 6,
+    marginBottom: 12,
+  },
+
+  infoTexto: {
+    marginBottom: 6,
+    fontSize: 14,
+  },
+  modalBotoes: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+  },
+
+  botaoCancelar: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: "#ccc",
+    borderRadius: 6,
+  },
+
+  botaoCancelarTexto: {
+    fontWeight: "bold",
+    color: "#333",
+  },
+
+  botaoConfirmarExcluir: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: "#d9534f",
+    borderRadius: 6,
+  },
+
+  botaoConfirmarExcluirTexto: {
+    fontWeight: "bold",
+    color: "#fff",
+  },
 });
