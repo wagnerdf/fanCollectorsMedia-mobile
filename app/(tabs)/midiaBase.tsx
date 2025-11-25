@@ -506,6 +506,27 @@ export default function MidiaBase() {
   }
 
   // --------------------------------------------------------------
+  // ------------------- TELA DE EXCLUIR --------------------------
+  // --------------------------------------------------------------
+  function renderExcluir() {
+    return (
+      <View style={{ marginTop: 20 }}>
+        <Text style={styles.excluirTitle}>🗑️ Excluir Mídia</Text>
+
+        <Text style={styles.label}>Pesquisar mídia</Text>
+
+        <TextInput
+          style={styles.input}
+          placeholder="Digite para buscar..."
+          placeholderTextColor="#555"
+        />
+
+        {/* Em breve aqui ficará a lista com as mídias filtradas */}
+      </View>
+    );
+  }
+
+  // --------------------------------------------------------------
   // ------------------- RENDER PRINCIPAL -------------------------
   // --------------------------------------------------------------
   return (
@@ -523,13 +544,7 @@ export default function MidiaBase() {
           </Text>
         </View>
       )}
-      {mode === "excluir" && (
-        <View style={{ marginTop: 20 }}>
-          <Text style={styles.placeholder}>
-            Tela de exclusão em desenvolvimento...
-          </Text>
-        </View>
-      )}
+      {mode === "excluir" && renderExcluir()}
 
       <AppModal
         visible={modalVisible}
@@ -719,5 +734,12 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: "#666",
     marginVertical: 15,
+  },
+  excluirTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#f87171", // vermelho suave
+    marginBottom: 10,
+    textAlign: "center",
   },
 });
