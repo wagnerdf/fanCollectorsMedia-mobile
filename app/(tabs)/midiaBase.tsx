@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -20,6 +20,7 @@ import {
   getMediaTypes,
   salvarMidiaApi,
   buscarMidiasParaExcluir,
+  excluirMidia,
 } from "../services/api";
 
 import Animated, {
@@ -67,6 +68,38 @@ export default function MidiaBase() {
   const [loadingExcluir, setLoadingExcluir] = useState(false);
 
   const [midiaSelecionada, setMidiaSelecionada] = useState<any>(null);
+
+  const inputExcluirRef = useRef<any>(null);
+
+  const [loadingExcluirConfirm, setLoadingExcluirConfirm] = useState(false);
+
+  async function handleConfirmarExclusao() {
+    if (!midiaSelecionada) return;
+
+    try {
+      setLoadingExcluirConfirm(true);
+
+      // chama a API de exclusão
+      await excluirMidia(midiaSelecionada.id);
+
+      // limpar estados da UI
+      setQueryExcluir(""); // limpa o input visualmente
+      setListaExcluir([]); // limpa a lista exibida
+      setMidiaSelecionada(null);
+      setModalVisible(false);
+
+      // dar foco no input para o usuário poder digitar de novo
+      // usamos um pequeno timeout para garantir que o modal já fechou e o input está montado
+      setTimeout(() => {
+        inputExcluirRef.current?.focus?.();
+      }, 50);
+    } catch (error) {
+      console.error("Erro ao excluir mídia:", error);
+      // opcional: mostrar modal de erro
+    } finally {
+      setLoadingExcluirConfirm(false);
+    }
+  }
 
   function abrirModalExcluir(midia: any) {
     setMidiaSelecionada(midia);
@@ -552,6 +585,7 @@ export default function MidiaBase() {
         <Text style={styles.excluirTitle}>🗑️ Excluir Mídia</Text>
         <Text style={styles.label}>Pesquisar</Text>
         <TextInput
+          ref={inputExcluirRef}
           style={styles.input}
           placeholder="Digite para buscar..."
           placeholderTextColor="#555"
@@ -600,7 +634,7 @@ export default function MidiaBase() {
               exiting={ZoomOut.duration(200)}
               style={styles.modalContent}
             >
-              {/* Ícone de alerta */}
+              {/* Ícone */}
               <View style={{ alignItems: "center", marginBottom: 15 }}>
                 <MaterialIcons name="warning" size={48} color="#ff453a" />
               </View>
@@ -625,7 +659,7 @@ export default function MidiaBase() {
                 }}
               />
 
-              {/* Bloco de informações */}
+              {/* Bloco com informações */}
               {midiaSelecionada && (
                 <View style={styles.infoBox}>
                   {midiaSelecionada.capaUrl && (
@@ -668,9 +702,12 @@ export default function MidiaBase() {
 
                 <TouchableOpacity
                   style={styles.botaoConfirmarExcluir}
-                  onPress={() => console.log("Excluir futuramente")}
+                  onPress={handleConfirmarExclusao}
+                  disabled={loadingExcluirConfirm}
                 >
-                  <Text style={styles.botaoConfirmarExcluirTexto}>Excluir</Text>
+                  <Text style={styles.botaoConfirmarExcluirTexto}>
+                    {loadingExcluirConfirm ? "Excluindo..." : "Excluir"}
+                  </Text>
                 </TouchableOpacity>
               </View>
             </Animated.View>

@@ -291,6 +291,7 @@ export const salvarMidiaApi = async (body: any) => {
   }
 };
 
+// Buscar midia
 export async function buscarMidiasParaExcluir(query: string) {
   if (!query || query.trim() === "") return [];
 
@@ -306,5 +307,10 @@ export async function buscarMidiasParaExcluir(query: string) {
   }
 }
 
+// ❌ Excluir mídia
+export const excluirMidia = async (id: number) => {
+  const res = await api.delete(`/api/midias/${id}`);
+  return res.data;
+};
 
 export default api;
