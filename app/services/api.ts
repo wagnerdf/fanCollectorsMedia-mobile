@@ -283,10 +283,28 @@ export const salvarMidiaApi = async (body: any) => {
     const response = await api.post("/api/midias", body);
     return response.data;
   } catch (error: any) {
-    console.error("Erro ao salvar mídia:", error.response?.data || error.message);
+    console.error(
+      "Erro ao salvar mídia:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 };
+
+export async function buscarMidiasParaExcluir(query: string) {
+  if (!query || query.trim() === "") return [];
+
+  try {
+    const response = await api.get(`/api/midias/buscar`, {
+      params: { query: query.trim() },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao buscar mídias para exclusão:", error);
+    return [];
+  }
+}
 
 
 export default api;

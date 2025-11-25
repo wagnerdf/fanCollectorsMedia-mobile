@@ -15,7 +15,11 @@ import {
   buscarTituloTMDB,
   buscarDetalhes as buscarDetalhesService,
 } from "../services/tmdb";
-import { getMediaTypes, salvarMidiaApi } from "../services/api";
+import {
+  getMediaTypes,
+  salvarMidiaApi,
+  buscarMidiasParaExcluir,
+} from "../services/api";
 
 export default function MidiaBase() {
   // ------------------- ESTADOS PRINCIPAIS -------------------
@@ -49,6 +53,10 @@ export default function MidiaBase() {
 
   const [formatoMidia, setFormatoMidia] = useState("");
 
+  const [queryExcluir, setQueryExcluir] = useState("");
+  const [listaExcluir, setListaExcluir] = useState<any[]>([]);
+  const [loadingExcluir, setLoadingExcluir] = useState(false);
+
   async function handleSearch(text: string) {
     setSearchQuery(text);
     setShowResults(true);
@@ -62,6 +70,20 @@ export default function MidiaBase() {
     const results = await buscarTituloTMDB(text);
     setSearchResults(results);
     setLoadingSearch(false);
+  }
+
+  async function handleBuscarParaExcluir(text: string) {
+    setQueryExcluir(text);
+
+    if (text.length < 2) {
+      setListaExcluir([]);
+      return;
+    }
+
+    setLoadingExcluir(true);
+    const data = await buscarMidiasParaExcluir(text);
+    setListaExcluir(Array.isArray(data) ? data : []);
+    setLoadingExcluir(false);
   }
 
   function showModal(msg: string, type: "success" | "error" | "info" = "info") {
@@ -513,15 +535,37 @@ export default function MidiaBase() {
       <View style={{ marginTop: 20 }}>
         <Text style={styles.excluirTitle}>🗑️ Excluir Mídia</Text>
 
-        <Text style={styles.label}>Pesquisar mídia</Text>
+        <Text style={styles.label}>Pesquisar</Text>
 
         <TextInput
           style={styles.input}
           placeholder="Digite para buscar..."
           placeholderTextColor="#555"
+          value={queryExcluir}
+          onChangeText={handleBuscarParaExcluir}
         />
 
-        {/* Em breve aqui ficará a lista com as mídias filtradas */}
+        {loadingExcluir && (
+          <Text style={{ marginTop: 10, color: "#999" }}>Buscando...</Text>
+        )}
+
+        {listaExcluir.length > 0 && (
+          <View style={{ marginTop: 16 }}>
+            {listaExcluir.map((item) => (
+              <View key={item.id} style={styles.excluirItem}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.excluirTitulo}>
+                    {item.tituloAlternativo}
+                  </Text>
+                  <Text style={styles.excluirInfo}>🎭 {item.generos}</Text>
+                  <Text style={styles.excluirInfo}>
+                    💿 {item.midiaTipoNome}
+                  </Text>
+                </View>
+              </View>
+            ))}
+          </View>
+        )}
       </View>
     );
   }
@@ -736,10 +780,32 @@ const styles = StyleSheet.create({
     marginVertical: 15,
   },
   excluirTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#f87171", // vermelho suave
-    marginBottom: 10,
-    textAlign: "center",
-  },
+  color: "#fff",
+  fontSize: 22,
+  fontWeight: "700",
+  marginBottom: 12,
+},
+
+excluirItem: {
+  backgroundColor: "#161b22",
+  padding: 12,
+  borderRadius: 10,
+  borderWidth: 1,
+  borderColor: "#2b2f33",
+  marginBottom: 10,
+  flexDirection: "row",
+  alignItems: "center",
+},
+
+excluirTitulo: {
+  color: "#fff",
+  fontSize: 16,
+  fontWeight: "600",
+},
+
+excluirInfo: {
+  color: "#cbd5e1",
+  fontSize: 13,
+},
+
 });
