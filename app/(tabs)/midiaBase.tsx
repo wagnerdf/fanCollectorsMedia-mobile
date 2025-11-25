@@ -22,6 +22,14 @@ import {
   buscarMidiasParaExcluir,
 } from "../services/api";
 
+import Animated, {
+  FadeIn,
+  FadeOut,
+  ZoomIn,
+  ZoomOut,
+} from "react-native-reanimated";
+import { MaterialIcons } from "@expo/vector-icons";
+
 export default function MidiaBase() {
   // ------------------- ESTADOS PRINCIPAIS -------------------
   const [mode, setMode] = useState<"" | "cadastrar" | "editar" | "excluir">("");
@@ -542,9 +550,7 @@ export default function MidiaBase() {
     return (
       <View style={{ marginTop: 20 }}>
         <Text style={styles.excluirTitle}>🗑️ Excluir Mídia</Text>
-
         <Text style={styles.label}>Pesquisar</Text>
-
         <TextInput
           style={styles.input}
           placeholder="Digite para buscar..."
@@ -552,11 +558,9 @@ export default function MidiaBase() {
           value={queryExcluir}
           onChangeText={handleBuscarParaExcluir}
         />
-
         {loadingExcluir && (
           <Text style={{ marginTop: 10, color: "#999" }}>Buscando...</Text>
         )}
-
         {listaExcluir.length > 0 && (
           <View style={{ marginTop: 16 }}>
             {listaExcluir.map((item) => (
@@ -586,8 +590,21 @@ export default function MidiaBase() {
           animationType="fade"
           onRequestClose={() => setModalVisible(false)}
         >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
+          <Animated.View
+            entering={FadeIn.duration(250)}
+            exiting={FadeOut.duration(200)}
+            style={styles.modalContainer}
+          >
+            <Animated.View
+              entering={ZoomIn.duration(250)}
+              exiting={ZoomOut.duration(200)}
+              style={styles.modalContent}
+            >
+              {/* Ícone de alerta */}
+              <View style={{ alignItems: "center", marginBottom: 15 }}>
+                <MaterialIcons name="warning" size={48} color="#ff453a" />
+              </View>
+
               <Text style={styles.modalTitle}>Confirmação de exclusão</Text>
 
               <Text style={styles.modalDescription}>
@@ -598,6 +615,17 @@ export default function MidiaBase() {
                 Tem certeza que deseja excluir a seguinte mídia?
               </Text>
 
+              {/* Divider */}
+              <View
+                style={{
+                  height: 1,
+                  backgroundColor: "#48484a",
+                  marginVertical: 12,
+                  opacity: 0.35,
+                }}
+              />
+
+              {/* Bloco de informações */}
               {midiaSelecionada && (
                 <View style={styles.infoBox}>
                   {midiaSelecionada.capaUrl && (
@@ -629,6 +657,7 @@ export default function MidiaBase() {
                 </View>
               )}
 
+              {/* Botões */}
               <View style={styles.modalBotoes}>
                 <TouchableOpacity
                   style={styles.botaoCancelar}
@@ -644,8 +673,8 @@ export default function MidiaBase() {
                   <Text style={styles.botaoConfirmarExcluirTexto}>Excluir</Text>
                 </TouchableOpacity>
               </View>
-            </View>
-          </View>
+            </Animated.View>
+          </Animated.View>
         </Modal>
       </View>
     );
@@ -831,11 +860,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#2b2f33",
   },
-
   dropdownItemSelected: {
     backgroundColor: "#2563eb33",
   },
-
   dropdownItemText: {
     color: "#fff",
     fontSize: 15,
@@ -847,7 +874,6 @@ const styles = StyleSheet.create({
     color: "#333",
     marginBottom: 10,
   },
-
   row: {
     flexDirection: "row",
     alignItems: "center",
@@ -855,7 +881,6 @@ const styles = StyleSheet.create({
     gap: 10, // OU marginRight no Text
     marginVertical: 10,
   },
-
   divider: {
     height: 1,
     backgroundColor: "#666",
@@ -867,7 +892,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginBottom: 12,
   },
-
   excluirItem: {
     backgroundColor: "#161b22",
     padding: 12,
@@ -878,13 +902,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-
   excluirTitulo: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "600",
   },
-
   excluirInfo: {
     color: "#cbd5e1",
     fontSize: 13,
@@ -895,90 +917,90 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 6,
   },
-
   textoBotaoExcluir: {
     color: "#fff",
     fontWeight: "bold",
   },
-
   modalContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
-
   modalContent: {
-    width: "85%",
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 20,
+    width: "88%",
+    backgroundColor: "#2c2c2e",
+    borderRadius: 18,
+    padding: 22,
+    borderWidth: 1,
+    borderColor: "#3a3a3c",
+    shadowColor: "#000",
+    shadowOpacity: 0.45,
+    shadowRadius: 14,
+    elevation: 14,
   },
-
   modalTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 10,
+    fontSize: 22,
+    color: "#fff",
+    fontWeight: "600",
+    textAlign: "center",
+    marginBottom: 4,
   },
-
   modalDescription: {
     fontSize: 14,
-    marginBottom: 15,
-    color: "#444",
+    color: "#c7c7cc",
+    textAlign: "center",
+    marginBottom: 14,
   },
-
   modalSubtitle: {
     fontSize: 15,
     fontWeight: "600",
-    marginBottom: 12,
+    color: "#fff",
+    marginBottom: 14,
   },
-
   infoBox: {
-    backgroundColor: "#f1f1f1",
-    borderRadius: 8,
-    padding: 12,
+    backgroundColor: "#3a3a3c",
+    borderRadius: 14,
+    padding: 15,
+    borderWidth: 1,
+    borderColor: "#48484a",
     marginBottom: 20,
   },
-
-  capaImagem: {
-    width: 120,
-    height: 160,
-    alignSelf: "center",
-    borderRadius: 6,
-    marginBottom: 12,
-  },
-
   infoTexto: {
-    marginBottom: 6,
-    fontSize: 14,
+    color: "#e5e5ea",
+    fontSize: 15,
+    marginBottom: 8,
+  },
+  capaImagem: {
+    width: 140,
+    height: 200,
+    alignSelf: "center",
+    borderRadius: 10,
+    marginBottom: 16,
   },
   modalBotoes: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 10,
+    marginTop: 5,
   },
-
   botaoCancelar: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    backgroundColor: "#ccc",
-    borderRadius: 6,
+    paddingVertical: 12,
+    paddingHorizontal: 22,
+    backgroundColor: "#636366",
+    borderRadius: 12,
   },
-
   botaoCancelarTexto: {
-    fontWeight: "bold",
-    color: "#333",
-  },
-
-  botaoConfirmarExcluir: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    backgroundColor: "#d9534f",
-    borderRadius: 6,
-  },
-
-  botaoConfirmarExcluirTexto: {
-    fontWeight: "bold",
     color: "#fff",
+    fontWeight: "700",
+  },
+  botaoConfirmarExcluir: {
+    paddingVertical: 12,
+    paddingHorizontal: 22,
+    backgroundColor: "#ff3b30",
+    borderRadius: 12,
+  },
+  botaoConfirmarExcluirTexto: {
+    color: "#fff",
+    fontWeight: "700",
   },
 });
