@@ -10,6 +10,8 @@ import {
   Image,
   Switch,
   Modal,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import AppModal from "@/components/AppModal";
 import {
@@ -30,6 +32,7 @@ import Animated, {
   ZoomOut,
 } from "react-native-reanimated";
 import { MaterialIcons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function MidiaBase() {
   // ------------------- ESTADOS PRINCIPAIS -------------------
@@ -732,29 +735,38 @@ export default function MidiaBase() {
   // ------------------- RENDER PRINCIPAL -------------------------
   // --------------------------------------------------------------
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Gerenciar Mídias</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#0d1117" }}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={{ paddingBottom: 120 }} // espaço para menu inferior + margem
+          keyboardShouldPersistTaps="handled" // permite clicar em botões mesmo com teclado aberto
+        >
+          <Text style={styles.title}>Gerenciar Mídias</Text>
+          {renderMenu()}
+          {mode === "" && renderHomeImage()}
+          {mode === "cadastrar" && renderCadastrar()}
+          {mode === "editar" && (
+            <View style={{ marginTop: 20 }}>
+              <Text style={styles.placeholder}>
+                Tela de edição em desenvolvimento...
+              </Text>
+            </View>
+          )}
+          {mode === "excluir" && renderExcluir()}
 
-      {renderMenu()}
-
-      {mode === "" && renderHomeImage()}
-      {mode === "cadastrar" && renderCadastrar()}
-      {mode === "editar" && (
-        <View style={{ marginTop: 20 }}>
-          <Text style={styles.placeholder}>
-            Tela de edição em desenvolvimento...
-          </Text>
-        </View>
-      )}
-      {mode === "excluir" && renderExcluir()}
-
-      <AppModal
-        visible={modalAppVisible}
-        message={modalMessage}
-        modalType={modalType}
-        onClose={() => setModalAppVisible(false)}
-      />
-    </ScrollView>
+          <AppModal
+            visible={modalAppVisible}
+            message={modalMessage}
+            modalType={modalType}
+            onClose={() => setModalAppVisible(false)}
+          />
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
