@@ -14,9 +14,14 @@ export default function ExplorerScreen() {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
-  const [modalType, setModalType] = useState<"success" | "error" | "info">("info");
+  const [modalType, setModalType] = useState<"success" | "error" | "info">(
+    "info"
+  );
 
-  const showModal = (message: string, type: "success" | "error" | "info" = "info") => {
+  const showModal = (
+    message: string,
+    type: "success" | "error" | "info" = "info"
+  ) => {
     setModalMessage(message);
     setModalType(type);
     setModalVisible(true);
@@ -28,11 +33,11 @@ export default function ExplorerScreen() {
         <Text style={styles.title}>Explorar</Text>
 
         <Text style={styles.subtitle}>
-          Descubra novas mídias, coleções e tendências compartilhadas pela comunidade FanCollectorsMedia.
+          Descubra novas mídias, coleções e tendências compartilhadas pela
+          comunidade FanCollectorsMedia.
         </Text>
 
         <View style={styles.section}>
-
           {/* 🔥 GERENCIAR MÍDIAS */}
           <View style={styles.item}>
             <Text style={styles.itemTitle}>📀 Gerenciar Mídias</Text>
@@ -48,6 +53,21 @@ export default function ExplorerScreen() {
             </TouchableOpacity>
           </View>
 
+          {/* 📚 MINHA BIBLIOTECA */}
+          <View style={styles.item}>
+            <Text style={styles.itemTitle}>📚 Minha Biblioteca</Text>
+            <Text style={styles.itemText}>
+              Veja todas as mídias que você já cadastrou na sua coleção.
+            </Text>
+
+            <TouchableOpacity
+              style={[styles.actionButton, styles.orangeButton]}
+              onPress={() => router.push("/(tabs)/home")}
+            >
+              <Text style={styles.actionText}>Abrir Biblioteca</Text>
+            </TouchableOpacity>
+          </View>
+
           {/* Mantendo o restante igual */}
           <View style={styles.item}>
             <Text style={styles.itemTitle}>⭐ Fãs em Destaque</Text>
@@ -56,7 +76,9 @@ export default function ExplorerScreen() {
             </Text>
             <TouchableOpacity
               style={[styles.actionButton, styles.greenButton]}
-              onPress={() => showModal("Funcionalidade em desenvolvimento!", "info")}
+              onPress={() =>
+                showModal("Funcionalidade em desenvolvimento!", "info")
+              }
             >
               <Text style={styles.actionText}>Explorar fãs</Text>
             </TouchableOpacity>
@@ -69,7 +91,9 @@ export default function ExplorerScreen() {
             </Text>
             <TouchableOpacity
               style={[styles.actionButton, styles.purpleButton]}
-              onPress={() => showModal("Funcionalidade em desenvolvimento!", "info")}
+              onPress={() =>
+                showModal("Funcionalidade em desenvolvimento!", "info")
+              }
             >
               <Text style={styles.actionText}>Ver mídias</Text>
             </TouchableOpacity>
@@ -162,4 +186,7 @@ const styles = StyleSheet.create({
   redButton: {
     backgroundColor: "#dc2626",
   },
+  orangeButton: {
+  backgroundColor: "#ea580c",
+},
 });

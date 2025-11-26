@@ -42,7 +42,7 @@ export default function LoginScreen() {
     if (data?.token) {
       try {
         await AsyncStorage.setItem("userToken", data.token);
-        router.replace("/(tabs)/home");
+        router.replace("/(tabs)/explore");
       } catch (e) {
         console.error("Erro ao salvar token:", e);
         setErrorMessage("Erro interno, tente novamente.");
@@ -89,6 +89,8 @@ export default function LoginScreen() {
               secureTextEntry={!showPassword}
               value={senha}
               onChangeText={setSenha}
+              onSubmitEditing={handleLogin}
+              returnKeyType="send"
             />
             <TouchableOpacity
               onPress={() => setShowPassword(!showPassword)}
@@ -206,9 +208,8 @@ const styles = StyleSheet.create({
   backButton: { backgroundColor: "#dc2626", marginLeft: 6 },
   buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
   signupText: { color: "#cbd5e1", textAlign: "center" },
-  signupLink: { color: "#60a5fa" 
-  },
-    fieldContainer: {
+  signupLink: { color: "#60a5fa" },
+  fieldContainer: {
     marginBottom: 16,
   },
   label: {
@@ -217,7 +218,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     marginLeft: 4,
   },
-    icon: {
+  icon: {
     alignSelf: "center",
     marginBottom: 12,
     textShadowColor: "rgba(0, 0, 0, 0.4)",
