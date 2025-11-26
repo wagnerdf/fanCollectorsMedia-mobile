@@ -1,14 +1,15 @@
 import React from "react";
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context"; // garante área segura no Android/iOS
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 export default function TabsLayout() {
   return (
-    // Provider para respeitar as áreas seguras
     <SafeAreaProvider>
-      {/* Área segura para evitar sobreposição com barras do sistema */}
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#121212" }} edges={["bottom"]}>
+      <SafeAreaView
+        style={{ flex: 1, backgroundColor: "#121212" }}
+        edges={["bottom"]}
+      >
         <Tabs
           screenOptions={{
             headerShown: false,
@@ -23,32 +24,40 @@ export default function TabsLayout() {
             tabBarLabelStyle: { fontSize: 12 },
           }}
         >
+          {/* Explorer */}
           <Tabs.Screen
             name="explore"
             options={{
-              title: "Home",
+              title: "Menu",
               tabBarIcon: ({ color, size }) => (
-                <Ionicons name="grid" color={color} size={size} />
+                <Ionicons name="apps" color={color} size={size} />
               ),
             }}
           />
+
+          {/* Gerenciador de Mídias */}
           <Tabs.Screen
-            name="home"
+            name="midiaBase"
+            options={{
+              title: "Mídias",
+              tabBarIcon: ({ color, size }) => (
+                <Ionicons name="videocam" color={color} size={size} />
+              ),
+            }}
+          />
+
+          {/* home */}
+          <Tabs.Screen
+            name="home" // corresponde a app/(tabs)/home/
             options={{
               title: "Biblioteca",
               tabBarIcon: ({ color, size }) => (
-                <Ionicons name="home" color={color} size={size} />
+                <Ionicons name="library" color={color} size={size} />
               ),
             }}
           />
-          {/* 👇 Oculta a tela Library do menu, mas mantém rota acessível */}
-          <Tabs.Screen
-            name="library"
-            options={{
-              href: null,
-            }}
-          />
-           {/* 👤 Novo menu de Usuário */}
+
+          {/* Usuário */}
           <Tabs.Screen
             name="userEdit"
             options={{

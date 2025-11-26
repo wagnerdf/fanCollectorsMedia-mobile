@@ -18,7 +18,7 @@ import {
   getMidiaById,
   getMidiasByGenero,
   getMidiasByTipo,
-} from "../services/api";
+} from "app/services/api";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 

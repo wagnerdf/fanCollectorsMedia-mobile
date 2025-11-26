@@ -1,14 +1,29 @@
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View, FlatList, ScrollView } from "react-native";
-import { useAppData } from "../../src/context/AppDataContext";
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  FlatList,
+  ScrollView,
+} from "react-native";
+import { useAppData } from "../../../src/context/AppDataContext";
 
 export default function HomeScreen() {
   const router = useRouter();
   const [atualizando, setAtualizando] = useState(false);
 
   // Dados vindos do contexto global
-  const { totalMidias, generos, tiposMidia, carregarDadosIniciais, carregando, jaCarregado, usuarioAtual } = useAppData();
+  const {
+    totalMidias,
+    generos,
+    tiposMidia,
+    carregarDadosIniciais,
+    carregando,
+    jaCarregado,
+    usuarioAtual,
+  } = useAppData();
 
   // Carrega apenas uma vez (ao logar)
   useEffect(() => {
@@ -39,21 +54,17 @@ export default function HomeScreen() {
       style={styles.item}
       onPress={() => {
         if (section === "biblioteca") {
-          router.push("/(tabs)/library");
+          router.push("home/library");
         } else if (section === "generos") {
-          router.push({
-            pathname: "/(tabs)/library",
-            params: { genero: item.nome },
-          });
+          router.push({ pathname: "home/library", params: { genero: item.nome } });
         } else if (section === "midias") {
-          router.push({
-            pathname: "/(tabs)/library",
-            params: { tipo: item.tipo },
-          });
+          router.push({ pathname: "home/library", params: { tipo: item.tipo } });
         }
       }}
     >
-      <Text style={styles.itemText}>{item.nome || item.label || item.tipo}</Text>
+      <Text style={styles.itemText}>
+        {item.nome || item.label || item.tipo}
+      </Text>
       <View style={styles.badge}>
         <Text style={styles.badgeText}>{item.total}</Text>
       </View>
@@ -75,14 +86,20 @@ export default function HomeScreen() {
               {atualizando ? "Atualizando..." : "Recarregar"}
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.headerButton, styles.logoutButton]} onPress={handleLogout}>
+          <TouchableOpacity
+            style={[styles.headerButton, styles.logoutButton]}
+            onPress={handleLogout}
+          >
             <Text style={styles.headerButtonText}>Sair</Text>
           </TouchableOpacity>
         </View>
       </View>
 
       {/* Conteúdo rolável */}
-      <ScrollView style={styles.scrollArea} contentContainerStyle={{ paddingBottom: 60 }}>
+      <ScrollView
+        style={styles.scrollArea}
+        contentContainerStyle={{ paddingBottom: 60 }}
+      >
         <Text style={styles.sectionTitle}>Biblioteca</Text>
         <FlatList
           data={biblioteca}
