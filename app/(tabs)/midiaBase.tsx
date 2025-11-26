@@ -48,7 +48,12 @@ export default function MidiaBase() {
   const [showSelectMediaType, setShowSelectMediaType] = useState(false);
 
   // ------------------- MODAL -------------------
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  // Modal AppModal (mensagens)
+  const [modalAppVisible, setModalAppVisible] = useState(false);
+
+  // Modal de exclusão
+  const [modalExcluirVisible, setModalExcluirVisible] = useState(false);
+
   const [modalMessage, setModalMessage] = useState<string>("");
   const [modalType, setModalType] = useState<"success" | "error" | "info">(
     "info"
@@ -83,27 +88,32 @@ export default function MidiaBase() {
       await excluirMidia(midiaSelecionada.id);
 
       // limpar estados da UI
-      setQueryExcluir(""); // limpa o input visualmente
-      setListaExcluir([]); // limpa a lista exibida
+      setQueryExcluir("");
+      setListaExcluir([]);
       setMidiaSelecionada(null);
-      setModalVisible(false);
+      setModalExcluirVisible(false); // fecha modal de exclusão
 
-      // dar foco no input para o usuário poder digitar de novo
-      // usamos um pequeno timeout para garantir que o modal já fechou e o input está montado
+      // mostra feedback de sucesso
+      showModal("Mídia excluída com sucesso!", "success");
+
+      // foca no input novamente
       setTimeout(() => {
         inputExcluirRef.current?.focus?.();
       }, 50);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erro ao excluir mídia:", error);
-      // opcional: mostrar modal de erro
+
+      // mostra feedback de erro
+      showModal(error?.message || "Erro ao excluir a mídia", "error");
     } finally {
       setLoadingExcluirConfirm(false);
     }
   }
 
+  // 2️⃣ Função para abrir Modal de exclusão
   function abrirModalExcluir(midia: any) {
     setMidiaSelecionada(midia);
-    setModalVisible(true);
+    setModalExcluirVisible(true); // <<< trocado
   }
 
   async function handleSearch(text: string) {
@@ -135,10 +145,11 @@ export default function MidiaBase() {
     setLoadingExcluir(false);
   }
 
+  // 1️⃣ Função para abrir AppModal
   function showModal(msg: string, type: "success" | "error" | "info" = "info") {
     setModalMessage(msg);
     setModalType(type);
-    setModalVisible(true);
+    setModalAppVisible(true); // <<< trocado
   }
 
   // ------------------- CARREGAR TIPOS DE MÍDIA -------------------
@@ -619,10 +630,10 @@ export default function MidiaBase() {
           </View>
         )}
         <Modal
-          visible={modalVisible}
+          visible={modalExcluirVisible}
           transparent
           animationType="fade"
-          onRequestClose={() => setModalVisible(false)}
+          onRequestClose={() => setModalExcluirVisible(false)}
         >
           <Animated.View
             entering={FadeIn.duration(250)}
@@ -695,7 +706,7 @@ export default function MidiaBase() {
               <View style={styles.modalBotoes}>
                 <TouchableOpacity
                   style={styles.botaoCancelar}
-                  onPress={() => setModalVisible(false)}
+                  onPress={() => setModalExcluirVisible(false)}
                 >
                   <Text style={styles.botaoCancelarTexto}>Cancelar</Text>
                 </TouchableOpacity>
@@ -738,10 +749,10 @@ export default function MidiaBase() {
       {mode === "excluir" && renderExcluir()}
 
       <AppModal
-        visible={modalVisible}
+        visible={modalAppVisible}
         message={modalMessage}
         modalType={modalType}
-        onClose={() => setModalVisible(false)}
+        onClose={() => setModalAppVisible(false)}
       />
     </ScrollView>
   );
