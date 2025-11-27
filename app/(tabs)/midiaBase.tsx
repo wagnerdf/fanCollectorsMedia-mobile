@@ -23,6 +23,7 @@ import {
   salvarMidiaApi,
   buscarMidiasParaExcluir,
   excluirMidia,
+  getMidiaById,
 } from "../services/api";
 
 import Animated, {
@@ -33,6 +34,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { MaterialIcons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Picker } from "@react-native-picker/picker";
 
 export default function MidiaBase() {
   // ------------------- ESTADOS PRINCIPAIS -------------------
@@ -86,6 +88,11 @@ export default function MidiaBase() {
   const [loadingEditar, setLoadingEditar] = useState(false);
 
   const [midiaParaEditar, setMidiaParaEditar] = useState<any>(null);
+  const [editObs, setEditObs] = useState("");
+  const [editTemporada, setEditTemporada] = useState("");
+  const [editMidiaTipoId, setEditMidiaTipoId] = useState("");
+  const [editAssistido, setEditAssistido] = useState(false);
+  const [listaTipos, setListaTipos] = useState<any[]>([]);
 
   async function handleBuscarParaEditar(text: string) {
     setQueryEditar(text);
@@ -133,11 +140,35 @@ export default function MidiaBase() {
     }
   }
 
-  //selecionar a mídia e abrir a tela de edição
-  function selecionarParaEditar(midia: any) {
-    setMidiaParaEditar(midia);
-    // Confirmação por modal
-    showModal("Mídia carregada para edição", "info");
+  // Selecionar a mídia e abrir a tela de edição
+  async function selecionarParaEditar(midia: any) {
+    try {
+      setLoadingEditar(true);
+
+      // Buscar dados completos
+      const dadosCompletos = await getMidiaById(midia.id);
+
+      // Guardar os dados completos
+      setMidiaParaEditar(dadosCompletos);
+
+      // Preencher os campos editáveis
+      setEditObs(dadosCompletos.observacoes || "");
+      setEditTemporada(String(dadosCompletos.temporada || ""));
+      setEditMidiaTipoId(dadosCompletos.midiaTipoId || "");
+      setEditAssistido(dadosCompletos.assistido === true);
+
+      // 🔥 Ao selecionar, some a lista de resultados
+      setListaEditar([]);
+
+      // 🔥 Opcional: limpar o campo de pesquisa
+      setQueryEditar("");
+
+      showModal("Mídia carregada para edição", "info");
+    } catch (error) {
+      showModal("Erro ao carregar dados da mídia", "error");
+    } finally {
+      setLoadingEditar(false);
+    }
   }
 
   // 2️⃣ Função para abrir Modal de exclusão
@@ -759,9 +790,22 @@ export default function MidiaBase() {
   }
 
   // --------------------------------------------------------------
-  // ------------------- TELA DE EDITAR ---------------------------
+  // ------------------- TELA DE EDITAR (COM TODOS CAMPOS) ---------
   // --------------------------------------------------------------
   function renderEditar() {
+    // helpers locais para exibir valores de forma segura
+    const formatValue = (v: any) => {
+      if (v === null || v === undefined) return "";
+      if (Array.isArray(v)) return v.join(", ");
+      return String(v);
+    };
+
+    const has = (v: any) =>
+      v !== null &&
+      v !== undefined &&
+      !(typeof v === "string" && v.trim() === "") &&
+      !(Array.isArray(v) && v.length === 0);
+
     return (
       <View style={{ marginTop: 20 }}>
         <Text style={styles.excluirTitle}>📝 Editar Mídia</Text>
@@ -803,6 +847,214 @@ export default function MidiaBase() {
                 </TouchableOpacity>
               </View>
             ))}
+          </View>
+        )}
+
+        {/* 🎯 DADOS COMPLETOS CARREGADOS DA MÍDIA */}
+        {midiaParaEditar && (
+          <View style={styles.boxEditar}>
+            <Text style={styles.editarTitulo}>🔎 Dados da Mídia</Text>
+
+            {/* CAPA */}
+            {has(midiaParaEditar.capaUrl ?? midiaParaEditar.capa_url) && (
+              <Image
+                source={{
+                  uri: midiaParaEditar.capaUrl ?? midiaParaEditar.capa_url,
+                }}
+                style={[
+                  styles.poster,
+                  { alignSelf: "center", marginBottom: 12 },
+                ]}
+              />
+            )}
+
+            {/* TITULOS */}
+            {has(midiaParaEditar.tituloOriginal) && (
+              <>
+                <Text style={styles.labelEditar}>Título Original</Text>
+                <TextInput
+                  style={styles.inputDisabled}
+                  editable={false}
+                  value={formatValue(midiaParaEditar.tituloOriginal)}
+                />
+              </>
+            )}
+
+            {/* CAMPOS EDITÁVEIS (mantidos, caso queira permitir edição no futuro) */}
+            <View style={{ height: 6 }} />
+
+            <Text style={styles.labelEditar}>Observações</Text>
+            <TextInput
+              style={styles.inputEditar}
+              multiline
+              value={editObs}
+              onChangeText={setEditObs}
+            />
+
+            {midiaParaEditar.formatoMidia === "Série" && (
+              <>
+                <Text style={styles.labelEditar}>Temporada</Text>
+                <TextInput
+                  style={styles.inputEditar}
+                  keyboardType="numeric"
+                  value={editTemporada}
+                  onChangeText={setEditTemporada}
+                />
+              </>
+            )}
+
+            <Text style={styles.labelEditar}>Tipo de Mídia Física</Text>
+            <Picker
+              selectedValue={editMidiaTipoId}
+              onValueChange={(v) => setEditMidiaTipoId(v)}
+              style={{
+                backgroundColor: "#fff",
+                borderRadius: 8,
+                marginBottom: 12,
+              }}
+            >
+              <Picker.Item label="Selecione..." value="" />
+              {mediaTypes.map((t) => (
+                <Picker.Item key={t.id} label={t.nome} value={t.id} />
+              ))}
+            </Picker>
+
+            <Text style={styles.labelEditar}>Assistido</Text>
+            <Switch value={editAssistido} onValueChange={setEditAssistido} />
+
+            {/* EDIÇÃO / COLEÇÃO / Nº SÉRIE / FAIXAS */}
+            {has(midiaParaEditar.edicao) && (
+              <>
+                <Text style={styles.labelEditar}>Edição</Text>
+                <TextInput
+                  style={styles.inputDisabled}
+                  editable={false}
+                  value={formatValue(midiaParaEditar.edicao)}
+                />
+              </>
+            )}
+
+            {/* GERAIS */}
+            {has(midiaParaEditar.generos) && (
+              <>
+                <Text style={styles.labelEditar}>Gêneros</Text>
+                <TextInput
+                  style={styles.inputDisabled}
+                  editable={false}
+                  value={formatValue(midiaParaEditar.generos)}
+                />
+              </>
+            )}
+
+            {/* DURACAO / LINGUAGEM / CLASSIFICACAO */}
+            {has(midiaParaEditar.duracao) && (
+              <>
+                <Text style={styles.labelEditar}>Duração</Text>
+                <TextInput
+                  style={styles.inputDisabled}
+                  editable={false}
+                  value={`${formatValue(midiaParaEditar.duracao)} min`}
+                />
+              </>
+            )}
+
+            {has(midiaParaEditar.linguagem) && (
+              <>
+                <Text style={styles.labelEditar}>Linguagem</Text>
+                <TextInput
+                  style={styles.inputDisabled}
+                  editable={false}
+                  value={formatValue(midiaParaEditar.linguagem)}
+                />
+              </>
+            )}
+
+            {has(midiaParaEditar.classificacaoEtaria) && (
+              <>
+                <Text style={styles.labelEditar}>Classificação</Text>
+                <TextInput
+                  style={styles.inputDisabled}
+                  editable={false}
+                  value={formatValue(midiaParaEditar.classificacaoEtaria)}
+                />
+              </>
+            )}
+
+            {/* ARTISTAS / DIRETORES / ESTUDIO */}
+            {has(midiaParaEditar.artistas) && (
+              <>
+                <Text style={styles.labelEditar}>Artistas</Text>
+                <TextInput
+                  style={[styles.inputDisabled, { height: 80 }]}
+                  editable={false}
+                  multiline
+                  value={formatValue(midiaParaEditar.artistas)}
+                />
+              </>
+            )}
+
+            {has(midiaParaEditar.diretores) && (
+              <>
+                <Text style={styles.labelEditar}>Diretores</Text>
+                <TextInput
+                  style={[styles.inputDisabled, { height: 80 }]}
+                  editable={false}
+                  multiline
+                  value={formatValue(midiaParaEditar.diretores)}
+                />
+              </>
+            )}
+
+            {has(midiaParaEditar.estudio) && (
+              <>
+                <Text style={styles.labelEditar}>Estúdio(s)</Text>
+                <TextInput
+                  style={styles.inputDisabled}
+                  editable={false}
+                  value={formatValue(midiaParaEditar.estudio)}
+                />
+              </>
+            )}
+
+            {/* ANO / NOTA / QUANTIDADE ITENS */}
+            {has(midiaParaEditar.anoLancamento ?? midiaParaEditar.ano) && (
+              <>
+                <Text style={styles.labelEditar}>Ano de Lançamento</Text>
+                <TextInput
+                  style={styles.inputDisabled}
+                  editable={false}
+                  value={formatValue(
+                    midiaParaEditar.anoLancamento ?? midiaParaEditar.ano
+                  )}
+                />
+              </>
+            )}
+
+            {has(midiaParaEditar.notaMedia ?? midiaParaEditar.nota_media) && (
+              <>
+                <Text style={styles.labelEditar}>Nota Média</Text>
+                <TextInput
+                  style={styles.inputDisabled}
+                  editable={false}
+                  value={formatValue(
+                    midiaParaEditar.notaMedia ?? midiaParaEditar.nota_media
+                  )}
+                />
+              </>
+            )}
+
+            {/* SINOPSE / OBSERVACOES */}
+            {has(midiaParaEditar.sinopse) && (
+              <>
+                <Text style={styles.labelEditar}>Sinopse</Text>
+                <TextInput
+                  style={[styles.inputDisabled, { height: 120 }]}
+                  editable={false}
+                  multiline
+                  value={formatValue(midiaParaEditar.sinopse)}
+                />
+              </>
+            )}
           </View>
         )}
       </View>
@@ -1134,5 +1386,49 @@ const styles = StyleSheet.create({
   botaoConfirmarExcluirTexto: {
     color: "#fff",
     fontWeight: "700",
+  },
+  boxEditar: {
+    marginTop: 20,
+    padding: 16,
+    backgroundColor: "#1e1e1e",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#333",
+  },
+
+  editarTitulo: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#fff",
+    marginBottom: 12,
+  },
+
+  // Input só para visualização (bloqueado)
+  inputDisabled: {
+    backgroundColor: "#2a2a2a",
+    borderWidth: 1,
+    borderColor: "#444",
+    padding: 10,
+    borderRadius: 8,
+    color: "#aaa",
+    marginBottom: 12,
+  },
+
+  // Inputs editáveis (observacoes, temporada etc.)
+  inputEditar: {
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#777",
+    padding: 10,
+    borderRadius: 8,
+    color: "#000",
+    marginBottom: 12,
+  },
+
+  labelEditar: {
+    color: "#ccc",
+    fontSize: 14,
+    marginTop: 6,
+    marginBottom: 4,
   },
 });
