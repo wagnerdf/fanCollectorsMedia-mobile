@@ -81,6 +81,26 @@ export default function MidiaBase() {
 
   const [loadingExcluirConfirm, setLoadingExcluirConfirm] = useState(false);
 
+  const [queryEditar, setQueryEditar] = useState("");
+  const [listaEditar, setListaEditar] = useState<any[]>([]);
+  const [loadingEditar, setLoadingEditar] = useState(false);
+
+  const [midiaParaEditar, setMidiaParaEditar] = useState<any>(null);
+
+  async function handleBuscarParaEditar(text: string) {
+    setQueryEditar(text);
+
+    if (text.length < 2) {
+      setListaEditar([]);
+      return;
+    }
+
+    setLoadingEditar(true);
+    const data = await buscarMidiasParaExcluir(text);
+    setListaEditar(Array.isArray(data) ? data : []);
+    setLoadingEditar(false);
+  }
+
   async function handleConfirmarExclusao() {
     if (!midiaSelecionada) return;
 
@@ -111,6 +131,13 @@ export default function MidiaBase() {
     } finally {
       setLoadingExcluirConfirm(false);
     }
+  }
+
+  //selecionar a mídia e abrir a tela de edição
+  function selecionarParaEditar(midia: any) {
+    setMidiaParaEditar(midia);
+    // Confirmação por modal
+    showModal("Mídia carregada para edição", "info");
   }
 
   // 2️⃣ Função para abrir Modal de exclusão
@@ -732,6 +759,57 @@ export default function MidiaBase() {
   }
 
   // --------------------------------------------------------------
+  // ------------------- TELA DE EDITAR ---------------------------
+  // --------------------------------------------------------------
+  function renderEditar() {
+    return (
+      <View style={{ marginTop: 20 }}>
+        <Text style={styles.excluirTitle}>📝 Editar Mídia</Text>
+
+        {/* INPUT DE BUSCA */}
+        <Text style={styles.label}>Pesquisar</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Digite para buscar..."
+          placeholderTextColor="#555"
+          value={queryEditar}
+          onChangeText={handleBuscarParaEditar}
+        />
+
+        {loadingEditar && (
+          <Text style={{ marginTop: 10, color: "#999" }}>Buscando...</Text>
+        )}
+
+        {/* LISTA DE RESULTADOS */}
+        {listaEditar.length > 0 && (
+          <View style={{ marginTop: 16 }}>
+            {listaEditar.map((item) => (
+              <View key={item.id} style={styles.excluirItem}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.excluirTitulo}>
+                    {item.tituloAlternativo}
+                  </Text>
+                  <Text style={styles.excluirInfo}>🎭 {item.generos}</Text>
+                  <Text style={styles.excluirInfo}>
+                    💿 {item.midiaTipoNome}
+                  </Text>
+                </View>
+
+                <TouchableOpacity
+                  style={styles.botaoExcluir}
+                  onPress={() => selecionarParaEditar(item)}
+                >
+                  <Text style={styles.textoBotaoExcluir}>Editar</Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
+        )}
+      </View>
+    );
+  }
+
+  // --------------------------------------------------------------
   // ------------------- RENDER PRINCIPAL -------------------------
   // --------------------------------------------------------------
   return (
@@ -749,13 +827,7 @@ export default function MidiaBase() {
           {renderMenu()}
           {mode === "" && renderHomeImage()}
           {mode === "cadastrar" && renderCadastrar()}
-          {mode === "editar" && (
-            <View style={{ marginTop: 20 }}>
-              <Text style={styles.placeholder}>
-                Tela de edição em desenvolvimento...
-              </Text>
-            </View>
-          )}
+          {mode === "editar" && renderEditar()}
           {mode === "excluir" && renderExcluir()}
 
           <AppModal
