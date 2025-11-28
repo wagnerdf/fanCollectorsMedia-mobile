@@ -313,4 +313,9 @@ export const excluirMidia = async (id: number) => {
   return res.data;
 };
 
+// Editar somente os campos livres da mídia
+export const atualizarCamposLivres = async (id: number, dados: any): Promise<void> => {
+  await api.patch(`/api/midias/${id}/editar-campos-livres`, dados);
+};
+
 export default api;

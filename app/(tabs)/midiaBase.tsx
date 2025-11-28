@@ -24,6 +24,7 @@ import {
   buscarMidiasParaExcluir,
   excluirMidia,
   getMidiaById,
+  atualizarCamposLivres,
 } from "../services/api";
 
 import Animated, {
@@ -92,7 +93,10 @@ export default function MidiaBase() {
   const [editTemporada, setEditTemporada] = useState("");
   const [editMidiaTipoId, setEditMidiaTipoId] = useState("");
   const [editAssistido, setEditAssistido] = useState(false);
-  const [listaTipos, setListaTipos] = useState<any[]>([]);
+
+  const [editMidiaTipoNome, setEditMidiaTipoNome] = useState("");
+  const cadastrarInputRef = useRef<TextInput>(null);
+  const editarInputRef = useRef<TextInput>(null);
 
   async function handleBuscarParaEditar(text: string) {
     setQueryEditar(text);
@@ -114,56 +118,44 @@ export default function MidiaBase() {
     try {
       setLoadingExcluirConfirm(true);
 
-      // chama a API de exclusão
       await excluirMidia(midiaSelecionada.id);
 
       // limpar estados da UI
       setQueryExcluir("");
       setListaExcluir([]);
       setMidiaSelecionada(null);
-      setModalExcluirVisible(false); // fecha modal de exclusão
+      setModalExcluirVisible(false);
 
-      // mostra feedback de sucesso
       showModal("Mídia excluída com sucesso!", "success");
 
-      // foca no input novamente
       setTimeout(() => {
         inputExcluirRef.current?.focus?.();
       }, 50);
     } catch (error: any) {
       console.error("Erro ao excluir mídia:", error);
 
-      // mostra feedback de erro
       showModal(error?.message || "Erro ao excluir a mídia", "error");
     } finally {
       setLoadingExcluirConfirm(false);
     }
   }
 
-  // Selecionar a mídia e abrir a tela de edição
   async function selecionarParaEditar(midia: any) {
     try {
       setLoadingEditar(true);
-
-      // Buscar dados completos
       const dadosCompletos = await getMidiaById(midia.id);
-
-      // Guardar os dados completos
+      
       setMidiaParaEditar(dadosCompletos);
-
       // Preencher os campos editáveis
       setEditObs(dadosCompletos.observacoes || "");
       setEditTemporada(String(dadosCompletos.temporada || ""));
       setEditMidiaTipoId(dadosCompletos.midiaTipoId || "");
+      setEditMidiaTipoNome(dadosCompletos.midiaTipoNome || "");
       setEditAssistido(dadosCompletos.assistido === true);
 
-      // 🔥 Ao selecionar, some a lista de resultados
       setListaEditar([]);
 
-      // 🔥 Opcional: limpar o campo de pesquisa
       setQueryEditar("");
-
-      showModal("Mídia carregada para edição", "info");
     } catch (error) {
       showModal("Erro ao carregar dados da mídia", "error");
     } finally {
@@ -171,10 +163,9 @@ export default function MidiaBase() {
     }
   }
 
-  // 2️⃣ Função para abrir Modal de exclusão
   function abrirModalExcluir(midia: any) {
     setMidiaSelecionada(midia);
-    setModalExcluirVisible(true); // <<< trocado
+    setModalExcluirVisible(true);
   }
 
   async function handleSearch(text: string) {
@@ -206,11 +197,56 @@ export default function MidiaBase() {
     setLoadingExcluir(false);
   }
 
+  function limparCamposDeEdicao() {
+    setMidiaParaEditar(null);
+    setEditObs("");
+    setEditTemporada("");
+    setEditMidiaTipoNome("");
+    setEditMidiaTipoId("");
+    setEditAssistido(false);
+    setSearchQuery("");
+  }
+
+  async function salvarEdicao() {
+    if (!midiaParaEditar) {
+      showModal("Nenhuma mídia selecionada.", "error");
+      return;
+    }
+
+    try {
+      setLoadingEditar(true);
+
+      const payload = {
+        observacoes: editObs,
+        temporada: editTemporada ? Number(editTemporada) : null,
+        midiaTipoNome: editMidiaTipoNome,
+        midiaTipoId: editMidiaTipoId ? Number(editMidiaTipoId) : null,
+        assistido: editAssistido,
+      };
+
+      await atualizarCamposLivres(midiaParaEditar.id, payload);
+      showModal("Mídia atualizada com sucesso!", "success");
+      setTimeout(() => {
+        limparCamposDeEdicao();
+        setTimeout(() => {
+          if (editarInputRef.current) {
+            editarInputRef.current.focus();
+          }
+        }, 150);
+      }, 400); 
+    } catch (error) {
+      console.log(error);
+      showModal("Erro ao salvar alterações.", "error");
+    } finally {
+      setLoadingEditar(false);
+    }
+  }
+
   // 1️⃣ Função para abrir AppModal
   function showModal(msg: string, type: "success" | "error" | "info" = "info") {
     setModalMessage(msg);
     setModalType(type);
-    setModalAppVisible(true); // <<< trocado
+    setModalAppVisible(true);
   }
 
   // ------------------- CARREGAR TIPOS DE MÍDIA -------------------
@@ -278,13 +314,12 @@ export default function MidiaBase() {
       showModal("Mídia cadastrada com sucesso!", "success");
 
       // limpar seleção após salvar
-
       setDetails(null);
       setSearchResults([]);
       setSelectedType("");
       setTemporada("");
       setObservacao("");
-      setMode(""); // volta para home
+      setMode("");
     } catch (err) {
       console.error("Erro ao salvar mídia:", err);
       showModal("Erro ao salvar mídia", "error");
@@ -332,7 +367,6 @@ export default function MidiaBase() {
   function renderHomeImage() {
     return (
       <View style={{ alignItems: "center", marginTop: 30 }}>
-        {/* substitua o caminho da imagem se necessário */}
         <Image
           source={require("@/assets/images/midias.png")}
           style={{ width: 260, height: 260, opacity: 0.85 }}
@@ -351,8 +385,6 @@ export default function MidiaBase() {
   async function buscarDetalhes(id: number, tipoTMDB: string) {
     try {
       setLoadingSearch(true);
-
-      // Agora enviamos corretamente o tipo recebido do item
       const data = await buscarDetalhesService(id, tipoTMDB);
 
       setDetails(data);
@@ -395,7 +427,7 @@ export default function MidiaBase() {
                     setSelectedType(displayName);
                     setSelectedTypeId(t.id);
                     setShowSelectMediaType(false);
-                    // 🔥 limpar tudo ao trocar o tipo de mídia
+                    // limpar tudo ao trocar o tipo de mídia
                     setSearchQuery("");
                     setSearchResults([]);
                     setDetails(null);
@@ -421,12 +453,13 @@ export default function MidiaBase() {
               <TextInput
                 style={[
                   styles.input,
-                  !selectedType && { opacity: 0.4 }, // 🔥 efeito visual de desabilitado
+                  !selectedType && { opacity: 0.4 }, 
                 ]}
                 placeholder="Digite para buscar..."
+                ref={cadastrarInputRef}
                 value={searchQuery}
                 onChangeText={handleSearch}
-                editable={!!selectedType} // 🔥 desabilita quando não há tipo selecionado
+                editable={!!selectedType} 
                 placeholderTextColor="#555"
               />
 
@@ -443,7 +476,7 @@ export default function MidiaBase() {
                     marginTop: 5,
                     borderRadius: 8,
                     padding: 10,
-                    maxHeight: 200, // limita o tamanho
+                    maxHeight: 200, 
                   }}
                 >
                   <ScrollView nestedScrollEnabled>
@@ -488,7 +521,6 @@ export default function MidiaBase() {
         )}
 
         {/* DETALHES SOMENTE SE O USUÁRIO ESCOLHEU UMA MÍDIA */}
-        {/* DETALHES APENAS SE A MÍDIA FOI SELECIONADA */}
         {details && (
           <View style={styles.detailsBox}>
             {/* TÍTULO */}
@@ -813,6 +845,7 @@ export default function MidiaBase() {
         {/* INPUT DE BUSCA */}
         <Text style={styles.label}>Pesquisar</Text>
         <TextInput
+          ref={editarInputRef}
           style={styles.input}
           placeholder="Digite para buscar..."
           placeholderTextColor="#555"
@@ -850,7 +883,7 @@ export default function MidiaBase() {
           </View>
         )}
 
-        {/* 🎯 DADOS COMPLETOS CARREGADOS DA MÍDIA */}
+        {/* DADOS COMPLETOS CARREGADOS DA MÍDIA */}
         {midiaParaEditar && (
           <View style={styles.boxEditar}>
             <Text style={styles.editarTitulo}>🔎 Dados da Mídia</Text>
@@ -868,7 +901,7 @@ export default function MidiaBase() {
               />
             )}
 
-            {/* TITULOS */}
+            {/* TITULO */}
             {has(midiaParaEditar.tituloOriginal) && (
               <>
                 <Text style={styles.labelEditar}>Título Original</Text>
@@ -879,8 +912,6 @@ export default function MidiaBase() {
                 />
               </>
             )}
-
-            {/* CAMPOS EDITÁVEIS (mantidos, caso queira permitir edição no futuro) */}
             <View style={{ height: 6 }} />
 
             <Text style={styles.labelEditar}>Observações</Text>
@@ -906,7 +937,17 @@ export default function MidiaBase() {
             <Text style={styles.labelEditar}>Tipo de Mídia Física</Text>
             <Picker
               selectedValue={editMidiaTipoId}
-              onValueChange={(v) => setEditMidiaTipoId(v)}
+              onValueChange={(value, index) => {
+                setEditMidiaTipoId(value);
+
+                // índice 0 é o "Selecione..."
+                if (index > 0) {
+                  const tipoSelecionado = mediaTypes[index - 1];
+                  setEditMidiaTipoNome(tipoSelecionado.nome);
+                } else {
+                  setEditMidiaTipoNome("");
+                }
+              }}
               style={{
                 backgroundColor: "#fff",
                 borderRadius: 8,
@@ -922,7 +963,6 @@ export default function MidiaBase() {
             <Text style={styles.labelEditar}>Assistido</Text>
             <Switch value={editAssistido} onValueChange={setEditAssistido} />
 
-            {/* EDIÇÃO / COLEÇÃO / Nº SÉRIE / FAIXAS */}
             {has(midiaParaEditar.edicao) && (
               <>
                 <Text style={styles.labelEditar}>Edição</Text>
@@ -1016,7 +1056,7 @@ export default function MidiaBase() {
               </>
             )}
 
-            {/* ANO / NOTA / QUANTIDADE ITENS */}
+            {/* ANO / NOTA */}
             {has(midiaParaEditar.anoLancamento ?? midiaParaEditar.ano) && (
               <>
                 <Text style={styles.labelEditar}>Ano de Lançamento</Text>
@@ -1043,7 +1083,7 @@ export default function MidiaBase() {
               </>
             )}
 
-            {/* SINOPSE / OBSERVACOES */}
+            {/* SINOPSE */}
             {has(midiaParaEditar.sinopse) && (
               <>
                 <Text style={styles.labelEditar}>Sinopse</Text>
@@ -1055,6 +1095,26 @@ export default function MidiaBase() {
                 />
               </>
             )}
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#007BFF",
+                padding: 12,
+                borderRadius: 10,
+                marginTop: 25,
+              }}
+              onPress={salvarEdicao}
+            >
+              <Text
+                style={{
+                  color: "#fff",
+                  textAlign: "center",
+                  fontWeight: "bold",
+                  fontSize: 16,
+                }}
+              >
+                💾 Salvar Alterações
+              </Text>
+            </TouchableOpacity>
           </View>
         )}
       </View>
@@ -1261,8 +1321,8 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "flex-start", // agora ficam juntos
-    gap: 10, // OU marginRight no Text
+    justifyContent: "flex-start", 
+    gap: 10, 
     marginVertical: 10,
   },
   divider: {
