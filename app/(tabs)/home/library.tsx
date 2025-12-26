@@ -64,6 +64,7 @@ const MidiaModal = ({ visible, midiaId, onClose }: any) => {
 
                   {/* Seção: Detalhes Técnicos */}
                   <Text style={modalStyles.sectionTitle}>Detalhes Técnicos</Text>
+                  <Text style={modalStyles.infoText}><Text style={modalStyles.label}>Assistido: </Text> <Text style={{fontWeight: "600", color: midia.assistido ? "#00C853" : "#D50000", }}>{midia.assistido ? "Sim" : "Não"} </Text></Text>
                   <Text style={modalStyles.infoText}><Text style={modalStyles.label}>Observações:</Text> {midia.observacoes?.trim() !== "" ? midia.observacoes : "—"}</Text>
                   <Text style={modalStyles.infoText}><Text style={modalStyles.label}>Nota Média:</Text> {midia.notaMedia?.toFixed(1) ?? "—"}</Text>
 
@@ -199,6 +200,18 @@ const modalStyles = StyleSheet.create({
     color: "#fff",
     marginBottom: 4,
     textAlign: "left",
+  },
+  statusAssistido: {
+    textAlign: "center",
+    fontSize: 14,
+    fontWeight: "600",
+    marginBottom: 10,
+  },
+  statusAssistidoTrue: {
+    color: "#00C853",
+  },
+  statusAssistidoFalse: {
+    color: "#D50000",
   },
 });
 
