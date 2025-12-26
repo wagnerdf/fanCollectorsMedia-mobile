@@ -222,6 +222,12 @@ export default function LibraryScreen() {
   const limit = 10;
   //const jaCarregado = useRef(false); // flag para não recarregar
 
+  useEffect(() => {
+  if (midias.length > 0) {
+    console.log("📦 Midia exemplo:", midias[0]);
+  }
+}, [midias]);
+
   const carregarMidias = async (novoOffset = 0) => {
     if (loading || (novoOffset !== 0 && !hasMore)) return;
     setLoading(true);
@@ -280,6 +286,13 @@ export default function LibraryScreen() {
       ) : (
         <>
           <View style={styles.tag}><Text style={styles.tagText}>{item.midiaTipoNome}</Text></View>
+          {/* Bolinha de status */}
+          <View
+            style={[
+              styles.statusDot,
+              { backgroundColor: item.assistido ? "#00C853" : "#D50000" },
+            ]}
+          />
           <Image source={{ uri: item.capaUrl }} style={styles.poster} />
           <Text style={styles.title} numberOfLines={2}>{item.tituloAlternativo}</Text>
         </>
@@ -437,4 +450,15 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   listRating: { fontSize: 14, color: "#FFD700", textAlign: "left" },
+    statusDot: {
+    position: "absolute",
+    top: 6,
+    right: 6,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: "#121212",
+    zIndex: 2,
+  },
 });
