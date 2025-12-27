@@ -139,9 +139,7 @@ export default function LoginScreen() {
           Ainda não tem conta?{" "}
           <Text
             style={styles.signupLink}
-            onPress={() =>
-              setErrorMessage("Função de cadastro ainda não implementada!")
-            }
+            onPress={() => router.push("/auth/Register")}
           >
             Cadastre-se
           </Text>

@@ -318,14 +318,13 @@ export default function RegisterFullScreen() {
 
             <TouchableOpacity onPress={openDatePicker} activeOpacity={0.8}>
               <TextInput
-                style={styles.input}
+                style={[styles.input, { pointerEvents: "none" }]}
                 value={
                   selectedDate ? selectedDate.toLocaleDateString("pt-BR") : ""
                 }
                 placeholder="DD/MM/AAAA"
                 placeholderTextColor="#9F9F5F"
                 editable={false}
-                pointerEvents="none"
               />
             </TouchableOpacity>
 
