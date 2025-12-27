@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import AppModal from "@/components/AppModal";
-import { recuperarSenha } from "app/services/api";
+import { recuperarSenha } from "@/src/services/api";
 
 export default function RecoverScreen() {
   const router = useRouter();

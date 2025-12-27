@@ -11,10 +11,10 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { cadastrarUsuarioCompleto } from "../services/api";
+import { cadastrarUsuarioCompleto } from "../../src/services/api";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Picker } from "@react-native-picker/picker";
-import { buscarEnderecoPorCep } from "../services/viaCep";
+import { buscarEnderecoPorCep } from "../../src/services/viaCep";
 import AppModal from "components/AppModal";
 
 export default function RegisterFullScreen() {

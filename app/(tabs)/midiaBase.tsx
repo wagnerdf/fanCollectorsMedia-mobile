@@ -17,7 +17,7 @@ import AppModal from "@/components/AppModal";
 import {
   buscarTituloTMDB,
   buscarDetalhes as buscarDetalhesService,
-} from "../services/tmdb";
+} from "../../src/services/tmdb";
 import {
   getMediaTypes,
   salvarMidiaApi,
@@ -25,7 +25,7 @@ import {
   excluirMidia,
   getMidiaById,
   atualizarCamposLivres,
-} from "../services/api";
+} from "../../src/services/api";
 
 import Animated, {
   FadeIn,

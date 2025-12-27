@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import { getTotalMidias, getGeneros, getTipos } from "app/services/api"; 
+import { getTotalMidias, getGeneros, getTipos } from "@/src/services/api"; 
 
 // Tipos
 interface Genero {

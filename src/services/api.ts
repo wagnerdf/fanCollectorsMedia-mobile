@@ -11,8 +11,6 @@ const baseURL =
     ? API_BASE_URL
     : "https://fancollectorsmedia-production.up.railway.app"; // fallback definitivo de produção
 
-console.log("🌐 API_BASE_URL:", baseURL);
-
 // 🧩 Cria uma instância do axios com base na URL da API
 const api = axios.create({
   baseURL,
