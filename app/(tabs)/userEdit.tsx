@@ -894,12 +894,10 @@ const styles = StyleSheet.create({
     width: "85%",
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#ff4d4d",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 4,
+    boxShadow: "0px 2px 4px rgba(255,77,77,0.8)",
     elevation: 5,
   },
+
   // NOVOS ESTILOS PARA EDITAR DADOS
   label: {
     color: "#f5a623",

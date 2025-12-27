@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Keyboard,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -221,8 +222,12 @@ const styles = StyleSheet.create({
   icon: {
     alignSelf: "center",
     marginBottom: 12,
-    textShadowColor: "rgba(0, 0, 0, 0.4)",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 4,
+    ...(Platform.OS === "web"
+      ? { textShadow: "1px 1px 4px rgba(0,0,0,0.4)" }
+      : {
+          textShadowColor: "rgba(0,0,0,0.4)",
+          textShadowOffset: { width: 1, height: 1 },
+          textShadowRadius: 4,
+        }),
   },
 });
