@@ -201,18 +201,6 @@ const modalStyles = StyleSheet.create({
     marginBottom: 4,
     textAlign: "left",
   },
-  statusAssistido: {
-    textAlign: "center",
-    fontSize: 14,
-    fontWeight: "600",
-    marginBottom: 10,
-  },
-  statusAssistidoTrue: {
-    color: "#00C853",
-  },
-  statusAssistidoFalse: {
-    color: "#D50000",
-  },
 });
 
 // --- Library Screen ---
@@ -234,12 +222,6 @@ export default function LibraryScreen() {
 
   const limit = 10;
   //const jaCarregado = useRef(false); // flag para não recarregar
-
-  useEffect(() => {
-  if (midias.length > 0) {
-    console.log("📦 Midia exemplo:", midias[0]);
-  }
-}, [midias]);
 
   const carregarMidias = async (novoOffset = 0) => {
     if (loading || (novoOffset !== 0 && !hasMore)) return;
