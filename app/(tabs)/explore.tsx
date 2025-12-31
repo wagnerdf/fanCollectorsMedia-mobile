@@ -8,6 +8,9 @@ import {
   View,
 } from "react-native";
 import AppModal from "@/components/AppModal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SecureStore from "expo-secure-store";
+import { clearAuthToken } from "@/src/services/authToken";
 
 export default function ExplorerScreen() {
   const router = useRouter();
@@ -25,6 +28,17 @@ export default function ExplorerScreen() {
     setModalMessage(message);
     setModalType(type);
     setModalVisible(true);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await SecureStore.deleteItemAsync("userToken");
+      clearAuthToken();
+
+      router.replace("/auth/Welcome");
+    } catch (e) {
+      console.error("Erro ao fazer logout:", e);
+    }
   };
 
   return (
@@ -102,7 +116,7 @@ export default function ExplorerScreen() {
 
         <TouchableOpacity
           style={[styles.actionButton, styles.redButton, { marginTop: 18 }]}
-          onPress={() => router.replace("/auth/Login")}
+          onPress={handleLogout}
         >
           <Text style={styles.actionText}>Sair</Text>
         </TouchableOpacity>
@@ -187,6 +201,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#dc2626",
   },
   orangeButton: {
-  backgroundColor: "#ea580c",
-},
+    backgroundColor: "#ea580c",
+  },
 });

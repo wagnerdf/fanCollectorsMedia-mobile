@@ -1,6 +1,6 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import Constants from "expo-constants";
+import { getAuthToken } from "./authToken";
 
 // 🔧 Pega a URL da API definida em app.config.js (ou no EAS Secret)
 const { API_BASE_URL } = Constants.expoConfig?.extra || {};
@@ -18,7 +18,7 @@ const api = axios.create({
 
 // 🛡️ Intercepta todas as requisições e injeta o token automaticamente
 api.interceptors.request.use(async (config) => {
-  const token = await AsyncStorage.getItem("userToken");
+  const token = await getAuthToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -312,7 +312,10 @@ export const excluirMidia = async (id: number) => {
 };
 
 // Editar somente os campos livres da mídia
-export const atualizarCamposLivres = async (id: number, dados: any): Promise<void> => {
+export const atualizarCamposLivres = async (
+  id: number,
+  dados: any
+): Promise<void> => {
   await api.patch(`/api/midias/${id}/editar-campos-livres`, dados);
 };
 

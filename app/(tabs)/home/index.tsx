@@ -86,12 +86,6 @@ export default function HomeScreen() {
               {atualizando ? "Atualizando..." : "Recarregar"}
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.headerButton, styles.logoutButton]}
-            onPress={handleLogout}
-          >
-            <Text style={styles.headerButtonText}>Sair</Text>
-          </TouchableOpacity>
         </View>
       </View>
 

@@ -26,12 +26,11 @@ import { MaskedTextInput } from "react-native-mask-text";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import {
-  getUserProfile,
-  updateUserProfile,
-} from "../../src/services/api";
+import { getUserProfile, updateUserProfile } from "../../src/services/api";
 import AppModal from "@/components/AppModal";
 import { buscarEnderecoPorCep } from "../../src/services/viaCep";
+import * as SecureStore from "expo-secure-store";
+import { clearAuthToken } from "@/src/services/authToken";
 
 export default function UserEdit() {
   const [screen, setScreen] = useState<
@@ -770,8 +769,15 @@ export default function UserEdit() {
                 style={[styles.saveButton, { width: "45%" }]}
                 onPress={async () => {
                   try {
+                    // Remove token de qualquer forma de persistência
                     await AsyncStorage.removeItem("userToken");
-                    router.replace("/"); // Redireciona para tela de login
+                    await SecureStore.deleteItemAsync("userToken");
+
+                    // Remove token do axios
+                    clearAuthToken();
+
+                    // Redireciona para Welcome
+                    router.replace("/auth/Welcome");
                   } catch (error) {
                     console.error("Erro ao fazer logout:", error);
                   }

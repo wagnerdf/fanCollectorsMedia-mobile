@@ -11,9 +11,10 @@ import {
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLogin } from "hooks/useLogin";
 import AnimatedError from "components/AnimatedError";
+import * as SecureStore from "expo-secure-store";
+import { setAuthToken } from "@/src/services/authToken";
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -22,6 +23,7 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
 
   const { loading, errorMessage, loginUser, setErrorMessage } = useLogin();
+  const [permanecerConectado, setPermanecerConectado] = useState(false);
 
   const handleLogin = async () => {
     Keyboard.dismiss();
@@ -42,14 +44,19 @@ export default function LoginScreen() {
 
     if (data?.token) {
       try {
-        await AsyncStorage.setItem("userToken", data.token);
+        // 🔑 injeta token no axios
+        setAuthToken(data.token);
+
+        // 🔐 salva token apenas se marcar permanecer conectado
+        if (permanecerConectado) {
+          await SecureStore.setItemAsync("userToken", data.token);
+        }
+
         router.replace("/(tabs)/explore");
       } catch (e) {
         console.error("Erro ao salvar token:", e);
         setErrorMessage("Erro interno, tente novamente.");
       }
-    } else if (!errorMessage) {
-      setErrorMessage(data?.message || "Login ou senha incorretos!");
     }
   };
 
@@ -90,8 +97,8 @@ export default function LoginScreen() {
               secureTextEntry={!showPassword}
               value={senha}
               onChangeText={setSenha}
-              onSubmitEditing={handleLogin}
-              returnKeyType="send"
+              returnKeyType="done"
+              blurOnSubmit={true}
             />
             <TouchableOpacity
               onPress={() => setShowPassword(!showPassword)}
@@ -105,6 +112,19 @@ export default function LoginScreen() {
             </TouchableOpacity>
           </View>
         </View>
+
+        {/* Box para escolha de permanecer conectado */}
+        <TouchableOpacity
+          style={styles.rememberRow}
+          onPress={() => setPermanecerConectado(!permanecerConectado)}
+        >
+          <Ionicons
+            name={permanecerConectado ? "checkbox" : "square-outline"}
+            size={22}
+            color="#60a5fa"
+          />
+          <Text style={styles.rememberText}>Permanecer conectado</Text>
+        </TouchableOpacity>
 
         {/* Link para recuperar senha */}
         <TouchableOpacity onPress={() => router.push("/auth/recover")}>
@@ -129,7 +149,7 @@ export default function LoginScreen() {
 
           <TouchableOpacity
             style={[styles.button, styles.backButton]}
-            onPress={() => router.back()}
+            onPress={() => router.replace("/auth/Welcome")}
           >
             <Text style={styles.buttonText}>Voltar</Text>
           </TouchableOpacity>
@@ -227,5 +247,17 @@ const styles = StyleSheet.create({
           textShadowOffset: { width: 1, height: 1 },
           textShadowRadius: 4,
         }),
+  },
+
+  rememberRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+
+  rememberText: {
+    color: "#cbd5e1",
+    marginLeft: 8,
+    fontSize: 14,
   },
 });

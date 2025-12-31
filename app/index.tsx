@@ -1,29 +1,49 @@
 import { useEffect } from "react";
 import { useRouter } from "expo-router";
-import { Platform } from "react-native";
+import { Platform, View, ActivityIndicator } from "react-native";
+import * as SecureStore from "expo-secure-store";
 import Welcome from "app/auth/Welcome";
 import { deactivateKeepAwake } from "expo-keep-awake";
+import { setAuthToken } from "@/src/services/authToken";
 
 export default function Index() {
   const router = useRouter();
 
   useEffect(() => {
-    // Desativa apenas no mobile (onde o KeepAwake funciona de verdade)
-    if (Platform.OS !== "web") {
-      deactivateKeepAwake();
+    async function initApp() {
+      if (Platform.OS !== "web") {
+        deactivateKeepAwake();
 
-      const timer = setTimeout(() => {
-        router.replace("../auth/Welcome");
-      }, 0);
+        const token = await SecureStore.getItemAsync("userToken");
 
-      return () => clearTimeout(timer);
+        if (token) {
+          setAuthToken(token); // 🔑 ESSENCIAL
+          router.replace("/(tabs)/explore");
+        } else {
+          router.replace("/auth/Welcome");
+        }
+      }
     }
+
+    initApp();
   }, []);
 
-  // --- Renderização ---
+  // WEB mantém comportamento atual
   if (Platform.OS === "web") {
     return <Welcome />;
   }
 
-  return null;
+  // Mobile: loading temporário
+  return (
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: "#00BFA6",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <ActivityIndicator size="large" color="#fff" />
+    </View>
+  );
 }
