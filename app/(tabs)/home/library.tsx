@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -49,42 +49,101 @@ const MidiaModal = ({ visible, midiaId, onClose }: any) => {
             <>
               {/* Área rolável */}
               <View style={modalStyles.scrollWrapper}>
-                <ScrollView style={modalStyles.scrollArea} showsVerticalScrollIndicator={false}>
-                  <Image source={{ uri: midia.capaUrl }} style={modalStyles.fullPoster} />
+                <ScrollView
+                  style={modalStyles.scrollArea}
+                  showsVerticalScrollIndicator={false}
+                >
+                  <Image
+                    source={{ uri: midia.capaUrl }}
+                    style={modalStyles.fullPoster}
+                  />
                   {/* Título */}
-                  <Text style={modalStyles.title}>{midia.tituloAlternativo}</Text>
+                  <Text style={modalStyles.title}>
+                    {midia.tituloAlternativo}
+                  </Text>
 
                   {/* Seção: Informações Gerais */}
-                  <Text style={modalStyles.sectionTitle}>Informações Gerais</Text>
-                  <Text style={modalStyles.infoText}><Text style={modalStyles.label}>Gênero:</Text> {midia.generos}</Text>
-                  <Text style={modalStyles.infoText}><Text style={modalStyles.label}>Tipo:</Text> {midia.midiaTipoNome}</Text>
-                  <Text style={modalStyles.infoText}><Text style={modalStyles.label}>Formato:</Text> {midia.formatoMidia}</Text>
-                  <Text style={modalStyles.infoText}><Text style={modalStyles.label}>Duração:</Text> {midia.duracao} minutos</Text>
-                  <Text style={modalStyles.infoText}><Text style={modalStyles.label}>Linguagem:</Text> {midia.linguagem}</Text>
+                  <Text style={modalStyles.sectionTitle}>
+                    Informações Gerais
+                  </Text>
+                  <Text style={modalStyles.infoText}>
+                    <Text style={modalStyles.label}>Gênero:</Text>{" "}
+                    {midia.generos}
+                  </Text>
+                  <Text style={modalStyles.infoText}>
+                    <Text style={modalStyles.label}>Tipo:</Text>{" "}
+                    {midia.midiaTipoNome}
+                  </Text>
+                  <Text style={modalStyles.infoText}>
+                    <Text style={modalStyles.label}>Formato:</Text>{" "}
+                    {midia.formatoMidia}
+                  </Text>
+                  <Text style={modalStyles.infoText}>
+                    <Text style={modalStyles.label}>Duração:</Text>{" "}
+                    {midia.duracao} minutos
+                  </Text>
+                  <Text style={modalStyles.infoText}>
+                    <Text style={modalStyles.label}>Linguagem:</Text>{" "}
+                    {midia.linguagem}
+                  </Text>
 
                   {/* Seção: Detalhes Técnicos */}
-                  <Text style={modalStyles.sectionTitle}>Detalhes Técnicos</Text>
-                  <Text style={modalStyles.infoText}><Text style={modalStyles.label}>Assistido: </Text> <Text style={{fontWeight: "600", color: midia.assistido ? "#00C853" : "#D50000", }}>{midia.assistido ? "Sim" : "Não"} </Text></Text>
-                  <Text style={modalStyles.infoText}><Text style={modalStyles.label}>Observações:</Text> {midia.observacoes?.trim() !== "" ? midia.observacoes : "—"}</Text>
-                  <Text style={modalStyles.infoText}><Text style={modalStyles.label}>Nota Média:</Text> {midia.notaMedia?.toFixed(1) ?? "—"}</Text>
+                  <Text style={modalStyles.sectionTitle}>
+                    Detalhes Técnicos
+                  </Text>
+                  <Text style={modalStyles.infoText}>
+                    <Text style={modalStyles.label}>Assistido: </Text>{" "}
+                    <Text
+                      style={{
+                        fontWeight: "600",
+                        color: midia.assistido ? "#00C853" : "#D50000",
+                      }}
+                    >
+                      {midia.assistido ? "Sim" : "Não"}{" "}
+                    </Text>
+                  </Text>
+                  <Text style={modalStyles.infoText}>
+                    <Text style={modalStyles.label}>Observações:</Text>{" "}
+                    {midia.observacoes?.trim() !== "" ? midia.observacoes : "—"}
+                  </Text>
+                  <Text style={modalStyles.infoText}>
+                    <Text style={modalStyles.label}>Nota Média:</Text>{" "}
+                    {midia.notaMedia?.toFixed(1) ?? "—"}
+                  </Text>
 
                   {/* Seção: Créditos */}
                   <Text style={modalStyles.sectionTitle}>Créditos</Text>
-                  <Text style={modalStyles.infoText}><Text style={modalStyles.label}>Artistas:</Text> {midia.artistas}</Text>
-                  <Text style={modalStyles.infoText}><Text style={modalStyles.label}>Diretores:</Text> {midia.diretores}</Text>
-                  <Text style={modalStyles.infoText}><Text style={modalStyles.label}>Estúdio:</Text> {midia.estudio}</Text>
+                  <Text style={modalStyles.infoText}>
+                    <Text style={modalStyles.label}>Artistas:</Text>{" "}
+                    {midia.artistas}
+                  </Text>
+                  <Text style={modalStyles.infoText}>
+                    <Text style={modalStyles.label}>Diretores:</Text>{" "}
+                    {midia.diretores}
+                  </Text>
+                  <Text style={modalStyles.infoText}>
+                    <Text style={modalStyles.label}>Estúdio:</Text>{" "}
+                    {midia.estudio}
+                  </Text>
 
                   {/* Seção: Sinopse */}
                   <Text style={modalStyles.sectionTitle}>Sinopse</Text>
-                  <Text style={modalStyles.infoText}>{midia.sinopse}{"\n"}</Text>
+                  <Text style={modalStyles.infoText}>
+                    {midia.sinopse}
+                    {"\n"}
+                  </Text>
                 </ScrollView>
-                <LinearGradient 
-                  colors={["transparent", "#1E1E1E"]} 
-                  style={modalStyles.scrollIndicatorBottom} />
+                <LinearGradient
+                  colors={["transparent", "#1E1E1E"]}
+                  style={modalStyles.scrollIndicatorBottom}
+                />
               </View>
 
               {/* Botão fixo fora da rolagem */}
-              <TouchableOpacity onPress={onClose} style={modalStyles.closeButton}>
+              <TouchableOpacity
+                onPress={onClose}
+                style={modalStyles.closeButton}
+              >
                 <Text style={modalStyles.closeText}>Fechar</Text>
               </TouchableOpacity>
             </>
@@ -118,13 +177,13 @@ const modalStyles = StyleSheet.create({
     flex: 1,
   },
   poster: {
-    width: "100%",         
-    height: 220,           
-    resizeMode: "contain", 
+    width: "100%",
+    height: 220,
+    resizeMode: "contain",
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     marginBottom: 16,
-    alignSelf: "center",  
+    alignSelf: "center",
   },
   title: {
     color: "#fff",
@@ -242,7 +301,9 @@ export default function LibraryScreen() {
         data = res;
       }
 
-      setMidias((prev) => (novoOffset === 0 ? data.midias : [...prev, ...data.midias]));
+      setMidias((prev) =>
+        novoOffset === 0 ? data.midias : [...prev, ...data.midias]
+      );
       setHasMore(data.hasMore ?? false);
       setOffset(novoOffset + limit);
     } catch (error) {
@@ -273,14 +334,37 @@ export default function LibraryScreen() {
         <>
           <Image source={{ uri: item.capaUrl }} style={styles.listPoster} />
           <View style={styles.listInfo}>
-            <Text style={styles.listTitle} numberOfLines={2}>{item.tituloAlternativo}</Text>
-            <Text style={styles.listGenres} numberOfLines={2}>{item.generos}</Text>
-            {item.notaMedia != null && <Text style={styles.listRating}>⭐ {item.notaMedia.toFixed(1)}</Text>}
+            <Text style={styles.listTitle} numberOfLines={2}>
+              {item.tituloAlternativo}
+            </Text>
+            <Text style={styles.listGenres} numberOfLines={2}>
+              {item.generos}
+            </Text>
+            <View style={styles.listExtraInfo}>
+              {item.notaMedia != null && (
+                <Text style={styles.listRating}>
+                  ⭐ {item.notaMedia.toFixed(1)}
+                </Text>
+              )}
+
+              <Text style={styles.listTipo}>{item.midiaTipoNome}</Text>
+
+              <Text
+                style={[
+                  styles.listAssistido,
+                  { color: item.assistido ? "#00C853" : "#D50000" },
+                ]}
+              >
+                • {item.assistido ? "Assistido" : "Não assistido"}
+              </Text>
+            </View>
           </View>
         </>
       ) : (
         <>
-          <View style={styles.tag}><Text style={styles.tagText}>{item.midiaTipoNome}</Text></View>
+          <View style={styles.tag}>
+            <Text style={styles.tagText}>{item.midiaTipoNome}</Text>
+          </View>
           {/* Bolinha de status */}
           <View
             style={[
@@ -289,7 +373,9 @@ export default function LibraryScreen() {
             ]}
           />
           <Image source={{ uri: item.capaUrl }} style={styles.poster} />
-          <Text style={styles.title} numberOfLines={2}>{item.tituloAlternativo}</Text>
+          <Text style={styles.title} numberOfLines={2}>
+            {item.tituloAlternativo}
+          </Text>
         </>
       )}
     </TouchableOpacity>
@@ -308,16 +394,29 @@ export default function LibraryScreen() {
         </TouchableOpacity>
         <Text style={styles.headerTitle}>FanCollectorsMedia</Text>
         <TouchableOpacity onPress={() => setModoLista(!modoLista)}>
-          <Ionicons name={modoLista ? "grid-outline" : "list-outline"} size={26} color="#00BFA6" />
+          <Ionicons
+            name={modoLista ? "grid-outline" : "list-outline"}
+            size={26}
+            color="#00BFA6"
+          />
         </TouchableOpacity>
       </View>
 
       <Text style={styles.mainTitle}>
-        {genero ? `Gênero: ${genero}` : tipo ? `Tipo: ${tipo}` : "Todos os meus filmes"}
+        {genero
+          ? `Gênero: ${genero}`
+          : tipo
+          ? `Tipo: ${tipo}`
+          : "Todos os meus filmes"}
       </Text>
 
       <View style={styles.searchContainer}>
-        <Ionicons name="search-outline" size={18} color="#999" style={{ marginRight: 6 }} />
+        <Ionicons
+          name="search-outline"
+          size={18}
+          color="#999"
+          style={{ marginRight: 6 }}
+        />
         <TextInput
           style={styles.searchInput}
           placeholder="Procurar"
@@ -333,15 +432,23 @@ export default function LibraryScreen() {
         keyExtractor={(item) => item.id.toString()}
         key={modoLista ? "list" : "grid"}
         numColumns={modoLista ? 1 : 3}
-        columnWrapperStyle={modoLista ? undefined : { justifyContent: "flex-start" }}
+        columnWrapperStyle={
+          modoLista ? undefined : { justifyContent: "flex-start" }
+        }
         onEndReached={() => carregarMidias(offset)}
         onEndReachedThreshold={0.5}
-        ListFooterComponent={loading ? <ActivityIndicator style={{ marginVertical: 20 }} /> : null}
+        ListFooterComponent={
+          loading ? <ActivityIndicator style={{ marginVertical: 20 }} /> : null
+        }
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 40 }}
       />
 
-      <MidiaModal visible={showModal} midiaId={selectedMidiaId} onClose={() => setShowModal(false)} />
+      <MidiaModal
+        visible={showModal}
+        midiaId={selectedMidiaId}
+        onClose={() => setShowModal(false)}
+      />
     </View>
   );
 }
@@ -374,11 +481,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 16,
     paddingVertical: 8,
-  marginBottom: 20,
+    marginBottom: 20,
   },
-  searchInput: { 
-    flex: 1, 
-    fontSize: 14, 
+  searchInput: {
+    flex: 1,
+    fontSize: 14,
     color: "#fff",
     paddingHorizontal: 10,
   },
@@ -445,7 +552,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   listRating: { fontSize: 14, color: "#FFD700", textAlign: "left" },
-    statusDot: {
+  statusDot: {
     position: "absolute",
     top: 6,
     right: 6,
@@ -455,5 +562,24 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "#121212",
     zIndex: 2,
+  },
+  listExtraInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 4,
+    flexWrap: "wrap",
+  },
+
+  listTipo: {
+    fontSize: 13,
+    color: "#00BFA6",
+    marginLeft: 8,
+    fontWeight: "600",
+  },
+
+  listAssistido: {
+    fontSize: 13,
+    marginLeft: 6,
+    fontWeight: "600",
   },
 });
