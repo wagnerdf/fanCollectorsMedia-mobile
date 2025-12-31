@@ -1159,6 +1159,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#0d1117",
     padding: 16,
   },
+
   title: {
     fontSize: 26,
     fontWeight: "700",
@@ -1166,11 +1167,13 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 16,
   },
+
   menuBox: {
     flexDirection: "row",
     justifyContent: "space-around",
     marginBottom: 20,
   },
+
   menuButton: {
     paddingVertical: 10,
     paddingHorizontal: 16,
@@ -1179,20 +1182,24 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#2b2f33",
   },
+
   menuSelected: {
     backgroundColor: "#2563eb",
     borderColor: "#2563eb",
   },
+
   menuText: {
     color: "#fff",
     fontWeight: "600",
   },
+
   label: {
-    color: "#cbd5e1",
+    fontWeight: "700",
+    color: "#FFD700",
     marginTop: 10,
     marginBottom: 4,
-    fontWeight: "bold",
   },
+
   input: {
     backgroundColor: "#161b22",
     padding: 10,
@@ -1201,12 +1208,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#2b2f33",
   },
+
   selectBox: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8, // Android ignore gap, but kept for web/future
     marginBottom: 8,
   },
+
   selectItem: {
     paddingVertical: 8,
     paddingHorizontal: 14,
@@ -1217,13 +1225,16 @@ const styles = StyleSheet.create({
     marginRight: 8,
     marginBottom: 8,
   },
+
   selected: {
     backgroundColor: "#2563eb",
     borderColor: "#2563eb",
   },
+
   selectText: {
     color: "#fff",
   },
+
   resultItem: {
     padding: 12,
     backgroundColor: "#0f1724",
@@ -1232,27 +1243,32 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#1f2937",
   },
+
   resultText: {
     color: "#fff",
   },
+
   detailsBox: {
     marginTop: 16,
     padding: 12,
     backgroundColor: "#161b22",
     borderRadius: 12,
   },
+
   detailsTitle: {
     fontSize: 18,
     fontWeight: "700",
     color: "#fff",
     marginBottom: 8,
   },
+
   poster: {
     width: 140,
     height: 200,
     borderRadius: 10,
     marginBottom: 12,
   },
+
   saveButton: {
     marginTop: 16,
     backgroundColor: "#2563eb",
@@ -1260,24 +1276,29 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: "center",
   },
+
   saveText: {
     color: "#fff",
     fontWeight: "700",
   },
+
   placeholder: {
     color: "#cbd5e1",
     fontStyle: "italic",
   },
+
   dropdownContainer: {
     backgroundColor: "#1f2937",
     borderRadius: 8,
     marginTop: 4,
     paddingVertical: 4,
   },
+
   dropdownText: {
     color: "#fff",
     fontSize: 16,
   },
+
   dropdownButton: {
     backgroundColor: "#161b22",
     borderRadius: 8,
@@ -1287,10 +1308,12 @@ const styles = StyleSheet.create({
     borderColor: "#2b2f33",
     marginTop: 6,
   },
+
   dropdownButtonText: {
     color: "#cbd5e1",
     fontSize: 16,
   },
+
   dropdownList: {
     backgroundColor: "#161b22",
     borderRadius: 8,
@@ -1298,44 +1321,51 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#2b2f33",
   },
+
   dropdownItem: {
     paddingVertical: 12,
     paddingHorizontal: 14,
     borderBottomWidth: 1,
     borderBottomColor: "#2b2f33",
   },
+
   dropdownItemSelected: {
     backgroundColor: "#2563eb33",
   },
+
   dropdownItemText: {
     color: "#fff",
     fontSize: 15,
   },
+
   readonly: {
-    backgroundColor: "#eee",
+    backgroundColor: "#2a2a2a",
     padding: 10,
     borderRadius: 8,
-    color: "#333",
+    color: "#aaa",
     marginBottom: 10,
   },
+
   row: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "flex-start", 
-    gap: 10, 
+    justifyContent: "flex-start",
     marginVertical: 10,
   },
+
   divider: {
     height: 1,
-    backgroundColor: "#666",
+    backgroundColor: "#3a3a3c",
     marginVertical: 15,
   },
+
   excluirTitle: {
     color: "#fff",
     fontSize: 22,
     fontWeight: "700",
     marginBottom: 12,
   },
+
   excluirItem: {
     backgroundColor: "#161b22",
     padding: 12,
@@ -1346,73 +1376,87 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
+
   excluirTitulo: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "600",
   },
+
   excluirInfo: {
     color: "#cbd5e1",
     fontSize: 13,
   },
+
   botaoExcluir: {
     backgroundColor: "#d9534f",
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 6,
   },
+
   textoBotaoExcluir: {
     color: "#fff",
     fontWeight: "bold",
   },
+
+  /* ===== MODAL EXCLUSÃO (AJUSTADO) ===== */
+
   modalContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(0,0,0,0.8)",
   },
+
   modalContent: {
-    width: "88%",
-    backgroundColor: "#2c2c2e",
-    borderRadius: 18,
-    padding: 22,
+    width: "90%",
+    backgroundColor: "#1E1E1E",
+    borderRadius: 16,
+    padding: 20,
     borderWidth: 1,
-    borderColor: "#3a3a3c",
-    boxShadow: "0px 6px 14px rgba(0,0,0,0.45)",
+    borderColor: "#00BFA6",
     elevation: 14,
   },
+
   modalTitle: {
     fontSize: 22,
     color: "#fff",
-    fontWeight: "600",
+    fontWeight: "700",
     textAlign: "center",
-    marginBottom: 4,
+    marginBottom: 6,
   },
+
   modalDescription: {
     fontSize: 14,
-    color: "#c7c7cc",
+    color: "#ccc",
     textAlign: "center",
-    marginBottom: 14,
+    marginBottom: 12,
   },
+
   modalSubtitle: {
     fontSize: 15,
     fontWeight: "600",
     color: "#fff",
     marginBottom: 14,
   },
+
   infoBox: {
-    backgroundColor: "#3a3a3c",
-    borderRadius: 14,
-    padding: 15,
+    backgroundColor: "#121212",
+    borderRadius: 12,
+    padding: 14,
     borderWidth: 1,
-    borderColor: "#48484a",
-    marginBottom: 20,
+    borderColor: "#3a3a3c",
+    marginBottom: 16,
   },
+
   infoTexto: {
-    color: "#e5e5ea",
-    fontSize: 15,
-    marginBottom: 8,
+    color: "#fff",
+    fontSize: 14,
+    marginBottom: 6,
+    textAlign: "left",
   },
+
   capaImagem: {
     width: 140,
     height: 200,
@@ -1420,31 +1464,43 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 16,
   },
+
   modalBotoes: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 5,
+    marginTop: 10,
   },
+
   botaoCancelar: {
+    flex: 1,
     paddingVertical: 12,
-    paddingHorizontal: 22,
-    backgroundColor: "#636366",
-    borderRadius: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#aaa",
+    marginRight: 8,
+    alignItems: "center",
+    backgroundColor: "transparent",
   },
+
   botaoCancelarTexto: {
-    color: "#fff",
+    color: "#aaa",
     fontWeight: "700",
   },
+
   botaoConfirmarExcluir: {
+    flex: 1,
     paddingVertical: 12,
-    paddingHorizontal: 22,
-    backgroundColor: "#ff3b30",
-    borderRadius: 12,
+    borderRadius: 10,
+    backgroundColor: "#D50000",
+    marginLeft: 8,
+    alignItems: "center",
   },
+
   botaoConfirmarExcluirTexto: {
     color: "#fff",
     fontWeight: "700",
   },
+
   boxEditar: {
     marginTop: 20,
     padding: 16,
@@ -1461,7 +1517,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
 
-  // Input só para visualização (bloqueado)
   inputDisabled: {
     backgroundColor: "#2a2a2a",
     borderWidth: 1,
@@ -1472,7 +1527,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
 
-  // Inputs editáveis (observacoes, temporada etc.)
   inputEditar: {
     backgroundColor: "#fff",
     borderWidth: 1,
@@ -1490,3 +1544,4 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
 });
+
