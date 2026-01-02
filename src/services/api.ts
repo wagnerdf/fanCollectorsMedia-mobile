@@ -1,6 +1,8 @@
 import axios from "axios";
 import Constants from "expo-constants";
-import { getAuthToken } from "./authToken";
+import { getAuthToken, clearAuthToken } from "./authToken";
+import * as SecureStore from "expo-secure-store";
+import { router } from "expo-router";
 
 // 🔧 Pega a URL da API definida em app.config.js (ou no EAS Secret)
 const { API_BASE_URL } = Constants.expoConfig?.extra || {};
@@ -17,11 +19,30 @@ const api = axios.create({
 });
 
 // 🛡️ Intercepta todas as requisições e injeta o token automaticamente
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401) {
+      // 🔐 limpa tokens
+      await SecureStore.deleteItemAsync("userToken");
+      await SecureStore.deleteItemAsync("tokenExpiration");
+      clearAuthToken();
+
+      // 🚪 volta para login
+      router.replace("/auth/Login");
+    }
+
+    return Promise.reject(error);
+  }
+);
+
 api.interceptors.request.use(async (config) => {
   const token = await getAuthToken();
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
   config.headers["Content-Type"] = "application/json";
   return config;
 });

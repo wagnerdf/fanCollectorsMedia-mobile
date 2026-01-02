@@ -15,15 +15,16 @@ import { useLogin } from "hooks/useLogin";
 import AnimatedError from "components/AnimatedError";
 import * as SecureStore from "expo-secure-store";
 import { setAuthToken } from "@/src/services/authToken";
+import { getTokenExpiration } from "@/src/utils/jwt";
 
 export default function LoginScreen() {
   const router = useRouter();
   const [login, setLogin] = useState("");
   const [senha, setSenha] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [permanecerConectado, setPermanecerConectado] = useState(false);
 
   const { loading, errorMessage, loginUser, setErrorMessage } = useLogin();
-  const [permanecerConectado, setPermanecerConectado] = useState(false);
 
   const handleLogin = async () => {
     Keyboard.dismiss();
@@ -40,39 +41,54 @@ export default function LoginScreen() {
       return;
     }
 
-    const data = await loginUser(login, senha);
+    try {
+      const data = await loginUser(login, senha);
 
-    if (data?.token) {
-      try {
-        // 🔑 injeta token no axios
-        setAuthToken(data.token);
-
-        // 🔐 salva token apenas se marcar permanecer conectado
-        if (permanecerConectado) {
-          await SecureStore.setItemAsync("userToken", data.token);
-        }
-
-        router.replace("/(tabs)/explore");
-      } catch (e) {
-        console.error("Erro ao salvar token:", e);
-        setErrorMessage("Erro interno, tente novamente.");
+      if (!data?.token) {
+        setErrorMessage("Erro ao autenticar.");
+        return;
       }
+
+      // 🔐 Extrai expiração do JWT
+      const expiresAt = getTokenExpiration(data.token);
+
+      if (!expiresAt) {
+        console.error("Token sem data de expiração");
+        setErrorMessage("Token inválido. Faça login novamente.");
+        return;
+      }
+
+      // 🔑 SEMPRE injeta em memória
+      setAuthToken(data.token, expiresAt);
+
+      // 💾 Salva apenas se marcar permanecer conectado
+      if (permanecerConectado) {
+        await SecureStore.setItemAsync("userToken", data.token);
+        await SecureStore.setItemAsync(
+          "tokenExpiration",
+          expiresAt.getTime().toString()
+        );
+      }
+
+      router.replace("/(tabs)/explore");
+    } catch (error) {
+      console.error("Erro no login:", error);
+      setErrorMessage("Erro interno, tente novamente.");
     }
   };
 
   return (
     <View style={styles.outerContainer}>
       <View style={styles.container}>
-        {/* Ícone acima do título */}
         <Ionicons
           name="lock-closed-outline"
           size={52}
           color="#60a5fa"
           style={styles.icon}
         />
+
         <Text style={styles.title}>Login</Text>
 
-        {/* Campo de Email */}
         <View style={styles.fieldContainer}>
           <Text style={styles.label}>Email</Text>
           <TextInput
@@ -86,7 +102,6 @@ export default function LoginScreen() {
           />
         </View>
 
-        {/* Campo de Senha */}
         <View style={styles.fieldContainer}>
           <Text style={styles.label}>Senha</Text>
           <View style={styles.passwordContainer}>
@@ -98,7 +113,6 @@ export default function LoginScreen() {
               value={senha}
               onChangeText={setSenha}
               returnKeyType="done"
-              blurOnSubmit={true}
             />
             <TouchableOpacity
               onPress={() => setShowPassword(!showPassword)}
@@ -113,7 +127,6 @@ export default function LoginScreen() {
           </View>
         </View>
 
-        {/* Box para escolha de permanecer conectado */}
         <TouchableOpacity
           style={styles.rememberRow}
           onPress={() => setPermanecerConectado(!permanecerConectado)}
@@ -126,12 +139,10 @@ export default function LoginScreen() {
           <Text style={styles.rememberText}>Permanecer conectado</Text>
         </TouchableOpacity>
 
-        {/* Link para recuperar senha */}
         <TouchableOpacity onPress={() => router.push("/auth/recover")}>
           <Text style={styles.forgotPasswordText}>Esqueceu sua senha?</Text>
         </TouchableOpacity>
 
-        {/* Mensagem de erro animada */}
         <AnimatedError message={errorMessage} />
 
         <View style={styles.buttonRow}>

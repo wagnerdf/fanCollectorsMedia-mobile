@@ -8,9 +8,7 @@ import {
   View,
 } from "react-native";
 import AppModal from "@/components/AppModal";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as SecureStore from "expo-secure-store";
-import { clearAuthToken } from "@/src/services/authToken";
+import { logout } from "@/src/services/authToken";
 
 export default function ExplorerScreen() {
   const router = useRouter();
@@ -30,16 +28,10 @@ export default function ExplorerScreen() {
     setModalVisible(true);
   };
 
-  const handleLogout = async () => {
-    try {
-      await SecureStore.deleteItemAsync("userToken");
-      clearAuthToken();
-
-      router.replace("/auth/Welcome");
-    } catch (e) {
-      console.error("Erro ao fazer logout:", e);
-    }
-  };
+  async function handleLogout() {
+    await logout();
+    router.replace("/auth/Welcome");
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.scroll}>
