@@ -29,9 +29,15 @@ export default function ExplorerScreen() {
   };
 
   async function handleLogout() {
-    await logout();
-    router.replace("/auth/Welcome");
+    try {
+      await logout();
+    } catch (error) {
+      console.warn("Erro ao fazer logout:", error);
+    } finally {
+      router.replace("/auth/Welcome");
+    }
   }
+
 
   return (
     <ScrollView contentContainerStyle={styles.scroll}>
