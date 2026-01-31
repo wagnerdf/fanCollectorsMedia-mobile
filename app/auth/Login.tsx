@@ -62,6 +62,12 @@ export default function LoginScreen() {
       // 🔑 SEMPRE injeta em memória
       setAuthToken(data.token, expiresAt);
 
+      await setLoggedUser({
+        email: login,
+        username: login.split("@")[0],
+        loggedAt: new Date().toISOString(),
+      });
+
       // 💾 Salva apenas se marcar permanecer conectado
       if (permanecerConectado) {
         await SecureStore.setItemAsync("userToken", data.token);
