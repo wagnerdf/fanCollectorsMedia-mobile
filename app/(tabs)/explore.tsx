@@ -36,7 +36,7 @@ export default function ExplorerScreen() {
   return (
     <ScrollView contentContainerStyle={styles.scroll}>
       <View style={styles.card}>
-        <Text style={styles.title}>Explorar</Text>
+        <Text style={styles.title}>FanCollectionMidia</Text>
 
         <Text style={styles.subtitle}>
           Descubra novas mídias, coleções e tendências compartilhadas pela
