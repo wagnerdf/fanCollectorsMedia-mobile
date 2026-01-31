@@ -145,9 +145,10 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   subtitle: {
-    color: "#cbd5e1",
     textAlign: "center",
-    marginBottom: 12,
+    color: "#9ca3af",
+    marginBottom: 16,
+    fontSize: 14,
   },
   section: {
     marginTop: 8,
