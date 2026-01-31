@@ -16,6 +16,7 @@ import AnimatedError from "components/AnimatedError";
 import * as SecureStore from "expo-secure-store";
 import { setAuthToken } from "@/src/services/authToken";
 import { getTokenExpiration } from "@/src/utils/jwt";
+import { setLoggedUser, getLoggedUser } from "@/src/services/userStorage";
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -66,9 +67,23 @@ export default function LoginScreen() {
         await SecureStore.setItemAsync("userToken", data.token);
         await SecureStore.setItemAsync(
           "tokenExpiration",
-          expiresAt.getTime().toString()
+          expiresAt.getTime().toString(),
         );
       }
+
+      // 👤 Monta usuário logado
+      const user = {
+        email: login,
+        username: login.split("@")[0], // simples e funcional
+        loggedAt: new Date().toISOString(),
+      };
+
+      // 💾 Salva no storage
+      await setLoggedUser(user);
+
+      // 🔍 Lê e imprime no console
+      const storedUser = await getLoggedUser();
+      console.log("Usuário logado:", storedUser);
 
       router.replace("/(tabs)/explore");
     } catch (error) {
