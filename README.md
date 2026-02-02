@@ -1,5 +1,5 @@
 # 🎥 fanCollectorsMedia 
-[![License](https://img.shields.io/github/license/wagnerdf/fan-collectors-frontend)](https://github.com/wagnerdf/fan-collectors-frontend/LICENSE)
+[![License](https://img.shields.io/github/license/wagnerdf/fanCollectorsMedia-mobile)](https://github.com/wagnerdf/fanCollectorsMedia-mobile/blob/main/LICENSE)
 [![Java](https://img.shields.io/badge/Java-17+-orange?logo=java&logoColor=white)](https://www.java.com/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3+-6DB33F?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
