@@ -1,7 +1,19 @@
 # 🎥 fanCollectorsMedia 
-[![NPM](https://img.shields.io/npm/l/react)](https://github.com/wagnerdf/fan-collectors-frontend/LICENSE) 
+[![License](https://img.shields.io/github/license/wagnerdf/fan-collectors-frontend)](https://github.com/wagnerdf/fan-collectors-frontend/LICENSE)
+[![Java](https://img.shields.io/badge/Java-17+-orange?logo=java&logoColor=white)](https://www.java.com/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3+-6DB33F?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![React](https://img.shields.io/badge/React-18+-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![React Native](https://img.shields.io/badge/React%20Native-Mobile-20232A?logo=react&logoColor=61DAFB)](https://reactnative.dev/)
+[![Expo](https://img.shields.io/badge/Expo-Platform-000020?logo=expo&logoColor=white)](https://expo.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![JWT](https://img.shields.io/badge/JWT-Auth-000000?logo=jsonwebtokens&logoColor=white)](https://jwt.io/)
+[![Railway](https://img.shields.io/badge/Railway-Cloud-0B0D0E?logo=railway&logoColor=white)](https://railway.app/)
 
-Sistema para colecionadores de mídias físicas (Blu-ray, DVD, VHS, LP, CD, Cartuchos...), permitindo cadastro detalhado para midia fśicas, salvando, editando, deletando e visualizando todos registro de cada usuário, integração com a API TMDB e outras que serão acresentadas com o desenvolvimento da aplicação web, autenticação de usuários, publicação de potagens e muito mais!
+
+Sistema para colecionadores de mídias físicas (Blu-ray, DVD, VHS, LP, CD, cartuchos, etc.), permitindo o cadastro detalhado de mídias físicas, com funcionalidades para salvar, editar, excluir e visualizar todos os registros de cada usuário.
+
+O sistema conta com autenticação de usuários, integração com a API do TMDB e outras que serão adicionadas ao longo do desenvolvimento da aplicação web, além de publicação de postagens e muitos outros recursos.
 
 ---
 
@@ -9,7 +21,7 @@ Sistema para colecionadores de mídias físicas (Blu-ray, DVD, VHS, LP, CD, Cart
 
 Baixe a versão mais recente do aplicativo **FanCollectionMidia** para Android:
 
-👉 [⬇️ FanCollectionMidia v1.0.6 (Preview)](https://drive.google.com/file/d/1UBEqRF84vd-iuxwS5AfYNQY2bTbkiC-J/view?usp=sharing)
+👉 [⬇️ FanCollectionMidia v1.0.7 (Preview)](https://drive.google.com/file/d/1NWKB1J-982PyKBwnqUT_Jwqk1Re5Lae-/view?usp=sharing)
 
 👤 Usuário de Teste
 
@@ -20,18 +32,19 @@ Baixe a versão mais recente do aplicativo **FanCollectionMidia** para Android:
 > Algumas funções ainda estão em desenvolvimento.
 
 **Informações da build:**
-- Versão: `1.0.6`
+- Versão: `1.0.7`
 - Tipo: `Preview (Release APK)`
-- Data de build: **31/12/2025**
+- Data de build: **02/02/2026**
 - Tamanho: ~91 MB
 - Compatibilidade: Android 7.0 (Nougat) ou superior
 - Status: ✅ Testado e funcional via EAS Build
 
-**Novidades desta versão (1.0.6):**
-- 🎨 Padronização do layout do modal de exclusão de mídia, seguindo o visual e a identidade do restante do aplicativo.
-- 🔐 Implementada a opção **“Permanecer conectado”** na tela de login, permitindo manter a sessão ativa mesmo após fechar o aplicativo.
-- 🚪 Ajuste no fluxo de logout, garantindo a remoção correta do token e retorno seguro à tela de boas-vindas.
-- 🧭 Melhorias na navegação inicial do app, evitando acessos indevidos quando o usuário não está autenticado.
+**Novidades desta versão (1.0.7):**
+- 🔐 Correção no login em dispositivos Android, garantindo compatibilidade total com o SecureStore.
+- 🚪 Ajuste definitivo no fluxo de logout no Web e Mobile, evitando travamentos e erros de sessão.
+- 🧹 Limpeza completa dos dados de autenticação e usuário ao sair da aplicação.
+- 🧠 Alinhamento do armazenamento de sessão entre Web (localStorage) e Mobile (SecureStore).
+- 🐛 Correção de erros e warnings no console, aumentando a estabilidade geral do app.
 
 ---
 
