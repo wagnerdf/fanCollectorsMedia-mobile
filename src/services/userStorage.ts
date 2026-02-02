@@ -1,7 +1,8 @@
 import { Platform } from "react-native";
 import * as SecureStore from "expo-secure-store";
 
-const STORAGE_KEY = "fanCollection:user";
+const STORAGE_KEY = "fanCollection.user";
+
 
 export type LoggedUser = {
   email: string;
