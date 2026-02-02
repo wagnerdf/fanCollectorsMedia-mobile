@@ -1,4 +1,6 @@
 import * as SecureStore from "expo-secure-store";
+import { Platform } from "react-native";
+import { clearLoggedUser } from "../services/userStorage";
 
 let memoryToken: string | null = null;
 let tokenExpiration: number | null = null;
@@ -27,8 +29,15 @@ export async function getAuthToken(): Promise<string | null> {
 }
 
 export async function logout() {
-  await SecureStore.deleteItemAsync("userToken");
-  await SecureStore.deleteItemAsync("tokenExpiration");
+  if (Platform.OS !== "web") {
+    await SecureStore.deleteItemAsync("userToken");
+    await SecureStore.deleteItemAsync("tokenExpiration");
+  } else {
+    localStorage.removeItem("userToken");
+    localStorage.removeItem("tokenExpiration");
+  }
+
+  await clearLoggedUser();
   clearAuthToken();
 }
 

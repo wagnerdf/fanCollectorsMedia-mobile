@@ -3,6 +3,7 @@ import Constants from "expo-constants";
 import { getAuthToken, clearAuthToken } from "./authToken";
 import * as SecureStore from "expo-secure-store";
 import { router } from "expo-router";
+import { Platform } from "react-native";
 
 // 🔧 Pega a URL da API definida em app.config.js (ou no EAS Secret)
 const { API_BASE_URL } = Constants.expoConfig?.extra || {};
@@ -23,17 +24,24 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response?.status === 401) {
-      // 🔐 limpa tokens
-      await SecureStore.deleteItemAsync("userToken");
-      await SecureStore.deleteItemAsync("tokenExpiration");
-      clearAuthToken();
+      try {
+        if (Platform.OS !== "web") {
+          await SecureStore.deleteItemAsync("userToken");
+          await SecureStore.deleteItemAsync("tokenExpiration");
+        } else {
+          localStorage.removeItem("userToken");
+          localStorage.removeItem("tokenExpiration");
+        }
 
-      // 🚪 volta para login
-      router.replace("/auth/Login");
+        clearAuthToken();
+        router.replace("/auth/Login");
+      } catch (e) {
+        console.error("Erro ao limpar sessão:", e);
+      }
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 api.interceptors.request.use(async (config) => {
@@ -55,7 +63,7 @@ export const apiPost = async (endpoint: string, body: any) => {
   } catch (error: any) {
     console.error(
       "Erro na requisição POST:",
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     throw error;
   }
@@ -69,7 +77,7 @@ export const getTotalMidias = async (): Promise<number> => {
   } catch (error: any) {
     console.error(
       "Erro ao buscar total de mídias:",
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     return 0;
   }
@@ -85,7 +93,7 @@ export const getUserMidias = async (offset: number = 0, limit: number = 10) => {
   } catch (error: any) {
     console.error(
       "Erro ao buscar mídias do usuário:",
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     return { total: 0, midias: [], hasMore: false };
   }
@@ -107,7 +115,7 @@ export const getGeneros = async (): Promise<
   } catch (error: any) {
     console.error(
       "Erro ao buscar gêneros:",
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     return [];
   }
@@ -123,7 +131,7 @@ export const getTipos = async (): Promise<
   } catch (error: any) {
     console.error(
       "Erro ao buscar tipos de mídia:",
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     return [];
   }
@@ -133,7 +141,7 @@ export const getTipos = async (): Promise<
 export const getMidiasByGenero = async (
   genero: string,
   page: number = 0,
-  size: number = 10
+  size: number = 10,
 ): Promise<{
   content: any[];
   currentPage: number;
@@ -146,14 +154,14 @@ export const getMidiasByGenero = async (
       `/api/midias/generos/${encodeURIComponent(genero)}`,
       {
         params: { page, size },
-      }
+      },
     );
 
     return response.data; // objeto { content, currentPage, totalItems, totalPages, hasMore }
   } catch (error: any) {
     console.error(
       "Erro ao buscar mídias por gênero:",
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     return {
       content: [],
@@ -169,7 +177,7 @@ export const getMidiasByGenero = async (
 export const getMidiasByTipo = async (
   tipo: string,
   page: number = 0,
-  size: number = 10
+  size: number = 10,
 ): Promise<{
   content: any[];
   currentPage: number;
@@ -182,14 +190,14 @@ export const getMidiasByTipo = async (
       `/api/midias/tipo-midia/${encodeURIComponent(tipo)}`,
       {
         params: { page, size },
-      }
+      },
     );
 
     return response.data; // objeto { content, currentPage, totalItems, totalPages, hasMore }
   } catch (error: any) {
     console.error(
       "Erro ao buscar mídias por tipo:",
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     return {
       content: [],
@@ -215,7 +223,7 @@ export const getUserProfile = async (): Promise<{
   } catch (error: any) {
     console.error(
       "Erro ao buscar perfil do usuário:",
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     throw error;
   }
@@ -234,7 +242,7 @@ export const updateUserProfile = async (body: Record<string, any>) => {
 
 // 🔐 Envia solicitação para recuperação de senha
 export const recuperarSenha = async (
-  email: string
+  email: string,
 ): Promise<{ message: string }> => {
   try {
     const response = await api.post("/auth/recuperar-senha", { email });
@@ -243,7 +251,7 @@ export const recuperarSenha = async (
   } catch (error: any) {
     console.error(
       "❌ Erro ao enviar recuperação de senha:",
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     throw error;
   }
@@ -304,7 +312,7 @@ export const salvarMidiaApi = async (body: any) => {
   } catch (error: any) {
     console.error(
       "Erro ao salvar mídia:",
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     throw error;
   }
@@ -335,7 +343,7 @@ export const excluirMidia = async (id: number) => {
 // Editar somente os campos livres da mídia
 export const atualizarCamposLivres = async (
   id: number,
-  dados: any
+  dados: any,
 ): Promise<void> => {
   await api.patch(`/api/midias/${id}/editar-campos-livres`, dados);
 };
