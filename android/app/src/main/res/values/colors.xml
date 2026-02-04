@@ -1,10 +1,7 @@
 <resources>
-    <color name="splashscreen_background">#ffffff</color>
-    <color name="iconBackground">#00BFA6</color>
-
-    <!-- COR PRINCIPAL DO APP -->
-    <color name="colorPrimary">#00BFA6</color>
-
-    <!-- NÃO deixe branco -->
-    <color name="colorPrimaryDark">#00BFA6</color>
+  <color name="splashscreen_background">#00BFA6</color>
+  <color name="iconBackground">#00BFA6</color>
+  <color name="colorPrimary">#023c69</color>
+  <color name="colorPrimaryDark">#00BFA6</color>
+  <color name="navigationBarColor">#00BFA6</color>
 </resources>

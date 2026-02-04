@@ -368,7 +368,7 @@ export default function MidiaBase() {
     return (
       <View style={{ alignItems: "center", marginTop: 30 }}>
         <Image
-          source={require("@/assets/images/midias.png")}
+          source={require("@/assets/adaptive-icon.png")}
           style={{ width: 260, height: 260, opacity: 0.85 }}
         />
         <Text style={{ color: "#cbd5e1", marginTop: 12 }}>
