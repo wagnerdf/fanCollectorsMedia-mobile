@@ -1,16 +1,52 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-  <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
-    <item name="android:enforceNavigationBarContrast" tools:targetApi="29">true</item>
-    <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
-    <item name="colorPrimary">@color/colorPrimary</item>
-    <item name="android:statusBarColor">#00BFA6</item>
-    <item name="android:navigationBarColor">@color/navigationBarColor</item>
-    <item name="android:windowLightNavigationBar">true</item>
-  </style>
-  <style name="Theme.App.SplashScreen" parent="Theme.SplashScreen">
-    <item name="windowSplashScreenBackground">@color/splashscreen_background</item>
-    <item name="windowSplashScreenAnimatedIcon">@drawable/splashscreen_logo</item>
-    <item name="postSplashScreenTheme">@style/AppTheme</item>
-    <item name="android:windowSplashScreenBehavior">icon_preferred</item>
-  </style>
+
+    <!-- ===================== -->
+    <!-- Tema principal do App -->
+    <!-- ===================== -->
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+
+        <!-- Cor principal -->
+        <item name="colorPrimary">#00BFA6</item>
+
+        <!-- Status bar -->
+        <item name="android:statusBarColor">#00BFA6</item>
+
+        <!-- Navigation bar -->
+        <item name="android:navigationBarColor">#00BFA6</item>
+
+        <!-- Ícones claros na barra (fundo escuro/colorido) -->
+        <item name="android:windowLightNavigationBar">false</item>
+
+        <!-- Desliga contraste automático (API 29+) -->
+        <item name="android:enforceNavigationBarContrast" tools:targetApi="29">false</item>
+
+        <!-- Compatibilidade React Native -->
+        <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
+
+    </style>
+
+    <!-- ===================== -->
+    <!-- Splash Screen (Android 12+) -->
+    <!-- ===================== -->
+    <style name="Theme.App.SplashScreen" parent="Theme.SplashScreen">
+
+        <!-- Fundo do splash -->
+        <item name="windowSplashScreenBackground">#00BFA6</item>
+
+        <!-- Ícone animado -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splashscreen_logo</item>
+
+        <!-- 🔥 FORÇA cores da system UI no splash -->
+        <item name="android:statusBarColor">#00BFA6</item>
+        <item name="android:navigationBarColor">#00BFA6</item>
+        <item name="android:windowLightNavigationBar">false</item>
+
+        <!-- Após o splash, volta para o tema principal -->
+        <item name="postSplashScreenTheme">@style/AppTheme</item>
+
+        <!-- Preferência de exibição do ícone -->
+        <item name="android:windowSplashScreenBehavior">icon_preferred</item>
+
+    </style>
+
 </resources>
