@@ -134,6 +134,9 @@ export default function LoginScreen() {
               value={senha}
               onChangeText={setSenha}
               returnKeyType="done"
+              autoCapitalize="none"
+              autoCorrect={false}
+              textContentType="password"
             />
             <TouchableOpacity
               onPress={() => setShowPassword(!showPassword)}
