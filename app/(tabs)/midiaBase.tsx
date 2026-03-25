@@ -1128,11 +1128,11 @@ export default function MidiaBase() {
     <SafeAreaView style={{ flex: 1, backgroundColor: "#0d1117" }}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <ScrollView
           style={styles.container}
-          contentContainerStyle={{ paddingBottom: 120 }} // espaço para menu inferior + margem
+          contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps="handled" // permite clicar em botões mesmo com teclado aberto
         >
           <Text style={styles.title}>Gerenciar Mídias</Text>
