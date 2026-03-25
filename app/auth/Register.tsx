@@ -593,6 +593,13 @@ export default function RegisterFullScreen() {
         {/* Botões */}
         <View style={styles.buttonRow}>
           <TouchableOpacity
+            style={[styles.button, styles.voltarButton]}
+            onPress={() => router.back()}
+          >
+            <Text style={styles.buttonText}>↩️ Voltar</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
             style={[styles.button, styles.cadastrarButton]}
             onPress={handleCadastrar}
             disabled={loading}
@@ -602,13 +609,6 @@ export default function RegisterFullScreen() {
             ) : (
               <Text style={styles.buttonText}>🪪 Cadastrar</Text>
             )}
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.button, styles.voltarButton]}
-            onPress={() => router.back()}
-          >
-            <Text style={styles.buttonText}>↩️ Voltar</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
