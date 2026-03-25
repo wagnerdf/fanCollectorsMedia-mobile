@@ -168,6 +168,13 @@ export default function LoginScreen() {
 
         <View style={styles.buttonRow}>
           <TouchableOpacity
+            style={[styles.button, styles.backButton]}
+            onPress={() => router.replace("/auth/Welcome")}
+          >
+            <Text style={styles.buttonText}>Voltar</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
             style={[styles.button, styles.loginButton]}
             onPress={handleLogin}
             disabled={loading}
@@ -177,13 +184,6 @@ export default function LoginScreen() {
             ) : (
               <Text style={styles.buttonText}>Entrar</Text>
             )}
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.button, styles.backButton]}
-            onPress={() => router.replace("/auth/Welcome")}
-          >
-            <Text style={styles.buttonText}>Voltar</Text>
           </TouchableOpacity>
         </View>
 
@@ -255,8 +255,8 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
   },
-  loginButton: { backgroundColor: "#2563eb", marginRight: 6 },
-  backButton: { backgroundColor: "#dc2626", marginLeft: 6 },
+  loginButton: { backgroundColor: "#2563eb", marginLeft: 6 },
+  backButton: { backgroundColor: "#dc2626", marginRight: 6 },
   buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
   signupText: { color: "#cbd5e1", textAlign: "center" },
   signupLink: { color: "#60a5fa" },
