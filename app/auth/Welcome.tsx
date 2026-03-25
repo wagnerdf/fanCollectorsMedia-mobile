@@ -29,16 +29,16 @@ export default function WelcomeScreen() {
 
       <View style={styles.buttonContainer}>
         <AppButton
-          title={LOGIN_BUTTON}
-          onPress={() => router.push("/auth/Login")}
-          color="#2563eb"
+          title={SIGNUP_BUTTON}
+          onPress={() => router.push("/auth/Register")}
+          color="#16a34a"
           flex={1}
           margin="right"
         />
         <AppButton
-          title={SIGNUP_BUTTON}
-          onPress={() => router.push("/auth/Register")}
-          color="#16a34a"
+          title={LOGIN_BUTTON}
+          onPress={() => router.push("/auth/Login")}
+          color="#2563eb"
           flex={1}
           margin="left"
         />
